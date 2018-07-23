@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Feedtype.mapper.WphFeedtypeMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Feedtype.po.WphFeedtype" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="parent_Fid" property="parentFid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="UUID" property="uuid" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="typeMap" type="com.slk.wph.module.WPH_Feedtype.po.WphFeedtypeCustom" >
+      <id column="fid" property="fid"/>
+      <result column="name" property="name"/>
+      <collection property="types" ofType="com.slk.wph.module.WPH_Feedtype.po.WphFeedtypeCustom">
+          <id column="tfid" property="fid"/>
+          <result column="tname" property="name"/>
+      </collection>
+  </resultMap>
+
+  <select id="selectParentTypes"  resultMap="typeMap" >
+      SELECT type1.fid ,type1.`Name` ,type2.fid tfid ,type2.`Name` tname  FROM wph_feedtype type1
+        LEFT JOIN wph_feedtype type2 ON type1.fid = type2.parent_Fid
+      WHERE type1.parent_Fid = 0
+  </select>
+
+
+
+</mapper>

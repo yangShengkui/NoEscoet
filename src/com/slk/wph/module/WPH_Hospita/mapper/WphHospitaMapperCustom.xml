@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Hospita.mapper.WphHospitaMapperCustom">
+	<resultMap id="BaseResultMap"
+		type="com.slk.wph.module.WPH_Hospita.po.WphHospitaCustom">
+		<id column="fid" property="fid" />
+		<result column="Name" property="name" />
+		<result column="Abbreviation" property="abbreviation" />
+		<result column="CreateDate" property="createdate" />
+		<result column="Notes" property="notes" />
+		<result column="Status" property="status" />
+		<collection property="wphWardlist" column="fid"
+			ofType="com.slk.wph.module.WPH_Ward.po.WphWard">
+			<id column="wphWardlist_fid" property="fid" />
+			<result column="WPH_Hospita_fid" property="wphHospitaFid" />
+			<result column="wphWardlist_Name" property="name" />
+			<result column="wphWardlist_Abbreviation" property="abbreviation" />
+			<result column="wphWardlist_CreateDate" property="createdate" />
+			<result column="wphWardlist_Notes" property="notes" />
+			<result column="wphWardlist_SaveMoney" property="savemoney" />
+			<result column="wphWardlist_WaringMoney" property="waringmoney" />
+			<result column="wphWardlist_Status" property="status" />
+		</collection>
+	</resultMap>
+	<sql id="Base_Column_List">
+		fid,
+		Name,
+		Abbreviation,
+		CreateDate,
+		Notes,
+		Status
+	</sql>
+	
+	<select id="getWphHospitaAndWphWard" resultMap="BaseResultMap">
+		select a.fid,
+		a.name,
+		a.Status,
+		b.fid as wphWardlist_fid,
+		b.WPH_Hospita_fid,
+		b.Name as wphWardlist_Name,
+		b.Abbreviation as wphWardlist_Abbreviation,
+		b.CreateDate as wphWardlist_CreateDate,
+		b.Notes as wphWardlist_Notes,
+		b.Savemoney as wphWardlist_Savemoney,
+		b.Waringmoney as wphWardlist_Waringmoney,
+		b.Status as wphWardlist_Status
+		from wph_hospita a left join wph_ward b on a.fid=b.WPH_Hospita_fid
+		order by a.fid asc,b.fid asc
+	</select>
+
+	<select id="getWardCountStatus" resultType="java.lang.Integer">
+		select count(*) from wph_hospita a
+		left join wph_ward b
+		on a.fid= b.WPH_Hospita_fid
+		where a.fid=#{fid}
+		and a.status='0'
+	</select>
+
+	<select id="getWphHospitaList" resultType="com.slk.wph.module.WPH_Hospita.po.WphHospita">
+		select
+		<include refid="Base_Column_List" />
+		from wph_hospita order by fid asc
+	</select>
+	
+	<select id="getWphHospitaListByStatus" resultType="com.slk.wph.module.WPH_Hospita.po.WphHospita">
+		select
+		<include refid="Base_Column_List" />
+		from wph_hospita where status='0' order by fid asc
+	</select>
+	<select id="checkWphHospita" resultType="java.lang.Integer">
+		select count(*) from
+		wph_hospita
+		where Name=#{0}
+	</select>
+	<select id="checkWphHospita_" resultType="java.lang.Integer">
+		select count(*) from
+		wph_hospita
+		where fid!=#{0} and Name=#{1}
+	</select>
+	
+	<select id="getWphHospitaByFid" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from wph_hospita where fid=#{fid} 
+	</select>
+	
+	<update id="updateWphHospita">
+		update wph_hospita
+		<set>
+			<if test="name!=null">
+				Name = #{name},
+			</if>
+			<if test="abbreviation!=null">
+				Abbreviation = #{abbreviation},
+			</if>
+			<if test="notes!=null">
+				Notes = #{notes},
+			</if>
+			<if test="status!=null">
+				Status=#{status},
+			</if>
+		</set>
+		where fid = #{fid}
+	</update>
+	<delete id="deleteWphHospitaByFId">
+		delete from wph_hospita where fid=#{fid}
+	</delete>
+	<delete id="deleteWphWardByWphHospitaFId">
+		delete from wph_ward where WPH_Hospita_fid=#{fid}
+	</delete>
+
+	<sql id="Base_Column_List_i">
+		Name,
+		Abbreviation,
+		Notes,
+		Status
+	</sql>
+	<insert id="saveWphHospita">
+		insert into wph_hospita (
+		<include refid="Base_Column_List_i" />
+		)
+		values (
+		#{name},
+		#{abbreviation},
+		#{notes},
+		#{status}
+		)
+	</insert>
+
+</mapper>

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Summary_Expert.mapper.WphSummaryExpertMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Summary_Expert.po.WphSummaryExpert" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="positiontitle" property="positiontitle" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="outcall" property="outcall" jdbcType="VARCHAR" />
+    <result column="major" property="major" jdbcType="VARCHAR" />
+    <result column="duties" property="duties" jdbcType="VARCHAR" />
+    <result column="education" property="education" jdbcType="VARCHAR" />
+    <result column="achievement" property="achievement" jdbcType="VARCHAR" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <result column="img" property="img" jdbcType="VARCHAR" />
+    <result column="notes" property="notes" jdbcType="VARCHAR" />
+    <result column="createdate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, position, positiontitle, name, outcall, major, duties, education, achievement, 
+    state, img, notes, createdate, createuser
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Summary_Expert.po.WphSummaryExpertExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_summary_expert
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_summary_expert
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_summary_expert
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_Summary_Expert.po.WphSummaryExpertExample" >
+    delete from wph_summary_expert
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_Summary_Expert.po.WphSummaryExpert" >
+    insert into wph_summary_expert (fid, position, positiontitle, 
+      name, outcall, major, 
+      duties, education, achievement, 
+      state, img, notes, 
+      createdate, createuser)
+    values (#{fid,jdbcType=INTEGER}, #{position,jdbcType=VARCHAR}, #{positiontitle,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{outcall,jdbcType=VARCHAR}, #{major,jdbcType=VARCHAR}, 
+      #{duties,jdbcType=VARCHAR}, #{education,jdbcType=VARCHAR}, #{achievement,jdbcType=VARCHAR}, 
+      #{state,jdbcType=INTEGER}, #{img,jdbcType=VARCHAR}, #{notes,jdbcType=VARCHAR}, 
+      #{createdate,jdbcType=TIMESTAMP}, #{createuser,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Summary_Expert.po.WphSummaryExpert" >
+    insert into wph_summary_expert
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="position != null" >
+        position,
+      </if>
+      <if test="positiontitle != null" >
+        positiontitle,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="outcall != null" >
+        outcall,
+      </if>
+      <if test="major != null" >
+        major,
+      </if>
+      <if test="duties != null" >
+        duties,
+      </if>
+      <if test="education != null" >
+        education,
+      </if>
+      <if test="achievement != null" >
+        achievement,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="img != null" >
+        img,
+      </if>
+      <if test="notes != null" >
+        notes,
+      </if>
+      <if test="createdate != null" >
+        createdate,
+      </if>
+      <if test="createuser != null" >
+        createuser,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="position != null" >
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="positiontitle != null" >
+        #{positiontitle,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="outcall != null" >
+        #{outcall,jdbcType=VARCHAR},
+      </if>
+      <if test="major != null" >
+        #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="duties != null" >
+        #{duties,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="achievement != null" >
+        #{achievement,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="img != null" >
+        #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null" >
+        #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuser != null" >
+        #{createuser,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_Summary_Expert.po.WphSummaryExpertExample" resultType="java.lang.Integer" >
+    select count(*) from wph_summary_expert
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_summary_expert
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.position != null" >
+        position = #{record.position,jdbcType=VARCHAR},
+      </if>
+      <if test="record.positiontitle != null" >
+        positiontitle = #{record.positiontitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null" >
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.outcall != null" >
+        outcall = #{record.outcall,jdbcType=VARCHAR},
+      </if>
+      <if test="record.major != null" >
+        major = #{record.major,jdbcType=VARCHAR},
+      </if>
+      <if test="record.duties != null" >
+        duties = #{record.duties,jdbcType=VARCHAR},
+      </if>
+      <if test="record.education != null" >
+        education = #{record.education,jdbcType=VARCHAR},
+      </if>
+      <if test="record.achievement != null" >
+        achievement = #{record.achievement,jdbcType=VARCHAR},
+      </if>
+      <if test="record.state != null" >
+        state = #{record.state,jdbcType=INTEGER},
+      </if>
+      <if test="record.img != null" >
+        img = #{record.img,jdbcType=VARCHAR},
+      </if>
+      <if test="record.notes != null" >
+        notes = #{record.notes,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdate != null" >
+        createdate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.createuser != null" >
+        createuser = #{record.createuser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_summary_expert
+    set fid = #{record.fid,jdbcType=INTEGER},
+      position = #{record.position,jdbcType=VARCHAR},
+      positiontitle = #{record.positiontitle,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      outcall = #{record.outcall,jdbcType=VARCHAR},
+      major = #{record.major,jdbcType=VARCHAR},
+      duties = #{record.duties,jdbcType=VARCHAR},
+      education = #{record.education,jdbcType=VARCHAR},
+      achievement = #{record.achievement,jdbcType=VARCHAR},
+      state = #{record.state,jdbcType=INTEGER},
+      img = #{record.img,jdbcType=VARCHAR},
+      notes = #{record.notes,jdbcType=VARCHAR},
+      createdate = #{record.createdate,jdbcType=TIMESTAMP},
+      createuser = #{record.createuser,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Summary_Expert.po.WphSummaryExpert" >
+    update wph_summary_expert
+    <set >
+      <if test="position != null" >
+        position = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="positiontitle != null" >
+        positiontitle = #{positiontitle,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="outcall != null" >
+        outcall = #{outcall,jdbcType=VARCHAR},
+      </if>
+      <if test="major != null" >
+        major = #{major,jdbcType=VARCHAR},
+      </if>
+      <if test="duties != null" >
+        duties = #{duties,jdbcType=VARCHAR},
+      </if>
+      <if test="education != null" >
+        education = #{education,jdbcType=VARCHAR},
+      </if>
+      <if test="achievement != null" >
+        achievement = #{achievement,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="img != null" >
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null" >
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        createdate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuser != null" >
+        createuser = #{createuser,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_Summary_Expert.po.WphSummaryExpert" >
+    update wph_summary_expert
+    set position = #{position,jdbcType=VARCHAR},
+      positiontitle = #{positiontitle,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      outcall = #{outcall,jdbcType=VARCHAR},
+      major = #{major,jdbcType=VARCHAR},
+      duties = #{duties,jdbcType=VARCHAR},
+      education = #{education,jdbcType=VARCHAR},
+      achievement = #{achievement,jdbcType=VARCHAR},
+      state = #{state,jdbcType=INTEGER},
+      img = #{img,jdbcType=VARCHAR},
+      notes = #{notes,jdbcType=VARCHAR},
+      createdate = #{createdate,jdbcType=TIMESTAMP},
+      createuser = #{createuser,jdbcType=VARCHAR}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

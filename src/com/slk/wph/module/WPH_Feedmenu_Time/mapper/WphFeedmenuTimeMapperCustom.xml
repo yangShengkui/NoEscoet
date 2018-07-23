@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Feedmenu_Time.mapper.WphFeedmenuTimeMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTimeCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="wph_feedMenu_Fid" property="wphFeedmenuFid" jdbcType="INTEGER" />
+    <result column="wph_feedType_Fid" property="wphFeedtypeFid" jdbcType="INTEGER" />
+    <result column="wph_feedTime" property="wphFeedtime" jdbcType="INTEGER" />
+    <result column="wph_feedWeek" property="wphFeedweek" jdbcType="INTEGER" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+
+  <delete id="deleteFeedMenuTimeByInfo" parameterType="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTimeCustom">
+    DELETE mt.* FROM wph_feedmenu_time mt
+    WHERE
+    mt.WPH_FeedType_Fid = #{wphFeedtypeFid} AND
+    mt.WPH_FeedMenu_Fid = #{wphFeedmenuFid} AND
+    mt.WPH_FeedTime =#{wphFeedtime} AND
+    mt.WPH_FeedWeek = #{wphFeedweek}
+  </delete>
+
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.slk.wph.module.Wph_Servicedetails.mapper.WphServicedetailsMapperCustom">
+	<resultMap id="BaseResultMap"
+		type="com.slk.wph.module.Wph_Servicedetails.po.WphServicedetailsCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="WPH_Query_Fid" property="wphQueryFid" jdbcType="INTEGER" />
+		<result column="WPH_ServiceType_Fid" property="wphServicetypeFid"
+			jdbcType="INTEGER" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="JoinUUID" property="joinuuid" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		fid, Name, WPH_Query_Fid, WPH_ServiceType_Fid, CreateDate, JoinUUID
+	</sql>
+
+	<select id="selectByUUid" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from wph_servicedetails
+		where JoinUUID = #{joinuuid}
+	</select>
+	
+	
+	<!-- 通过wardOm表Fid等级查询服务信息 -->
+	<select id="selectByWardOMFid" resultMap="BaseResultMap">
+		select * from wph_servicedetails a left JOIN wph_nursinggrade b
+		on a.JoinUUID=b.UUID
+		left join wph_ward_om c 
+		on c.WPH_NursingGrade_Fid=b.fid
+		where c.fid=#{value}
+	</select>
+	
+	<!-- 通过护理等级查询服务信息 -->
+	<select id="selectByGradeFid" resultMap="BaseResultMap">
+		select * from wph_servicedetails a left JOIN wph_nursinggrade b
+		on a.JoinUUID=b.UUID
+		where b.fid=#{value}
+	</select>
+	
+	<select id="selectByQueryFid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" /> FROM wph_servicedetails WHERE WPH_Query_Fid = #{wphQueryFid}
+	</select>
+
+
+    <select id="getDetailBymenuFid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        SELECT details.* FROM wph_servicedetails details
+            LEFT JOIN wph_mealmenu meal ON meal.UUID = details.JoinUUID
+        WHERE meal.fid = #{value}
+    </select>
+
+
+</mapper>

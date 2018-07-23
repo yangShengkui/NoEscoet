@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Privilege.mapper.WphPrivilegeCustomMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Privilege.po.WphPrivilegeCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="PrivilegeMaster" property="privilegemaster" jdbcType="VARCHAR" />
+    <result column="PrivilegeMasterValue" property="privilegemastervalue" jdbcType="INTEGER" />
+    <result column="PrivilegeAccess" property="privilegeaccess" jdbcType="VARCHAR" />
+    <result column="PrivilegeAccessValue" property="privilegeaccessvalue" jdbcType="INTEGER" />
+    <result column="PrivilegeAccessCodeOrUrl" property="privilegeaccesscodeorurl" jdbcType="VARCHAR" />
+    <result column="PrivilegeOperation" property="privilegeoperation" jdbcType="VARCHAR" />
+    <result column="Modify_UserFid" property="modifyUserfid" jdbcType="INTEGER" />
+    <result column="ModifyDate" property="modifydate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  
+  
+</mapper>

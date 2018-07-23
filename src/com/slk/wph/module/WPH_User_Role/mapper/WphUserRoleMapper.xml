@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_User_Role.mapper.WphUserRoleMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_User_Role.po.WphUserRole" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="Role_Fid" property="roleFid" jdbcType="INTEGER" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="Modify_UserFid" property="modifyUserfid" jdbcType="INTEGER" />
+    <result column="ModifyDate" property="modifydate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, Role_Fid, User_Fid, Modify_UserFid, ModifyDate
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_User_Role.po.WphUserRoleExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from Wph_user_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from Wph_user_role
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from Wph_user_role
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_User_Role.po.WphUserRoleExample" >
+    delete from Wph_user_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_User_Role.po.WphUserRole" >
+    insert into Wph_user_role (fid, Role_Fid, User_Fid, 
+      Modify_UserFid, ModifyDate)
+    values (#{fid,jdbcType=INTEGER}, #{roleFid,jdbcType=INTEGER}, #{userFid,jdbcType=INTEGER}, 
+      #{modifyUserfid,jdbcType=INTEGER}, #{modifydate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_User_Role.po.WphUserRole" >
+    insert into Wph_user_role
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="roleFid != null" >
+        Role_Fid,
+      </if>
+      <if test="userFid != null" >
+        User_Fid,
+      </if>
+      <if test="modifyUserfid != null" >
+        Modify_UserFid,
+      </if>
+      <if test="modifydate != null" >
+        ModifyDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="roleFid != null" >
+        #{roleFid,jdbcType=INTEGER},
+      </if>
+      <if test="userFid != null" >
+        #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="modifyUserfid != null" >
+        #{modifyUserfid,jdbcType=INTEGER},
+      </if>
+      <if test="modifydate != null" >
+        #{modifydate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_User_Role.po.WphUserRoleExample" resultType="java.lang.Integer" >
+    select count(*) from Wph_user_role
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update Wph_user_role
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.roleFid != null" >
+        Role_Fid = #{record.roleFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.userFid != null" >
+        User_Fid = #{record.userFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.modifyUserfid != null" >
+        Modify_UserFid = #{record.modifyUserfid,jdbcType=INTEGER},
+      </if>
+      <if test="record.modifydate != null" >
+        ModifyDate = #{record.modifydate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update Wph_user_role
+    set fid = #{record.fid,jdbcType=INTEGER},
+      Role_Fid = #{record.roleFid,jdbcType=INTEGER},
+      User_Fid = #{record.userFid,jdbcType=INTEGER},
+      Modify_UserFid = #{record.modifyUserfid,jdbcType=INTEGER},
+      ModifyDate = #{record.modifydate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_User_Role.po.WphUserRole" >
+    update Wph_user_role
+    <set >
+      <if test="roleFid != null" >
+        Role_Fid = #{roleFid,jdbcType=INTEGER},
+      </if>
+      <if test="userFid != null" >
+        User_Fid = #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="modifyUserfid != null" >
+        Modify_UserFid = #{modifyUserfid,jdbcType=INTEGER},
+      </if>
+      <if test="modifydate != null" >
+        ModifyDate = #{modifydate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_User_Role.po.WphUserRole" >
+    update Wph_user_role
+    set Role_Fid = #{roleFid,jdbcType=INTEGER},
+      User_Fid = #{userFid,jdbcType=INTEGER},
+      Modify_UserFid = #{modifyUserfid,jdbcType=INTEGER},
+      ModifyDate = #{modifydate,jdbcType=TIMESTAMP}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

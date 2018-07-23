@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.slk.wph.module.WPH_NursingGrade.mapper.WphNursinggradeMapperCustom">
+	<resultMap id="BaseResultMap"
+		type="com.slk.wph.module.WPH_NursingGrade.po.WphNursinggradeCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="Notes" property="notes" jdbcType="VARCHAR" />
+		<result column="Type" property="type" jdbcType="INTEGER" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="UUID" property="uuid" jdbcType="VARCHAR" />
+
+		<collection property="wphWardList"
+			ofType="com.slk.wph.module.WPH_Ward.po.WphWard">
+			<id column="wfid" property="fid" jdbcType="INTEGER" />
+			<result column="WPH_Hospita_fid" property="wphHospitaFid" />
+			<result column="wName" property="name" />
+			<result column="wAbbreviation" property="abbreviation" />
+			<result column="wCreateDate" property="createdate" />
+			<result column="wNotes" property="notes" />
+			<result column="wSaveMoney" property="savemoney" />
+			<result column="WaringMoney" property="waringmoney" />
+			<result column="wStatus" property="status" />
+		</collection>
+	</resultMap>
+
+	<insert id="insertSelective"  keyProperty="fid" useGeneratedKeys="true">
+		insert into wph_nursinggrade
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="name != null">
+				Name,
+			</if>
+			<if test="notes != null">
+				Notes,
+			</if>
+			<if test="type != null">
+				Type,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="notes != null">
+				#{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective">
+		update wph_nursinggrade
+		<set>
+			<if test="name != null">
+				Name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="notes != null">
+				Notes = #{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				Type = #{type,jdbcType=INTEGER},
+			</if>
+		</set>
+		where fid = #{fid,jdbcType=INTEGER}
+	</update>
+
+	<select id="selectAllNursing" resultMap="BaseResultMap">
+		select *,c.fid as
+		wfid,c.name as wName from wph_nursinggrade a
+		LEFT JOIN wph_ward_om b
+		on a.fid=b.WPH_NursingGrade_Fid
+		LEFT JOIN wph_ward c
+		on b.WPH_Ward_Fid=c.fid
+		ORDER BY a.Type,a.fid
+	</select>
+	
+	<select id="getByFid" resultType="com.slk.wph.module.WPH_NursingGrade.po.WphNursinggrade">
+		select * from wph_nursinggrade where fid=#{value}
+	</select>
+	
+	<select id="selectNursing"  resultMap="BaseResultMap">
+		select * from wph_nursinggrade where type=#{type}
+		order by fid
+	</select>
+	
+	
+</mapper>

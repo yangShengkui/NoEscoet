@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Menu.mapper.WphMenuCustomMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Menu.po.WphMenuCustom" >
+    <id column="fid" jdbcType="INTEGER" property="fid" />
+    <result column="MenuName" jdbcType="VARCHAR" property="menuname" />
+    <result column="MenuUrl" jdbcType="VARCHAR" property="menuurl" />
+    <result column="MenuDesc" jdbcType="VARCHAR" property="menudesc" />
+    <result column="Parent_Fid" jdbcType="INTEGER" property="parentFid" />
+    <result column="Create_UserFid" jdbcType="INTEGER" property="createUserfid" />
+    <result column="levels" jdbcType="INTEGER" property="levels" />
+    <result column="MenuType" jdbcType="INTEGER" property="menutype" />
+    <result column="OrderS" jdbcType="INTEGER" property="orders" />
+    <result column="ParentName" jdbcType="VARCHAR" property="parentName" />
+    <result column="CkeckON" jdbcType="INTEGER" property="checkON" />
+  </resultMap>
+  
+  
+    <insert id="insert" parameterType="com.slk.wph.module.WPH_Menu.po.WphMenu" >
+	    insert into Wph_menu (fid, MenuName, MenuUrl, 
+	      MenuDesc, Parent_Fid, Create_UserFid, 
+	      levels, MenuType, OrderS
+	      )
+	    values (#{fid,jdbcType=INTEGER}, #{menuname,jdbcType=VARCHAR}, #{menuurl,jdbcType=VARCHAR}, 
+	      #{menudesc,jdbcType=VARCHAR}, #{parentFid,jdbcType=INTEGER}, #{createUserfid,jdbcType=INTEGER}, 
+	      #{levels,jdbcType=INTEGER}, #{menutype,jdbcType=INTEGER}, #{orders,jdbcType=INTEGER}
+	      )
+  </insert>
+  
+  
+  
+   <select id="findMenuById" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Menu.po.WphMenuCustom" >
+   		SELECT m.*,(SELECT MenuName FROM wph_menu WHERE fid = m.Parent_Fid)parentName
+   			 FROM wph_menu m 
+			LEFT JOIN wph_privilege p ON m.fid = p.PrivilegeAccessValue AND p.PrivilegeAccess = "Menu"
+			LEFT JOIN wph_user_role ur ON ur.Role_Fid = p.PrivilegeMasterValue  
+		WHERE  m.fid = #{fid} GROUP BY m.fid
+<!-- 		WHERE (ur.User_Fid = #{userFid} OR 1=#{userFid}) AND m.fid = #{fid} GROUP BY m.fid -->
+  </select>
+  
+  
+  <select id="deleteMenuFindById" resultType ="java.lang.Integer"  parameterType="java.lang.Integer" >
+   	select count(1) from wph_menu a
+    where FIND_IN_SET(a.fid,getChildList(#{fid})) and a.fid!=#{fid} ORDER BY  a.orders ;
+  </select>
+  
+
+  <delete id="deleteMenusByIdAndUserId"  parameterType="com.slk.wph.module.WPH_Menu.po.WphMenuCustom" >
+  
+   DELETE m,p FROM wph_menu m 
+			LEFT JOIN wph_privilege p ON p.PrivilegeAccessValue = m.fid AND p.PrivilegeMaster = 'menu'
+			LEFT JOIN wph_user_role ur ON p.PrivilegeMasterValue = ur.Role_Fid 
+		
+	WHERE m.fid = #{fid}
+<!-- 	WHERE m.fid = #{fid} AND (ur.User_Fid = #{userFid} OR 1= #{userFid})  -->
+  
+  </delete>
+  
+  
+  
+  
+  <update id="updateMenu" parameterType="com.slk.wph.module.WPH_Menu.po.WphMenuCustom" >
+    update Wph_menu  a 
+	left join Wph_menu_privilege_view b on a.fid=b.fid and b.User_Fid=#{userFid}
+    <set >
+      <if test="menuname != null" >
+        a.MenuName = #{menuname,jdbcType=VARCHAR},
+      </if>
+      <if test="menuurl != null" >
+        a.MenuUrl = #{menuurl,jdbcType=VARCHAR},
+      </if>
+      <if test="menudesc != null" >
+        a.MenuDesc = #{menudesc,jdbcType=VARCHAR},
+      </if>
+      <if test="parentFid != null" >
+        a.Parent_Fid = #{parentFid,jdbcType=INTEGER},
+      </if>
+      <if test="createUserfid != null" >
+        a.Create_UserFid = #{createUserfid,jdbcType=INTEGER},
+      </if>
+      <if test="levels != null" >
+        a.levels = #{levels,jdbcType=INTEGER},
+      </if>
+       <if test="menutype != null" >
+        a.MenuType = #{menutype,jdbcType=INTEGER},
+      </if>
+      <if test="orders != null">
+         a.OrderS= #{orders,jdbcType=INTEGER},
+      </if>
+    </set>
+    where a.fid = #{fid,jdbcType=INTEGER} and (b.User_Fid=#{userFid} or a.Create_UserFid=#{userFid});
+  </update>
+  
+  
+  
+  <delete id="deleteMenuById"  parameterType="com.slk.wph.module.WPH_Menu.po.WphMenuCustom" >
+  
+   delete a from wph_menu a 
+	left join wph_menu_privilege_view b on a.fid=b.fid and b.User_Fid=#{userFid}
+	where a.fid = #{fid,jdbcType=INTEGER} and (b.User_Fid=#{userFid} or a.Create_UserFid=#{userFid});
+  
+  </delete>
+  
+  
+  
+   <!-- 宋现亮-获取菜单列表 -->
+  <select id="getMenuListByParentFid" parameterType="WphMenuCustom" resultType="com.slk.wph.module.WPH_Menu.po.WphMenuCustom">
+  	
+  	<choose>
+  		<when test="userFid == 1"><!-- 判断是不是超级管理员id -->
+  			SELECT * FROM wph_menu m WHERE m.Parent_Fid = #{parentFid} ORDER BY m.orders
+  		</when>
+  		<otherwise>
+  			SELECT * FROM wph_menu m WHERE m.fid in(
+				SELECT p.PrivilegeAccessValue FROM wph_privilege p WHERE p.PrivilegeMasterValue in(
+					SELECT ur.Role_Fid FROM wph_user_role ur WHERE  ur.User_Fid = #{userFid}) AND p.PrivilegeAccess = 'Menu') AND m.Parent_Fid = #{parentFid} ORDER BY m.orders
+  		</otherwise>
+  	</choose>
+  	
+  </select>
+  
+  
+  <!-- 宋现亮-获取菜单列表，并附带是否选中 -->
+  <select id="getMenuListCheckByMenu" parameterType="WphMenuCustom" resultType="com.slk.wph.module.WPH_Menu.po.WphMenuCustom">
+		
+		<choose>
+			<when test="userFid == 1">
+				SELECT m.*,CASE WHEN m.fid = p.PrivilegeAccessValue AND p.PrivilegeAccess = "Menu" THEN 1 ELSE 0 END checkON
+				  FROM wph_menu m 
+						LEFT JOIN wph_privilege p ON p.PrivilegeAccessValue = m.fid   AND p.PrivilegeAccess = "Menu" <if test="roleFid != null">AND p.PrivilegeMasterValue = #{roleFid}</if>
+					WHERE m.Parent_Fid = #{parentFid}  GROUP BY m.fid ORDER BY m.orders
+			</when>
+			<otherwise>
+					
+				SELECT m.*,CASE WHEN p2.PrivilegeAccessValue = m.fid THEN 1 ELSE 0 END checkON 
+					FROM wph_menu m 
+						LEFT JOIN wph_privilege p ON p.PrivilegeAccessValue = m.fid AND p.PrivilegeAccess = "Menu" 
+						LEFT JOIN wph_user_role ur ON ur.Role_Fid = p.PrivilegeMasterValue 
+
+						LEFT JOIN wph_privilege p2 ON p2.PrivilegeAccessValue = m.fid <if test="roleFid != null"> AND p2.PrivilegeMasterValue = #{roleFid} </if>
+				  
+					WHERE (ur.User_Fid = #{userFid} OR m.Create_UserFid = #{userFid}) AND m.Parent_Fid = #{parentFid}	GROUP BY m.fid ORDER BY m.orders 
+				
+			</otherwise>
+		</choose>  	
+  	
+  </select>
+  
+  
+  
+  <!-- 拦截器用到 user  -->
+  <select id="getCountByUrlUserIds" parameterType="WphMenuCustom" resultType="java.lang.Integer">
+  
+  	SELECT count(*) FROM wph_menu m
+		LEFT JOIN wph_privilege p ON  p.PrivilegeAccessValue = m.fid AND p.PrivilegeAccess = "Menu"
+		LEFT JOIN wph_user_role ur ON p.PrivilegeMasterValue = ur.Role_Fid 
+
+	WHERE m.MenuUrl LIKE "%${menuurl}%" AND (ur.User_Fid = #{userFid } OR 1=#{userFid })
+	
+  </select>
+  
+</mapper>

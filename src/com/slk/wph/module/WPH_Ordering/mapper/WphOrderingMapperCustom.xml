@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Ordering.mapper.WphOrderingMapperCustom" >
+	<resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom" >
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Title" property="title" jdbcType="VARCHAR" />
+		<result column="Depict" property="depict" jdbcType="VARCHAR" />
+		<result column="Money" property="money" jdbcType="DOUBLE" />
+		<result column="OrderingStatse" property="orderingstatse" jdbcType="INTEGER" />
+		<result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+		<result column="Customer_CarId" property="customerCarid" jdbcType="VARCHAR" />
+		<result column="Customer_Hospitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+		<result column="Customer_Balance" property="customerBalance" jdbcType="DOUBLE" />
+		<result column="WPH_InvoiceRate_Fid" property="wphInvoicerateFid" jdbcType="INTEGER" />
+		<result column="WPH_Query_Fid" property="wphQueryFid" jdbcType="INTEGER" />
+		<result column="WPH_ServiceType_Fid" property="wphServicetypeFid" jdbcType="INTEGER" />
+		<result column="WPH_ServiceDetails_Fid" property="wphServicedetailsFid" jdbcType="INTEGER" />
+		<result column="OrderingDate" property="orderingdate" jdbcType="TIMESTAMP" />
+		<result column="PayType" property="paytype" jdbcType="INTEGER" />
+		<result column="PayOrderNumber" property="payordernumber" jdbcType="VARCHAR" />
+		<result column="OrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+		<result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+		<result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+		<result column="UserName" property="username" jdbcType="VARCHAR" />
+		<result column="Notes" property="notes" jdbcType="VARCHAR" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="whereOrderingSelect">
+		<where>
+			<if test="fid != null">
+				AND fid = #{fid}
+			</if>
+			<if test="customerHospitalld != null">
+				AND Customer_Hospitalld = #{customerHospitalld}
+			</if>
+			<if test="orderingnumber != null">
+				AND OrderingNumber = #{orderingnumber}
+			</if>
+			<if test="orderingstatse != null">
+				AND OrderingStatse = #{orderingstatse}
+			</if>
+			<if test="title != null">
+				AND Title = #{title}
+			</if>
+		</where>
+	</sql>
+
+	<select id="getOrderingByInfo" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom" resultMap="BaseResultMap">
+		SELECT * FROM wph_ordering <include refid="whereOrderingSelect"/> ORDER BY fid DESC LIMIT 1
+	</select>
+
+
+	<select id="getOrderSummaryByHospital" parameterType="java.lang.String" resultType="com.slk.wph.module.WPH_Ordering.po.WphOrderingConsumeInfo">
+		SELECT
+		SUM(IF(oo.OrderingStatse = 3,oo.Money,0)) pay,#缴费
+		SUM(IF(oo.Title='开卡押金',oo.Money,0)) deposit,#押金
+		IFNULL(SUM(IF((oo.OrderingStatse=1 AND oo.WPH_Query_Fid=1),oo.money,0)),0)-  #加的是一对一护理，并减去退费的一对一护理
+		IFNULL(SUM(IF(oo.OrderingStatse=2 and oo.WPH_ServiceType_Fid =2,oo.Money,0)),0) nursing, #护理
+		SUM(IF((oo.OrderingStatse=1 AND oo.WPH_Query_Fid=3),oo.Money,0))  meal,#餐-并去掉明天将要退的
+		sum(IF((oo.OrderingStatse=1 AND oo.WPH_Query_Fid=2),oo.Money,0)) blood, #用血
+		sum(IF(oo.OrderingStatse=1 AND oo.WPH_Query_Fid=6,oo.Money,0)) other ,#其他
+		SUM(IF(oo.OrderingStatse=1 and oo.Title!='开卡押金',oo.Money,0)) - #减的是退费的一对一护理
+		SUM(IF(oo.OrderingStatse=2 and oo.WPH_ServiceType_Fid =2,oo.Money,0))  total, #消费合计
+		ROUND(cus.Balance,2) refund
+		FROM wph_ordering oo
+		LEFT JOIN wph_customer cus on oo.Customer_Hospitalld=cus.Hospitalld
+		LEFT JOIN wph_ordering xc on oo.fid=xc.fid
+		WHERE oo.Customer_Hospitalld = #{value} AND oo.OrderingNumber NOT IN(
+		SELECT oo2.OldOrderingNumber FROM wph_ordering oo2 WHERE oo2.Customer_Hospitalld = #{value} and (oo2.OrderingStatse=2 OR cus.WPH_Ward_Fid = 1) and WPH_ServiceType_Fid !=2 and oo2.OldOrderingNumber IS NOT NULL AND oo2.OldOrderingNumber!=''
+		) AND cus.BindingTime &lt;=oo.CreateDate;
+
+	</select>
+
+
+	<select id="getOrderSummaryByHospital2" parameterType="java.lang.String" resultType="com.slk.wph.module.WPH_Ordering.po.WphOrderingConsumeInfo">
+		SELECT
+		SUM(IF(oo.OrderingStatse = 3,oo.Money,0)) pay,#缴费
+		SUM(IF(oo.Title='开卡押金',oo.Money,0)) deposit,#押金
+		IFNULL(SUM(IF((oo.OrderingStatse=1 AND oo.WPH_Query_Fid=1),oo.money,0)),0)-  #加的是一对一护理，并减去退费的一对一护理
+		IFNULL(SUM(IF(oo.OrderingStatse=2 and oo.WPH_ServiceType_Fid =2,oo.Money,0)),0)
+		nursing, #护理
+		SUM(IF((oo.OrderingStatse=1 AND oo.WPH_Query_Fid=3),oo.Money,0))  - getMealRetreat(#{value})  meal,#餐-并去掉明天将要退的
+		sum(IF((oo.OrderingStatse=1 AND oo.WPH_Query_Fid=2),oo.Money,0)) blood, #用血
+		sum(IF(oo.OrderingStatse=1 AND oo.WPH_Query_Fid=6,oo.Money,0)) other ,#其他
+		SUM(IF(oo.OrderingStatse=1,oo.Money,0)) - #减的是退费的一对一护理
+		SUM(IF(oo.OrderingStatse=2 and oo.WPH_ServiceType_Fid =2,oo.Money,0)) - getMealRetreat(#{value})  - (SUM(IF(oo.Title='开卡押金',oo.Money,0))) total, #消费合计
+		(cus.Balance) +
+		(SUM(IF(oo.Title='开卡押金',oo.Money,0))) + getMealRetreat(#{value}) refund
+		FROM wph_ordering oo
+		LEFT JOIN
+		wph_customer cus on oo.Customer_Hospitalld=cus.Hospitalld
+		LEFT JOIN
+		wph_ordering xc on oo.fid=xc.fid
+		WHERE oo.Customer_Hospitalld = #{value}
+		AND oo.OrderingNumber NOT IN(
+		SELECT oo2.OldOrderingNumber FROM wph_ordering oo2
+		WHERE oo2.Customer_Hospitalld = #{value} and oo2.OrderingStatse=2 and WPH_ServiceType_Fid !=2 and oo2.OldOrderingNumber IS NOT NULL AND oo2.OldOrderingNumber!=''
+		) AND cus.BindingTime &lt;=oo.CreateDate
+		GROUP BY oo.Customer_Hospitalld
+	</select>
+
+	<sql id="ordernumserR">
+		<foreach collection="array" item="ordernumber" index="index" open="(" separator="," close=")" >
+			#{ordernumber}
+		</foreach>
+
+	</sql>
+
+	<select id="getRetreatMoneyByHospitalld" resultMap="BaseResultMap" >
+		SELECT * FROM wph_ordering og WHERE og.OrderingNumber IN <include refid="ordernumserR"/>
+	</select>
+	
+
+	<select id="getRetreaOrdernumbers" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT getMealRetreatOrderNumber(#{value})
+	</select>
+
+
+
+	<select id="getOrderListByInfo" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrdering" resultMap="BaseResultMap" >
+		SELECT 	oo.Customer_Hospitalld,
+		cus.`Name` customerName,
+		ward.`Name` wardName,
+		q.`Name` queryName,
+		st.`Name` workName ,
+		sd.`Name` detalisName,
+		oo.UserName,
+		IF(oo.WPH_ServiceType_Fid=2,oo.Money,oo.Money/fnb.numbers) price,
+		IF(oo.WPH_ServiceType_Fid=2,1,fnb.numbers) count,
+		IF(oo.WPH_ServiceType_Fid=2,oo.Money -IFNULL(o2.Money,0),oo.Money) totalMoney
+		FROM wph_ordering oo
+		LEFT JOIN wph_customer cus ON cus.fid = oo.Customer_Fid
+		LEFT JOIN wph_ward ward ON ward.fid = oo.WPH_Ward_Fid
+		LEFT JOIN wph_query q ON q.fid = oo.WPH_Query_Fid
+		LEFT JOIN wph_servicetype st ON st.fid = oo.WPH_ServiceType_Fid
+		LEFT JOIN wph_servicedetails sd ON sd.fid = oo.WPH_ServiceDetails_Fid
+		LEFT JOIN (SELECT OldOrderingNumber,Money,WPH_ServiceDetails_Fid FROM wph_ordering WHERE  OrderingStatse = 2) o2 ON o2.OldOrderingNumber = oo.OrderingNumber
+		AND o2.WPH_ServiceDetails_Fid=oo.WPH_ServiceDetails_Fid
+		LEFT JOIN (
+		SELECT  food.OrderingNumber,food.Numbers,food.Money/food.Numbers Money FROM wph_orderingfood  food GROUP BY food.OrderingNumber #餐
+		UNION ALL
+		SELECT nursing.OrderingNumber,1 AS Numbers,nursing.Money FROM wph_orderingnursing nursing  WHERE nursing.Nursing_Type = 1 #一对多护理
+		UNION ALL
+		SELECT ood.OrderingNumber,ood.NowDosage,ood.NowDosageMoney/ood.NowDosage FROM wph_blood ood WHERE ood.OrderingNumber IS NOT NULL  #用血
+		) fnb ON fnb.OrderingNumber = oo.OrderingNumber
+
+		WHERE   oo.OrderingNumber NOT IN(
+		SELECT oo2.OldOrderingNumber FROM wph_ordering oo2 WHERE oo2.WPH_ServiceType_Fid != 2 AND oo2.OrderingStatse = 2  AND oo2.OldOrderingNumber IS NOT NULL AND oo2.OldOrderingNumber != ''
+		)
+		AND oo.OrderingStatse = 1
+		AND DATE_FORMAT(oo.OrderingDate,'%y-%m-%d') BETWEEN DATE_FORMAT(#{datetime },'%y-%m-%d') AND DATE_FORMAT(#{datetime2 },'%y-%m-%d')
+		AND ward.`Status` = 0
+		AND oo.Customer_Hospitalld = #{customerHospitalld}
+		<choose>
+			<when test="wphQueryFid != '' and wphQueryFid != null">AND oo.WPH_Query_Fid=#{wphQueryFid}</when>
+			<otherwise>AND oo.WPH_Query_Fid IS NOT NULL AND oo.WPH_Query_Fid != ''</otherwise>
+		</choose>
+		ORDER BY oo.fid
+	</select>
+
+	<select id="selectNursingHZ" resultMap="BaseResultMap">
+		<if test="type==2">
+			select
+			z.Customer_Hospitalld,
+			e.`Name` as customerName,
+			f.name as wardName,
+			z.UserName as workName,
+			d.money as price,
+			count(CASE z.OrderingStatse  WHEN '1' then 'countState' END) as count,
+			SUM(IF(z.OrderingStatse = 1,z.Money,0)) - SUM(IF(z.OrderingStatse = 2,z.Money,0))+IFNULL(zz.money,0) as totalMoney,
+			z.WPH_ServiceType_Fid as nursingType
+			from wph_ordering z
+			LEFT JOIN wph_orderingnursing a on z.OrderingNumber=a.OrderingNumber
+			LEFT JOIN wph_customer e on e.fid=z.Customer_Fid
+			LEFT JOIN wph_ward f on z.WPH_Ward_Fid=f.fid
+			left join wph_one d on a.WPH_One_Fid=d.fid
+			left join (select one.fid,sum(oo.money) as money  from wph_ordering oo
+			LEFT JOIN wph_one one on oo.notes=one.fid
+			where  oo.WPH_ServiceType_Fid=25 GROUP BY one.fid
+			) zz
+			on zz.fid=d.fid
+			<where>
+				z.WPH_ServiceType_Fid=#{type} and f.Status='0'
+				and a.Nursing_Type='2'
+				and DATE_FORMAT(z.OrderingDate, '%Y-%m-%d') BETWEEN
+				DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate},
+				'%Y-%m-%d')
+				and  DATE_FORMAT(a.NursingDate, '%Y-%m-%d') BETWEEN
+				DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate},
+				'%Y-%m-%d')
+				and z.OrderingDate>=e.BindingTime
+				<if test="wardFid!=null and wardFid!=''">
+					and f.fid=#{wardFid}
+				</if>
+				group by z.Customer_Hospitalld,d.fid
+			</where>
+		</if>
+		<if test="type==1">
+			select
+			z.fid,
+			z.Customer_Hospitalld, deta.`Name` as queryName,
+			z.UserName as workName,
+			e.`Name` as customerName,
+			f.`Name` as wardName,
+			z.Money as price,
+			z.Money as totalMoney,
+			z.WPH_ServiceType_Fid as nursingType
+			from wph_ordering z
+			LEFT JOIN
+			wph_customer e
+			on e.fid=z.Customer_Fid
+			LEFT JOIN wph_ward f
+			on
+			z.WPH_Ward_Fid=f.fid
+			LEFT JOIN wph_servicedetails deta ON deta.fid =
+			z.WPH_ServiceDetails_Fid
+			where
+			z.OrderingNumber not in (
+			select x.OldOrderingNumber from wph_ordering x where
+			x.WPH_ServiceType_Fid=1 and x.OldOrderingNumber is not null and
+			x.OrderingStatse=2
+			and DATE_FORMAT(x.OrderingDate, '%Y-%m-%d') BETWEEN
+			DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate},
+			'%Y-%m-%d')
+			)
+			and z.OrderingStatse='1'
+			and z.WPH_ServiceType_Fid=1 and f.Status='0'
+			and DATE_FORMAT(z.OrderingDate, '%Y-%m-%d') BETWEEN
+			DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate},
+			'%Y-%m-%d')
+			and z.OrderingDate>=e.BindingTime
+			<if test="wardFid!=null and wardFid!=''">
+				and f.fid=#{wardFid}
+			</if>
+		</if>
+	</select>
+
+
+	<select id="selectWphBloodHZ" resultMap="BaseResultMap">
+		<if test="type==3">
+			<!-- 办血服务费 -->
+			select
+			a.OrderingDate,
+			a.Customer_Hospitalld,
+			b.`Name` as customerName,
+			c.`Name` as wardName,
+			a.Title,
+			a.Money as price,
+			count(a.Customer_Hospitalld) as count,
+			(a.Money*count(a.Customer_Hospitalld)) as totalMoney
+			from wph_ordering a
+			LEFT JOIN wph_customer b
+			on a.Customer_Fid=b.fid
+			LEFT JOIN wph_ward c
+			on a.WPH_Ward_Fid=c.fid
+			where
+			a.OrderingDate>=b.BindingTime
+			and WPH_ServiceType_Fid=#{type} and  a.WPH_ServiceDetails_Fid='1'  and c.Status='0'
+			and DATE_FORMAT(a.OrderingDate, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate}, '%Y-%m-%d')
+			<if test="wardFid!=null and wardFid!=''">
+				and c.fid=#{wardFid}
+			</if>
+			GROUP BY a.Customer_Hospitalld
+			ORDER BY a.fid
+		</if>
+		<if test="type==4"><!-- 办血费用 -->
+			select
+			a.OrderingDate,
+			a.Customer_Hospitalld,
+			b.`Name` as customerName,
+			c.`Name` as wardName,
+			a.Title,
+			(a.Money/d.NowDosage) as price,
+			d.NowDosage as count,
+			a.Money as totalMoney
+			from wph_ordering a
+			LEFT JOIN wph_customer b
+			on a.Customer_Fid=b.fid
+			LEFT JOIN wph_blood d
+			on a.OrderingNumber=d.OrderingNumber
+			LEFT JOIN wph_ward c
+			on a.WPH_Ward_Fid=c.fid
+			<where>
+				a.OrderingDate>=b.BindingTime  and c.Status='0'
+				and a.WPH_ServiceType_Fid=#{type} and  a.WPH_ServiceDetails_Fid='2'
+				and  d.OrderingNumber is not null
+				and DATE_FORMAT(a.OrderingDate, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate}, '%Y-%m-%d')
+				<if test="wardFid!=null and wardFid!=''">
+					and c.fid=#{wardFid}
+				</if>
+
+				ORDER BY a.fid
+			</where>
+		</if>
+	</select>
+	<!-- -->
+	<select id="selectOnephmx"  resultMap="BaseResultMap">
+		select d.fid as count,
+		min(z.OrderingDate)  as startDate,
+		CASE(d.statse)
+		when '0' then NULL
+		when '1' then max(z.OrderingDate)
+		end
+		as endDate,
+		z.Customer_Hospitalld,
+		e.`Name` as customerName,
+		z.UserName as workName,
+		d.money as price,
+		replace(
+		FORMAT((
+		TIMESTAMPDIFF(
+		MINUTE,
+		(min(z.OrderingDate)),
+		(max(z.OrderingDate))
+		)/60
+		),1),',','') as price2,
+		f.`Name` as
+		wardName,
+		SUM(IF(z.OrderingStatse = 1,z.Money,0)) - SUM(IF(z.OrderingStatse = 2,z.Money,0))+IFNULL(zz.money,0) as totalMoney,
+		z.WPH_ServiceType_Fid as nursingType,
+		a.Nursing_Name as queryName
+		from wph_ordering z
+		LEFT JOIN wph_orderingnursing a
+		on z.OrderingNumber=a.OrderingNumber
+		LEFT JOIN wph_customer e
+		on
+		e.fid=z.Customer_Fid
+		LEFT JOIN wph_ward f
+		on z.WPH_Ward_Fid=f.fid
+		left
+		join wph_one d
+		on a.WPH_One_Fid=d.fid
+
+		left join (select one.fid,sum(oo.money) as money  from wph_ordering oo
+		LEFT JOIN wph_one one on oo.notes=one.fid
+		where  oo.WPH_ServiceType_Fid=25 GROUP BY one.fid
+		) zz
+		on zz.fid=d.fid
+		<where>
+			a.Nursing_Type='2'
+			and z.WPH_ServiceType_Fid='2'
+			and f.Status='0'
+			and DATE_FORMAT(z.OrderingDate, '%Y-%m-%d') BETWEEN
+			DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate},
+			'%Y-%m-%d')
+			and DATE_FORMAT(a.NursingDate, '%Y-%m-%d') BETWEEN
+			DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate},
+			'%Y-%m-%d')
+			and z.OrderingDate>=e.BindingTime
+			<if test="wardFid!=null and wardFid!=''">
+				and f.fid=#{wardFid}
+			</if>
+			<if test="type!=null and type!=''">
+				and d.WPH_NursingGrade_Fid=#{type}
+			</if>
+			group by d.fid
+		</where>
+	</select>
+
+	<select id="tollInquirySummary" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrdering" resultMap="BaseResultMap">
+		SELECT og.*,cus.Name customerName,ward.`Name` wardName
+		FROM wph_ordering og
+		LEFT JOIN wph_ward ward ON ward.fid = og.WPH_Ward_Fid
+		LEFT JOIN wph_customer cus ON cus.fid = og.Customer_Fid
+		WHERE date_sub(DATE_FORMAT(og.OrderingDate,'%y-%m-%d'),interval 0 day) BETWEEN date_sub(DATE_FORMAT(#{datetime },'%y-%m-%d'),interval 0 day) AND date_sub(DATE_FORMAT(#{datetime2 },'%y-%m-%d'),interval 0 day)
+		<if test="userFid != null and userFid != ''"> AND og.User_Fid = #{userFid} </if>
+		<choose>
+			<when test="wphWardFid != null and wphWardFid != ''">AND og.WPH_Ward_Fid = #{wphWardFid }</when>
+			<otherwise>AND ward.`Status`=0</otherwise>
+		</choose>
+		<choose>
+			<when test="orderingstatse == null or orderingstatse == ''">
+				AND og.OrderingStatse IN (3,4)
+			</when>
+			<otherwise>
+				AND og.OrderingStatse = #{orderingstatse }
+			</otherwise>
+		</choose>
+		ORDER BY og.Customer_Fid, og.fid
+	</select>
+
+	<select id="getTotalCollection" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom" resultMap="BaseResultMap">
+		SELECT 	oo.Customer_Hospitalld customerHospitalld,cus.`Name` customerName,ward.`Name` wardName,
+
+		SUM(IF(oo.WPH_Query_Fid = 1 AND oo.WPH_ServiceType_Fid = 2 AND oo.OrderingStatse=1,oo.Money,0))-
+		SUM(IF(oo.WPH_Query_Fid = 1 AND oo.WPH_ServiceType_Fid = 2 AND oo.OrderingStatse=2,oo.Money,0)) price,#一对一
+
+		SUM(IF(oo.WPH_Query_Fid = 1 AND oo.WPH_ServiceType_Fid = 1 AND oo.OrderingStatse = 1 ,oo.Money,0)) price2,#一对多
+		SUM(IF(oo.WPH_Query_Fid = 1 AND oo.WPH_ServiceType_Fid = 25 AND oo.OrderingStatse = 1 ,oo.Money,0)) price8,#补费
+		SUM(IF(oo.WPH_Query_Fid = 3 AND oo.OrderingStatse=1,oo.Money,0)) price3,#餐费
+		SUM(IF(oo.WPH_Query_Fid = 2 AND oo.OrderingStatse=1,oo.Money,0)) price4,#用血
+		SUM(IF(oo.WPH_Query_Fid = 4,oo.Money,0)) price5,#延伸服务
+		SUM(IF(oo.WPH_Query_Fid = 5,oo.Money,0)) price6,#超级扣除
+		SUM(IF(oo.WPH_Query_Fid = 6,oo.Money,0)) price7,#其他费用
+		SUM(IF(oo.OrderingStatse=1,oo.Money,0)) - SUM(IF(oo.WPH_Query_Fid = 1 AND oo.WPH_ServiceType_Fid = 2 AND oo.OrderingStatse=2,oo.Money,0)) totalMoney,#以上费用总和
+		oo.OrderingDate  FROM wph_ordering oo
+		LEFT JOIN wph_customer cus ON cus.fid = oo.Customer_Fid
+		LEFT JOIN wph_ward ward ON ward.fid = oo.WPH_Ward_Fid
+		WHERE
+		oo.OrderingNumber NOT IN(
+		SELECT oo2.OldOrderingNumber FROM wph_ordering oo2 WHERE oo2.OrderingStatse = 2 AND oo2.WPH_ServiceType_Fid != 2 AND oo2.OldOrderingNumber IS NOT NULL AND oo2.OldOrderingNumber != ''
+		)
+		AND oo.Customer_Hospitalld = cus.Hospitalld
+		AND DATE_FORMAT(oo.OrderingDate,'%y-%m-%d') BETWEEN DATE_FORMAT(#{datetime},'%y-%m-%d') AND DATE_FORMAT(#{datetime2},'%y-%m-%d')
+		<choose>
+			<when test="wphWardFid != null and wphWardFid != ''">AND oo.WPH_Ward_Fid = #{wphWardFid }</when>
+			<otherwise>AND ward.`Status` = 0</otherwise>
+		</choose>
+		AND (oo.WPH_Query_Fid IS NOT NULL AND oo.WPH_Query_Fid != '')
+		GROUP BY oo.Customer_Fid
+	</select>
+
+	<select id="getMeal_collection" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom" resultMap="BaseResultMap" >
+		SELECT 	oo.Customer_Hospitalld,oo.OrderingNumber,
+		cus.`Name` customerName,
+		ward.`Name` wardName,
+		food.WPH_MealType_Name workName,
+		food.WPH_MealNume_Name detalisName,
+		food.money/food.numbers price ,
+		food.numbers count,
+		food.money totalMoney
+		FROM wph_ordering oo
+		LEFT JOIN wph_customer cus ON cus.fid = oo.Customer_Fid
+		LEFT JOIN wph_ward ward ON ward.fid = oo.WPH_Ward_Fid
+		LEFT JOIN (SELECT * FROM wph_orderingfood <if test="wphServicetypeFid &lt; 11">GROUP BY OrderingNumber</if>) food ON food.OrderingNumber = oo.OrderingNumber
+		LEFT JOIN wph_mealmenu meal ON meal.fid = food.WPH_MealMenu_Fid
+		LEFT JOIN wph_servicedetails details ON details.JoinUUID = meal.UUID
+		WHERE
+		oo.OrderingNumber NOT IN(
+		SELECT oo2.OldOrderingNumber FROM wph_ordering oo2 WHERE oo2.OrderingStatse = 2  AND oo2.OldOrderingNumber IS NOT NULL AND oo2.OldOrderingNumber != ''
+		)
+		AND oo.OrderingStatse = 1
+		AND date_sub(DATE_FORMAT(oo.OrderingDate,'%y-%m-%d'),interval 0 day) BETWEEN DATE_SUB(DATE_FORMAT(#{datetime},'%y-%m-%d'),interval 0 day) AND DATE_SUB(DATE_FORMAT(#{datetime2},'%y-%m-%d'),interval 0 day)
+		<choose>
+			<when test="wphWardFid != null and wphWardFid != ''">AND oo.WPH_Ward_Fid = #{wphWardFid }</when>
+			<otherwise>AND ward.`Status`=0</otherwise>
+		</choose>
+		AND oo.WPH_Query_Fid = 3
+		AND oo.WPH_ServiceType_Fid = #{wphServicetypeFid}
+		AND details.fid = #{wphServicedetailsFid }
+        <if test="wphServicetypeFid &gt; 11">
+            AND( food.WPH_MealTime_Fid IS NULL OR food.WPH_MealTime_Fid = '')
+        </if>
+		GROUP BY food.OrderingNumber,food.WPH_MealMenu_Fid,food.WPH_MealTime_Fid
+        ORDER BY oo.fid ;
+	</select>
+
+	<select id="getPatientdetails" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom" resultMap="BaseResultMap">
+		SELECT 	oo.Customer_Hospitalld,
+		cus.`Name` customerName,
+		q.`Name` queryName,
+		ward.`Name` wardName,
+		st.`Name` workName ,
+		sd.`Name` detalisName,
+		oo.UserName,
+		ROUND(oo.Money/fnb.numbers) price,
+		ROUND(fnb.numbers) count,
+		ROUND(oo.Money) totalMoney
+		FROM wph_ordering oo
+		LEFT JOIN wph_customer cus ON cus.fid = oo.Customer_Fid
+		LEFT JOIN wph_ward ward ON ward.fid = oo.WPH_Ward_Fid
+		LEFT JOIN wph_query q ON q.fid = oo.WPH_Query_Fid
+		LEFT JOIN wph_servicetype st ON st.fid = oo.WPH_ServiceType_Fid
+		LEFT JOIN wph_servicedetails sd ON sd.fid = oo.WPH_ServiceDetails_Fid
+		LEFT JOIN (
+		SELECT food.OrderingNumber,food.Numbers,food.Money/food.Numbers Money FROM wph_orderingfood food
+		LEFT JOIN wph_mealmenu meal  ON food.WPH_MealMenu_Fid = meal.fid
+		LEFT JOIN wph_servicedetails details  ON meal.UUID = details.JoinUUID WHERE details.fid = #{wphServicedetailsFid } #餐
+		UNION ALL
+		SELECT nursing.OrderingNumber,1 AS Numbers,nursing.Money FROM wph_orderingnursing nursing  WHERE nursing.Nursing_Type = 1 #一对多护理
+		UNION ALL
+		SELECT ood.OrderingNumber,ood.NowDosage,ood.NowDosageMoney/ood.NowDosage FROM wph_blood ood WHERE ood.OrderingNumber IS NOT NULL  #用血
+		) fnb ON fnb.OrderingNumber = oo.OrderingNumber
+		WHERE   oo.OrderingNumber NOT IN(
+		SELECT oo2.OldOrderingNumber FROM wph_ordering oo2 WHERE oo2.OrderingStatse = 2  AND oo2.OldOrderingNumber IS NOT NULL AND oo2.OldOrderingNumber != ''
+		)
+		AND oo.OrderingStatse = 1
+		AND date_sub(DATE_FORMAT(oo.OrderingDate,'%y-%m-%d'),interval 0 day) BETWEEN DATE_SUB(DATE_FORMAT(#{datetime},'%y-%m-%d'),interval 0 day) AND DATE_SUB(DATE_FORMAT(#{datetime2},'%y-%m-%d'),interval 0 day)
+		<choose>
+			<when test="wphWardFid != null and wphWardFid != ''">AND oo.WPH_Ward_Fid = #{wphWardFid }</when>
+			<otherwise>AND ward.`Status` = 0</otherwise>
+		</choose>
+		AND oo.WPH_Query_Fid = #{wphQueryFid }
+		AND oo.WPH_ServiceType_Fid = #{wphServicetypeFid}
+		AND oo.WPH_ServiceDetails_Fid = #{wphServicedetailsFid }
+		GROUP BY oo.fid
+		ORDER BY oo.fid
+	</select>
+
+
+	<select id="getPatientdetailsNursing" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom" resultMap="BaseResultMap">
+		SELECT 	oo.fid,
+		oo.Customer_Hospitalld,
+		cus.`Name` customerName,
+		q.`Name` queryName,
+		ward.`Name` wardName,
+		st.`Name` workName ,
+		sd.`Name` detalisName,
+		oo.UserName,
+		oo.Money price,
+		1 count,
+		oo.Money -IFNULL(o2.Money,0) totalMoney
+		FROM wph_ordering oo
+		LEFT JOIN wph_customer cus ON cus.fid = oo.Customer_Fid
+		LEFT JOIN wph_ward ward ON ward.fid = oo.WPH_Ward_Fid
+		LEFT JOIN wph_query q ON q.fid = oo.WPH_Query_Fid
+		LEFT JOIN wph_servicetype st ON st.fid = oo.WPH_ServiceType_Fid
+		LEFT JOIN wph_servicedetails sd ON sd.fid = oo.WPH_ServiceDetails_Fid
+		LEFT JOIN (SELECT OldOrderingNumber,Money,WPH_ServiceDetails_Fid FROM wph_ordering WHERE  OrderingStatse = 2) o2 ON o2.OldOrderingNumber = oo.OrderingNumber
+        AND o2.WPH_ServiceDetails_Fid = oo.WPH_ServiceDetails_Fid
+
+		WHERE oo.Customer_Hospitalld = cus.Hospitalld
+		AND DATE_FORMAT(oo.OrderingDate,'%y-%m-%d') BETWEEN DATE_FORMAT(#{datetime},'%y-%m-%d') AND DATE_FORMAT(#{datetime2},'%y-%m-%d')
+		<choose>
+			<when test="wphWardFid != null and wphWardFid != ''">AND oo.WPH_Ward_Fid = #{wphWardFid }</when>
+			<otherwise>AND ward.`Status` = 0</otherwise>
+		</choose>
+		AND oo.OrderingStatse = 1
+		AND oo.WPH_Query_Fid = #{wphQueryFid }
+		AND oo.WPH_ServiceType_Fid = #{wphServicetypeFid}
+		AND oo.WPH_ServiceDetails_Fid = #{wphServicedetailsFid }
+		ORDER BY cus.fid, oo.fid;
+	</select>
+
+
+	<resultMap type="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom" id="orderAndFoodListMap" extends="BaseResultMap" >
+		<result column="ooOrderingDate" property="orderingdate" jdbcType="TIMESTAMP" />
+		<result column="ooOrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+		<collection property="foodList" ofType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood">
+			<id column="foodfid" property="fid" jdbcType="INTEGER" />
+			<result column="ooOrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+			<result column="Title" property="title" jdbcType="VARCHAR" />
+			<result column="Depict" property="depict" jdbcType="VARCHAR" />
+			<result column="Numbers" property="numbers" jdbcType="INTEGER" />
+			<result column="Money" property="money" jdbcType="DOUBLE" />
+			<result column="ooOrderingDate" property="mealdate" jdbcType="TIMESTAMP" />
+			<result column="MealStatse" property="mealstatse" jdbcType="INTEGER" />
+			<result column="MealAdd" property="mealadd" jdbcType="INTEGER" />
+			<result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+			<result column="Customer_CarId" property="customerCardid" jdbcType="VARCHAR" />
+			<result column="Customer_Hospitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+			<result column="LunchFood" property="lunchfood" jdbcType="INTEGER" />
+			<result column="DinnerFood" property="dinnerfood" jdbcType="INTEGER" />
+			<result column="AddFood" property="addfood" jdbcType="INTEGER" />
+			<result column="Race" property="race" jdbcType="INTEGER" />
+			<result column="WPH_MealMenu_Fid" property="wphMealmenuFid" jdbcType="INTEGER" />
+			<result column="WPH_MealNume_Name" property="wphMealnumeName" jdbcType="VARCHAR" />
+			<result column="WPH_MealTime_Fid" property="wphMealtimeFid" jdbcType="INTEGER" />
+			<result column="WPH_MealTime_Name" property="wphMealtimeName" jdbcType="VARCHAR" />
+			<result column="WPH_MealType_Fid" property="wphMealtypeFid" jdbcType="INTEGER" />
+			<result column="WPH_MealType_Name" property="wphMealtypeName" jdbcType="VARCHAR" />
+			<result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+			<result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+			<result column="UserName" property="username" jdbcType="VARCHAR" />
+			<result column="Notes" property="notes" jdbcType="VARCHAR" />
+			<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+			<result column="BedNo" property="bedno" jdbcType="VARCHAR" />
+			<result column="VegetarianFood" property="vegetarianfood" jdbcType="INTEGER" />
+		</collection>
+
+	</resultMap>
+
+
+	<select id="getSugarMealList"  resultMap="orderAndFoodListMap">
+		SELECT
+		oo.fid,oo.title,oo.Depict,oo.Money,oo.OrderingStatse,oo.aOrderingNumber ooOrderingNumber,
+		oo.Customer_Fid,cus.WPH_Card_Number Customer_CarId,cus.Hospitalld Customer_Hospitalld,cus.Balance-oo.Money Customer_Balance,
+		oo.WPH_InvoiceRate_Fid,oo.WPH_Query_Fid,oo.WPH_ServiceType_Fid,oo.WPH_ServiceDetails_Fid,
+		SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL -1 DAY) ooOrderingDate,oo.PayType,oo.PayOrderNumber,oo.User_Fid,oo.UserRole,oo.UserName,oo.WPH_Ward_Fid
+		,
+		food.fid foodfid,food.Numbers,1 MealStatse,food.MealAdd,
+		food.LunchFood,food.DinnerFood,food.AddFood,food.VegetarianFood,food.Race,
+		27 WPH_MealMenu_Fid,'糖餐' WPH_MealNume_Name,food.WPH_MealTime_Fid,food.WPH_MealTime_Name,4 WPH_MealType_Fid,'治疗餐' WPH_MealType_Name,food.Notes,food.BedNo
+		FROM (SELECT *,concat('std_',CEILING((RAND()*9+1)*10000000),Customer_Fid) aOrderingNumber FROM wph_ordering GROUP BY fid ) oo
+		LEFT JOIN wph_orderingfood food ON oo.OrderingNumber = food.OrderingNumber
+		LEFT JOIN wph_customer cus ON cus.fid = food.Customer_Fid AND cus.balance>=20
+		WHERE
+		food.Customer_Fid IN(
+		SELECT nursing.Customer_Fid FROM wph_orderingnursing nursing WHERE nursing.NursingStates = 1 AND nursing.NursingDate IN (SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL 0 DAY)) AND nursing.OrderingNumber NOT IN(
+		SELECT OldOrderingNumber FROM wph_orderingnursing nursing2 WHERE nursing2.NursingStates = 2 AND nursing2.NursingDate IN (SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL 0 DAY)) AND OldOrderingNumber IS NOT NULL )
+		)
+		AND oo.OrderingNumber IN(
+		SELECT food2.OrderingNumber FROM wph_orderingfood food2  WHERE food2.MealStatse = 1 AND food2.MealDate IN(SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL 0 DAY)) AND food2.WPH_MealType_Fid = 4 AND food2.WPH_MealMenu_Fid =27 AND food2.WPH_MealTime_Fid = 3
+		AND food2.Customer_Fid NOT IN(
+		SELECT food3.Customer_Fid FROM wph_orderingfood food3 WHERE food3.MealDate IN(SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL -1 DAY)) AND food3.MealStatse = 1 AND food3.WPH_MealType_Fid IN(2,3,4) AND food3.WPH_MealMenu_Fid != 28)
+		) AND cus.Balance >= 20 AND oo.WPH_Ward_Fid != 30
+
+
+	</select>
+
+
+	<insert id="insertSugarMealOrderList"  parameterType="java.util.List" >
+		INSERT INTO wph_ordering (title,Depict,Money,OrderingStatse,OrderingNumber,Customer_Fid,Customer_CarId,Customer_Hospitalld,Customer_Balance,WPH_InvoiceRate_Fid,
+		WPH_Query_Fid,WPH_ServiceType_Fid,WPH_ServiceDetails_Fid,OrderingDate,PayType,PayOrderNumber,User_Fid,UserRole,UserName,WPH_Ward_Fid,OldOrderingNumber)
+		VALUES
+		<foreach collection="list" item="order" index="index" separator="," >
+			(#{order.title},#{order.depict},#{order.money},#{order.orderingstatse},#{order.orderingnumber},#{order.customerFid},#{order.customerCarid},#{order.customerHospitalld},#{order.customerBalance},#{order.wphInvoicerateFid},
+			#{order.wphQueryFid},#{order.wphServicetypeFid},#{order.wphServicedetailsFid},#{order.orderingdate},#{order.paytype},#{order.payordernumber},
+			#{order.userFid},#{order.userrole},#{order.username},#{order.wphWardFid},#{order.oldorderingnumber})
+		</foreach>
+	</insert>
+
+	<insert id="insertSugarMealFoodList"  parameterType="java.util.List" >
+		INSERT INTO wph_orderingfood (title,Depict,Money,Numbers,OrderingNumber,Customer_Fid,Customer_CardId,Customer_Hospitalld,
+		MealStatse,MealAdd,MealDate,LunchFood,DinnerFood,AddFood,VegetarianFood,Race,WPH_MealMenu_Fid,WPH_MealNume_Name,WPH_MealTime_Fid,WPH_MealTime_Name,WPH_MealType_Fid,WPH_MealType_Name,Notes,BedNo,
+		User_Fid,UserRole,UserName)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			<foreach collection="item.foodList" item="food" index="index2" separator="," >
+				(#{food.title},#{food.depict},#{food.money},#{food.numbers},#{food.orderingnumber},#{food.customerFid},#{food.customerCardid},#{food.customerHospitalld},
+				#{food.mealstatse},#{food.mealadd},#{food.mealdate},#{food.lunchfood},#{food.dinnerfood},#{food.addfood},#{food.vegetarianfood},#{food.race},#{food.wphMealmenuFid},#{food.wphMealnumeName},#{food.wphMealtimeFid},#{food.wphMealtimeName},#{food.wphMealtypeFid},#{food.wphMealtypeName},#{food.notes},#{food.bedno},
+				#{food.userFid},#{food.userrole},#{food.username})
+			</foreach>
+		</foreach>
+	</insert>
+
+	<update id="updateSugarCustomerList" parameterType="java.util.List">
+		UPDATE wph_customer
+		SET balance =
+		<foreach collection="list" item="item" index="index" open="CASE fid " separator=" " close=" END" >
+			WHEN #{item.customerFid} THEN #{item.customerBalance}
+		</foreach>
+		WHERE fid IN
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+			#{item.customerFid}
+		</foreach>
+	</update>
+
+	<select id="getOutHospitalByHospitalId" parameterType="java.lang.String" resultType="java.lang.Integer" >
+		SELECT COUNT(*) FROM wph_ordering oo WHERE oo.Title = '出院结算' AND oo.Customer_Hospitalld = #{value}
+	</select>
+
+
+	<sql id="forOrderNumberArr">
+		<foreach collection="array" item="orderingnumber" index="orderingnumber" open="(" separator="," close=")">
+			#{orderingnumber}
+		</foreach>
+	</sql>
+
+	<select id="getManyRetreatListByOrderNumber" resultMap="BaseResultMap">
+		SELECT
+			oo.Title,oo.Depict,oo.Money,2 OrderingStatse, nn.newOrdernumber OrderingNumber,oo.OrderingNumber OldOrderingNumber,
+			oo.Customer_Fid,oo.Customer_CarId,oo.Customer_Hospitalld,
+			oo.WPH_InvoiceRate_Fid,oo.WPH_Query_Fid,oo.WPH_ServiceType_Fid,oo.WPH_ServiceDetails_Fid,oo.OrderingDate,oo.PayType,oo.PayOrderNumber,
+			oo.User_Fid,oo.UserRole,oo.UserName,oo.Notes,oo.WPH_Ward_Fid
+		FROM wph_ordering oo
+	  	LEFT JOIN
+			(SELECT concat('std_',CEILING((RAND()*9+1)*10000000),Customer_Fid) newOrdernumber ,minoo.OrderingNumber FROM wph_ordering minoo WHERE minoo.OrderingNumber IN <include refid="forOrderNumberArr"/> GROUP BY minoo.OrderingNumber) nn  ON nn.OrderingNumber = oo.OrderingNumber
+		WHERE oo.OrderingNumber IN <include refid="forOrderNumberArr"/> ORDER BY oo.fid DESC
+	</select>
+
+
+	<select id="selectThreeOrding" resultMap="BaseResultMap">
+		select CASE WHEN(nur0.WPH_ServiceType_Fid=2) THEN '一对一护理' WHEN(nur0.WPH_ServiceType_Fid=1)  THEN '一对多护理' else '糖餐' END as Title,
+			   sum(case when nur0.OrderingDate BETWEEN concat(DATE_SUB(curdate(),INTERVAL 1 DAY),' 00:00:00') and concat(DATE_SUB(curdate(),INTERVAL 1 DAY),' 23:59:00') then 1 else 0 end) as WPH_Query_Fid,
+			   sum(case when nur0.OrderingDate BETWEEN concat(DATE_SUB(curdate(),INTERVAL 0 DAY),' 00:00:00') and concat(DATE_SUB(curdate(),INTERVAL 0 DAY),' 23:59:00') then 1 else 0 end) as WPH_ServiceType_Fid,
+			   sum(case when nur0.OrderingDate BETWEEN concat(DATE_SUB(curdate(),INTERVAL -1 DAY),' 00:00:00') and concat(DATE_SUB(curdate(),INTERVAL -1 DAY),' 23:59:00') then 1 else 0 end) as WPH_ServiceDetails_Fid
+		from wph_ordering nur0
+		where nur0.OrderingDate BETWEEN concat(DATE_SUB(curdate(),INTERVAL 1 DAY),' 00:00:00') and concat(DATE_SUB(curdate(),INTERVAL -1 DAY),' 23:59:00')
+			  and nur0.OrderingStatse=1
+			  and (nur0.WPH_ServiceType_Fid in (1,2)
+				   OR nur0.WPH_ServiceDetails_Fid = 39)
+			  and nur0.OrderingNumber not in (
+			select xcc.OldOrderingNumber from wph_ordering xcc
+			where  xcc.OrderingStatse=2  and xcc.OrderingDate BETWEEN concat(DATE_SUB(curdate(),INTERVAL 1 DAY),' 00:00:00') and concat(DATE_SUB(curdate(),INTERVAL -1 DAY),' 23:59:00')
+		)
+
+		GROUP BY nur0.WPH_ServiceType_Fid
+		ORDER BY nur0.WPH_ServiceType_Fid
+	</select>
+
+	<select id="getCountByUserFid" resultType="com.slk.wph.module.WPH_Ordering.po.WphMealCollect">
+		SELECT  count(OrderingNumber) as mealcount,
+				ifnull(sum(money),0) as mealmoney
+		FROM(SELECT sum(ordering.Money) as money,ordering.OrderingNumber as OrderingNumber
+				FROM wph_ordering ordering
+				LEFT JOIN wph_ordering oo on ordering.OrderingNumber = oo.OldOrderingNumber AND oo.WPH_ServiceType_Fid &gt;=11 	AND oo.WPH_Query_Fid=3
+				WHERE ordering.WPH_ServiceType_Fid &gt;=11
+				AND ordering.WPH_Query_Fid=3
+				AND ordering.User_Fid=#{userFid}
+				and ordering.OrderingStatse = 1
+				AND DATE_FORMAT(ordering.OrderingDate,'%m-%d-%Y')=DATE_FORMAT(#{datetime},'%m-%d-%Y')
+					GROUP BY ordering.OrderingNumber
+				having count(oo.OldOrderingNumber)=0) as collect
+    </select>
+
+	<select id="mealInfoByCardNumber" resultType="com.slk.wph.module.WPH_Ordering.po.WphMealInfo">
+		SELECT
+			servicedetails.`Name` as mealname,
+			COUNT(ordering.WPH_ServiceDetails_Fid) as mealcount,
+			IFNULL(sum(ordering.Money),0) as moneycount,
+			ordering.Money as price
+			FROM wph_ordering ordering
+			LEFT JOIN wph_servicedetails servicedetails
+			ON servicedetails.fid=ordering.WPH_ServiceDetails_Fid
+			WHERE ordering.WPH_ServiceType_Fid='11'
+			AND ordering.OrderingStatse='1'
+			AND ordering.Customer_CarId=#{cardNumber}
+			AND DATE_FORMAT(ordering.OrderingDate,'%m-%d-%Y')=DATE_FORMAT(#{datetime},'%m-%d-%Y')
+			AND ordering.OrderingNumber NOT IN (
+				  SELECT xcc.OldOrderingNumber FROM wph_ordering xcc
+				  WHERE xcc.OrderingStatse=2 AND xcc.WPH_ServiceType_Fid='11'
+				  AND xcc.Customer_CarId=#{cardNumber}
+				  AND DATE_FORMAT(xcc.OrderingDate,'%m-%d-%Y')=DATE_FORMAT(#{datetime},'%m-%d-%Y')
+			)
+		GROUP BY ordering.WPH_ServiceDetails_Fid
+	</select>
+</mapper>

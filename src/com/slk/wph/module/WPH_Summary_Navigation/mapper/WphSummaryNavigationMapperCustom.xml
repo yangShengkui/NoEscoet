@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Summary_Navigation.mapper.WphSummaryNavigationMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Summary_Navigation.po.WphSummaryNavigationCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="ward_fid" property="wardFid" jdbcType="INTEGER" />
+    <result column="imgs" property="imgs" jdbcType="VARCHAR" />
+    <result column="notes" property="notes" jdbcType="VARCHAR" />
+    <result column="createdate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+    <result column="state" property="state"/>
+  </resultMap>
+  
+  <select id="selectSummaryNavigationState" resultMap="BaseResultMap">
+    select  *,b.`Name` as wardName from wph_summary_navigation a
+	LEFT JOIN wph_ward b
+	on a.ward_fid=b.fid
+	where b.Status='0'
+	and a.state='0' 
+    order by a.fid
+  </select>
+  
+  <select id="selectSummaryNavigationAll" resultMap="BaseResultMap">
+    select  *,b.`Name` as wardName from wph_summary_navigation a
+	LEFT JOIN wph_ward b
+	on a.ward_fid=b.fid
+	where b.Status='0'
+	order by a.state,a.fid
+  </select>
+  <select id="selectSummaryNavigationByFid" resultMap="BaseResultMap">
+    select  *,b.`Name` as wardName from wph_summary_navigation a
+	LEFT JOIN wph_ward b
+	on a.ward_fid=b.fid
+	where b.fid=#{fid}
+  </select>
+  
+  
+  
+  <insert id="insertSummaryNavigation">
+    insert into wph_summary_navigation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="wardFid != null" >
+        ward_fid,
+      </if>
+      <if test="imgs != null" >
+        imgs,
+      </if>
+      <if test="notes != null" >
+        notes,
+      </if>
+      <if test="createdate != null" >
+        createdate,
+      </if>
+      <if test="createuser != null" >
+        createuser,
+      </if>
+      <if test="state!=null">
+      	state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid},
+      </if>
+      <if test="wardFid != null" >
+        #{wardFid},
+      </if>
+      <if test="imgs != null" >
+        #{imgs},
+      </if>
+      <if test="notes != null" >
+        #{notes},
+      </if>
+      <if test="createdate != null" >
+        #{createdate},
+      </if>
+      <if test="createuser != null" >
+        #{createuser},
+      </if>
+      <if test="state!=null">
+      	#{state},
+      </if>
+    </trim>
+  </insert>
+  
+ 
+  <update id="updateSummaryNavigation">
+    update wph_summary_navigation
+    <set >
+      <if test="wardFid != null" >
+        ward_fid = #{wardFid,jdbcType=INTEGER},
+      </if>
+      <if test="imgs != null" >
+        imgs = #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null" >
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        createdate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuser != null" >
+        createuser = #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="state!=null">
+      	state=#{state},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

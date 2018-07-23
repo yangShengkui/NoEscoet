@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.slk.wph.module.WPH_Ward.mapper.WphWardMapperCustom">
+	<resultMap type="com.slk.wph.module.WPH_Ward.po.WphWardCustom" id="BaseResultMap">
+		<id column="fid" property="fid" />
+		<result column="WPH_Hospita_fid" property="wphHospitaFid" />
+		<result column="Name" property="name" />
+		<result column="Abbreviation" property="abbreviation" />
+		<result column="CreateDate" property="createdate" />
+		<result column="Notes" property="notes" />
+		<result column="SaveMoney" property="savemoney" />
+		<result column="WaringMoney" property="waringmoney" />
+		<result column="Status" property="status" />
+	</resultMap>
+	<resultMap  id="SpecialMap" type="com.slk.wph.module.WPH_Ward.po.WphWardCustom" extends="BaseResultMap">
+	  	<collection property="nursingGradeList"  ofType="com.slk.wph.module.WPH_NursingGrade.po.WphNursinggradeCustom">
+		    <id column="nFid" property="fid"/>
+		    <result column="nName" property="name"/>
+		    <result column="nursingMoney" property="nursingMoney"/>
+		    <result column="wages" property="wages"/>
+		    <result column="onCheck" property="onCheck"/>
+		    <result column="nCreateDate" property="careateDate"/>
+	  	</collection>
+  </resultMap>
+	
+	<sql id="Base_Column_List">
+		WPH_Hospita_fid,name,abbreviation,notes,savemoney,waringmoney,Status
+	</sql>
+	<insert id="saveWphWard">
+		insert into wph_ward(
+		<include refid="Base_Column_List" />
+		)values(
+		#{wphHospitaFid},
+		#{name},
+		#{abbreviation},
+		#{notes},
+		#{savemoney},
+		#{waringmoney},
+		#{status}
+		)
+	</insert>
+	<update id="updateWphWard">
+		update wph_ward
+		<set>
+			<if test="wphHospitaFid != null">
+				WPH_Hospita_fid = #{wphHospitaFid,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				Name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="abbreviation != null">
+				Abbreviation = #{abbreviation,jdbcType=INTEGER},
+			</if>
+			<if test="abbreviation != null">
+				Notes = #{notes,jdbcType=INTEGER},
+			</if>
+			<if test="savemoney!=null">
+				SaveMoney=#{savemoney}
+			</if>
+			<if test="waringmoney!=null">
+				WaringMoney=#{waringmoney}
+			</if>
+			<if test="status!=null">
+				Status=#{status}
+			</if>
+		</set>
+		where fid=#{fid}
+	</update>
+	
+	<select id="getWphWardList" resultMap="BaseResultMap">
+		select
+		a.fid,
+		a.WPH_Hospita_fid wphHospitaFid,
+		a.Name,
+		a.Abbreviation,
+		a.CreateDate,
+		a.Notes,
+		a.Savemoney,
+		a.Waringmoney,
+		a.Status,
+		b.Name as hospitaName
+		from
+		wph_ward a
+		left join wph_hospita b
+		on a.wph_hospita_fid=b.fid
+		where b.status='0'
+		order by
+		a.fid asc
+	</select>
+	<select id="getWphWardListByStatus" resultMap="BaseResultMap">
+		select
+		a.fid,
+		a.WPH_Hospita_fid wphHospitaFid,
+		a.Name,
+		a.Abbreviation,
+		a.CreateDate,
+		a.Notes,
+		a.Savemoney,
+		a.Waringmoney,
+		a.Status,
+		b.Name as hospitaName
+		from
+		wph_ward a
+		left join wph_hospita b
+		on a.wph_hospita_fid=b.fid
+		where a.Status=0 and b.Status=0
+		order by
+		a.fid asc
+	</select>
+	
+
+	<select id="getWphWardListByUserFid" resultMap="BaseResultMap">
+		select * from
+		wph_ward a LEFT JOIN wph_user_ward b
+		on a.fid=b.WPH_Ward_Fid
+		left join
+		wph_user c
+		on c.fid=b.WPH_User_Fid
+		where c.Status='2' and b.WPH_User_Fid=#{value}
+	</select>
+
+	<delete id="deleteWphWard">
+		delete from wph_ward where fid=#{fid}
+	</delete>
+	<select id="checkWphWard" resultType="java.lang.Integer">
+		select count(*) from
+		wph_ward
+		where Name=#{0}
+	</select>
+	<select id="checkWphWard_" resultType="java.lang.Integer">
+		select count(*) from
+		wph_ward
+		where fid!=#{0} and Name=#{1}
+	</select>
+
+	<select id="selectCountByUserFid" resultType="java.lang.Integer">
+		select count(a.fid)
+		from wph_ward a LEFT JOIN wph_user_ward b
+		on a.fid=b.WPH_Ward_Fid
+		left
+		join wph_user c
+		on c.fid=b.WPH_User_Fid
+		where c.Status='2' and b.WPH_User_Fid=#{userFid} and a.fid=#{wardFid}
+	</select>
+	
+	
+	<select id="getWardNursingMoney" resultMap="SpecialMap">
+		SELECT w.fid,w.`Name`,n1.fid as nfid,n1.`Name` as nname,wo.Money as nursingMoney,wo.wages as wages,CASE WHEN n1.fid = wo.WPH_NursingGrade_Fid THEN 1 ELSE 0 END onCheck FROM wph_ward w
+		LEFT JOIN wph_nursinggrade n1 ON  n1.fid = n1.fid AND n1.Type=#{type}	
+		LEFT JOIN wph_ward_om wo ON  w.fid = wo.WPH_Ward_Fid AND  n1.fid = wo.WPH_NursingGrade_Fid
+		ORDER BY w.fid, n1.fid
+  	</select>
+  	
+  	<select id="getWardListByUserFid" resultMap="BaseResultMap">
+  		select a.fid,a.`Name`
+		from wph_ward a LEFT JOIN wph_user_ward b
+		on a.fid=b.WPH_Ward_Fid left
+		join wph_user c
+		on c.fid=b.WPH_User_Fid
+		where c.Status='2' and b.WPH_User_Fid=#{userFid}
+  	</select>
+  	
+  	<resultMap type="com.slk.wph.module.WPH_Ward.po.WphWardCustom" id="wardAndCustomerMap" extends="BaseResultMap">
+  			<collection property="foodList" ofType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom">
+  				<id column="foodFid" property="fid" />
+			    <result column="foodname" property="name" jdbcType="VARCHAR" />
+			    <association property="customer" javaType="com.slk.wph.module.WPH_Customer.po.WphCustomerCustom">
+			    	<id column="cfid" property="fid" jdbcType="INTEGER" />
+			    	<result column="cname" property="name" jdbcType="VARCHAR" />
+				    <result column="CodeId" property="codeid" jdbcType="VARCHAR" />
+				    <result column="Birthday" property="birthday" jdbcType="VARCHAR" />
+				    <result column="Sex" property="sex" jdbcType="VARCHAR" />
+				    <result column="Age" property="age" jdbcType="VARCHAR" />
+				    <result column="phone" property="phone" jdbcType="VARCHAR" />
+				    <result column="Hospitalld" property="hospitalld" jdbcType="VARCHAR" />
+				    <result column="BindingTime" property="bindingtime" jdbcType="TIMESTAMP" />
+				    <result column="cWPH_Hospita_Fid" property="wphHospitaFid" jdbcType="INTEGER" />
+				    <result column="cWPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+				    <result column="Nation" property="nation" jdbcType="INTEGER" />
+				    <result column="WPH_Card_Fid" property="wphCardFid" jdbcType="INTEGER" />
+				    <result column="WPH_Card_Number" property="wphCardNumber" jdbcType="VARCHAR" />
+				    <result column="Balance" property="balance" jdbcType="DOUBLE" />
+				    <result column="HospitalldStatus" property="hospitalldstatus" jdbcType="INTEGER" />
+				    <result column="HospitalldDate" property="hospitallddate" jdbcType="TIMESTAMP" />
+				    <result column="Nursing_Type" property="nursingType" jdbcType="INTEGER" />
+				    <result column="Worker" property="worker" jdbcType="INTEGER" />
+				    <result column="WorkerStatus" property="workerstatus" jdbcType="INTEGER" />
+				    <result column="cCreateDate" property="createdate" jdbcType="TIMESTAMP" />
+				    <result column="notes" property="notes" jdbcType="VARCHAR" />
+				    <result column="Img" property="img" jdbcType="VARCHAR" />
+				    <result column="state" property="state" jdbcType="INTEGER" />
+			    </association>
+  			</collection>
+<!--   		<collection property="customerList" ofType="com.slk.wph.module.WPH_Customer.po.WphCustomerCustom"> -->
+<!--   			<id column="cfid" property="fid" jdbcType="INTEGER" /> -->
+		    
+<!--   		</collection> -->
+  	</resultMap>
+  	
+  	<select id="appMealReserveSummaryByTime" resultType="com.slk.wph.module.WPH_Customer.po.WphMealCustomerApp" >
+			select x.`Name` name,x.WPH_Card_Number wph_Card_Number ,IF(c.fid  IS NOT NULL,1,0) checkstate,c.WPH_MealType_Fid wph_MealType_Fid,c.WPH_MealType_Name wph_MealType_Name
+			from  wph_customer x
+				left join wph_orderingfood c on x.fid=c.Customer_Fid and c.MealStatse = 1 and c.MealDate LIKE concat(#{datetime},'%')
+			where x.WPH_Ward_Fid= #{wardFid} and (x.HospitalldStatus=1 OR x.Worker = 1  OR x.WPH_Ward_Fid = 1 ) and x.WPH_Card_Number IS NOT NULL and x.WPH_Card_Number != ''
+			GROUP BY x.fid,c.WPH_MealType_Fid
+			order by x.`Name`,c.OrderingNumber;
+  	</select>
+
+	<select id="mealReserveTcSummary" resultType="com.slk.wph.module.WPH_Customer.po.WphMealCustomerApp" >
+		select x.`Name` name,x.WPH_Card_Number wph_Card_Number ,IF(c.fid  IS NOT NULL,1,0) checkstate,c.WPH_MealType_Fid wph_MealType_Fid,c.WPH_MealType_Name wph_MealType_Name
+		from  wph_customer x
+		left join wph_orderingfood c on x.fid=c.Customer_Fid and c.MealStatse = 1 and c.MealDate LIKE concat(#{datetime},'%')
+		where x.WPH_Ward_Fid= #{wardFid} and (x.HospitalldStatus=1 OR x.Worker = 1  OR x.WPH_Ward_Fid = 1 ) and x.WPH_Card_Number IS NOT NULL and x.WPH_Card_Number != ''
+			  AND (c.WPH_MealType_Fid=5 OR c.WPH_MealType_Fid is null)
+		GROUP BY x.fid,c.WPH_MealType_Fid
+		order by x.`Name`,c.OrderingNumber;
+	</select>
+
+	<sql id="fidForSqlArray">
+		<foreach collection="array" item="fids"  index="fid" open="(" separator="," close=")">
+			#{fids}
+		</foreach>
+	</sql>
+
+	<select id="getNotChildrenWardList"  resultMap="BaseResultMap">
+		SELECT * FROM wph_ward ward WHERE ward.fid NOT IN <include refid="fidForSqlArray"/>
+	</select>
+  	
+  
+</mapper>

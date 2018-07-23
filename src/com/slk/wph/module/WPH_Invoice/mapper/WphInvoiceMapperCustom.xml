@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Invoice.mapper.WphInvoiceMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Invoice.po.WphInvoiceCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+    <result column="Customer_CardId" property="customerCardid" jdbcType="VARCHAR" />
+    <result column="Customer_Hospitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+    <result column="WPH_InvoiceRate_Fid" property="wphInvoicerateFid" jdbcType="INTEGER" />
+    <result column="Rate" property="rate" jdbcType="DOUBLE" />
+    <result column="Money" property="money" jdbcType="DOUBLE" />
+    <result column="Taxation" property="taxation" jdbcType="DOUBLE" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    fid, Name, Customer_Fid, Customer_CardId, Customer_Hospitalld, WPH_InvoiceRate_Fid, 
+    Rate, Money, Taxation, User_Fid, UserRole, UserName, CreateDate
+  </sql>
+  <select id="selectWphInvoiceByHospitalld" resultMap="BaseResultMap">
+  	 select * from wph_invoice where Customer_Hospitalld=#{value}
+  </select>
+  
+ 
+  <insert id="insertWphInvoice" parameterType="com.slk.wph.module.WPH_Invoice.po.WphInvoice" >
+    insert into wph_invoice
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid,
+      </if>
+      <if test="customerCardid != null" >
+        Customer_CardId,
+      </if>
+      <if test="customerHospitalld != null" >
+        Customer_Hospitalld,
+      </if>
+      <if test="wphInvoicerateFid != null" >
+        WPH_InvoiceRate_Fid,
+      </if>
+      <if test="rate != null" >
+        Rate,
+      </if>
+      <if test="money != null" >
+        Money,
+      </if>
+      <if test="taxation != null" >
+        Taxation,
+      </if>
+      <if test="userFid != null" >
+        User_Fid,
+      </if>
+      <if test="userrole != null" >
+        UserRole,
+      </if>
+      <if test="username != null" >
+        UserName,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="customerFid != null" >
+        #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerCardid != null" >
+        #{customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="customerHospitalld != null" >
+        #{customerHospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="wphInvoicerateFid != null" >
+        #{wphInvoicerateFid,jdbcType=INTEGER},
+      </if>
+      <if test="rate != null" >
+        #{rate,jdbcType=DOUBLE},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="taxation != null" >
+        #{taxation,jdbcType=DOUBLE},
+      </if>
+      <if test="userFid != null" >
+        #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="selectInvoice" resultMap="BaseResultMap">
+  		select a.CreateDate,
+		a.Customer_Hospitalld,
+		a.Name,
+		b.Name as customerName,
+		c.Name as wardName,
+		a.Taxation,
+		a.Money,
+		a.UserName as username
+		from wph_invoice a LEFT JOIN wph_customer b
+		on a.Customer_Fid=b.fid
+		LEFT JOIN wph_ward c
+		on b.WPH_Ward_Fid=c.fid
+  		<where>
+  			c.Status='0'
+  			and DATE_FORMAT(a.CreateDate, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate}, '%Y-%m-%d')
+  			<if test="wardFid!=null and wardFid!=''">
+  				and c.fid=#{wardFid}
+  			</if>
+  			<if test="name!=null and name!=''">
+  				and a.name=#{name}
+  			</if>
+  		</where>
+  </select>
+  
+</mapper>

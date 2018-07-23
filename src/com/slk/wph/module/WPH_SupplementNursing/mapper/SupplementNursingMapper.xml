@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_SupplementNursing.mapper.SupplementNursingMapper" >
+	<resultMap type="com.slk.wph.module.WPH_User.po.WphUserCustom"  id="BaseResultMap_User">
+		<id column="fid" property="fid" />
+		<result column="Name" property="name" />
+		<result column="Username" property="username" />
+		<result column="Password" property="password" />
+		<result column="Sex" property="sex" />
+		<result column="Phone" property="phone" />
+		<result column="Manager" property="manager" />
+		<result column="Status" property="status" />
+		<result column="CreateDate" property="createdate" />
+		<result column="managerName" property="managerName" />
+	</resultMap>
+	<select id="getRoleAndUserByUser" resultMap="BaseResultMap_User">
+		SELECT
+		u.fid,u.Username,u.Name,u.Phone,group_concat(u_r.Role_Fid separator ",") AS
+		roleFid,group_concat(r.RoleName separator ",") AS roleName FROM
+		wph_user_role u_r
+		LEFT JOIN wph_role r ON u_r.Role_Fid = r.fid
+		LEFT JOIN
+		wph_user u ON u.fid = u_r.User_Fid
+		WHERE u.fid = #{fid}
+	</select>
+	<resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Customer.po.WphCustomer" >
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="Hospitalld" property="hospitalld" jdbcType="VARCHAR" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+		<result column="WPH_Card_Number" property="wphCardNumber" jdbcType="VARCHAR" />
+		<result column="Balance" property="balance" jdbcType="DOUBLE" />
+		<result column="HospitalldStatus" property="hospitalldstatus" jdbcType="INTEGER" />
+	</resultMap>
+	<update id="updateCustomerMoney">
+		update wph_customer a set a.Balance=#{balance}
+		where a.fid=#{cusFid}
+	</update>
+
+	<!-- parameterType="com.slk.wph.module.WPH_SupplementNursing.po.WPH_SupplementNursing" -->
+	<select id="getCustomerHosOrCardId" resultMap="BaseResultMap">
+			select cus.* from wph_customer cus
+			left JOIN wph_card card
+			on cus.WPH_Card_Fid=card.fid
+		    <where>
+				and cus.HospitalldStatus='1'
+				<if test="customerHospitalld!=null and customerHospitalld!=''">
+					and cus.Hospitalld=#{customerHospitalld}
+				</if>
+				<if test="cardNumber!=null and cardNumber!=''">
+					and card.CardId=#{cardNumber}
+				</if>
+			</where>
+	</select>
+	<insert id="saveOrieringSupplement" parameterType="com.slk.wph.module.WPH_SupplementNursing.po.WPH_SupplementNursing">
+			insert into wph_ordering(
+				title,
+				depict,
+				Money,
+				OrderingStatse,
+				OrderingNumber,
+				Customer_Fid,
+				Customer_CarId,
+				Customer_Hospitalld,
+				Customer_Balance,
+				WPH_Query_Fid,
+				WPH_ServiceType_Fid,
+				WPH_ServiceDetails_Fid,
+				OrderingDate,
+				User_Fid,
+				UserRole,
+				UserName,
+				Notes,
+				WPH_Ward_Fid
+			)
+			VALUES (
+				"护理补费",
+				"护理补费扣除",
+				#{money},
+				1,
+				#{orderingNumber},
+				#{cusFid},
+				#{cardId},
+				#{customerHospitalld},
+				#{balance},
+				1,
+				25,
+				145,
+				sysdate(),
+				#{userFid},
+				#{roleName},
+				#{userName},
+				#{notes},
+				#{wardFid}
+			)
+	</insert>
+<!-- 根据住院号查询患者一对一明细-->
+	<select id="selectOneInfo" resultType="com.slk.wph.module.WPH_SupplementNursing.po.WPH_OneInfo">
+			select
+			one.fid as oneFid,
+			one.StartDate as startDate,
+			one.TrueEndDate as endDate,
+			(select count(*) from wph_orderingnursing nursing where nursing.WPH_One_Fid=one.fid and nursing.Nursing_Type='2' and nursing.NursingStates='1') as countDay
+			,sum(IF(nur.NursingStates = 1,nur.Money,0)-IF(nur.NursingStates = 2,nur.Money,0)) as countMoney,
+			datediff(max(nur.NursingDate),min(nur.NursingDate)) as countDayBz
+			, (select sum(od.Money) from wph_ordering od where od.notes=one.fid and od.WPH_ServiceType_Fid=25) as subsidy
+			from wph_orderingnursing nur
+			LEFT JOIN wph_one one
+			on nur.WPH_One_Fid=one.fid
+			where nur.Nursing_Type=2
+			and nur.Customer_Hospitalld=#{customerHospitalld}
+			GROUP BY one.fid
+			ORDER BY one.fid desc
+	</select>
+	<select id="selectSubsidyByOneFid" resultType="java.lang.Double">
+		select money from wph_ordering oo where oo.notes=#{oneFid} and oo.WPH_ServiceType_Fid=25
+	</select>
+
+</mapper>

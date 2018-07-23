@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:cxf="http://cxf.apache.org/core"
+       xsi:schemaLocation="http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://cxf.apache.org/jaxws
+       http://cxf.apache.org/schemas/jaxws.xsd"
+       xmlns:jaxws="http://cxf.apache.org/jaxws">
+		
+	    <bean id="LicenseInterceptor" class="com.slk.wph.framework.Interceptor.AccessIntercept.LicenseInterceptor"/>
+
+    <cxf:bus>
+        <cxf:inInterceptors>
+            <ref bean="LicenseInterceptor"/>
+        </cxf:inInterceptors>
+    </cxf:bus> 
+
+	
+<import resource="classpath:META-INF/cxf/cxf.xml" /> 
+
+
+<jaxws:endpoint  implementor="com.slk.wph.webservice.Internet_Pay.Internet_PayServiceImpl" address="/Internet_PayService" /> 
+
+<jaxws:endpoint  implementor="com.slk.wph.webservice.User_Function.User_FunctionServiceImpl" address="/User_Function" /> 
+
+<jaxws:endpoint  implementor="com.slk.wph.webservice.Wph_Customer.Wph_CustomerServiceImpl" address="/Wph_Customer" /> 
+	
+<jaxws:endpoint implementor="com.slk.wph.webservice.Wph_Hospita.WPH_HospitaWSImpl" address="/Wph_Hospita"/>
+
+<jaxws:endpoint implementor="com.slk.wph.webservice.Hospital_Confirm.HospitalConfirmWSImpl" address="/Hospital_Confirm"/>
+
+<jaxws:endpoint implementor="com.slk.wph.webservice.OneManyNursing.OneManyNursingWSImpl" address="/OneManyNursing"/>
+
+<jaxws:endpoint implementor="com.slk.wph.webservice.OneAndOneNursing.OneAndOneNursingWSImpl" address="/OneAndOneNursing"/>
+
+<jaxws:endpoint implementor="com.slk.wph.webservice.FileUpload.FileUploadWSImpl" address="/FileUpload"/>
+
+<jaxws:endpoint implementor="com.slk.wph.webservice.Meal_Ordering.Meal_OrderingServiceImpl" address="/Meal_Ordering"/>
+
+<jaxws:endpoint implementor="com.slk.wph.webservice.Unsubscribe_Time.Unsubscribe_TimeServiceImpl" address="/Unsubscribe_Time"/>
+
+<jaxws:endpoint implementor="com.slk.wph.webservice.Meal_Cleaning.Meal_CleaningServiceImpl" address="/Meal_Cleaning"/>
+
+<!-- APP版本信息接口 -->
+<jaxws:endpoint implementor="com.slk.wph.webservice.AppVersion.AppVersionWsImpl" address="/AppVersion"/>
+
+    <jaxws:endpoint implementor="com.slk.wph.webservice.SupplementNursing.SupplementNursingWSImpl" address="/SupplementNursing"/>
+</beans>

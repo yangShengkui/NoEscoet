@@ -1,0 +1,2093 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+		namespace="com.slk.wph.module.WPH_Orderingnursing.mapper.WphOrderingnursingMapperCustom">
+	<resultMap id="BaseResultMap"
+			   type="com.slk.wph.module.WPH_Orderingnursing.po.WphOrderingnursingCustom">
+		<id column="fid" property="fid" />
+		<result column="OrderingNumber" property="orderingnumber" />
+		<result column="Title" property="title" />
+		<result column="Depict" property="depict" />
+		<result column="WPH_Ward_OM_Fid" property="wphWardOmFid" />
+		<result column="Nursing_Name" property="nursingName" />
+		<result column="Money" property="money" />
+		<result column="NursingDate" property="nursingdate" />
+		<result column="NursingStates" property="nursingstates" />
+		<result column="Customer_Fid" property="customerFid" />
+		<result column="Customer_Hospitalld" property="customerHospitalld" />
+		<result column="Nursing_Type" property="nursingType" />
+		<result column="WPH_One_Fid" property="wphOneFid" />
+		<result column="Workers_Fid" property="workersFid" />
+		<result column="Customer_CardId" property="customerCardid" />
+		<result column="User_Fid" property="userFid" />
+		<result column="UserRole" property="userrole" />
+		<result column="UserName" property="username" />
+		<result column="Notes" property="notes" />
+		<result column="CreateDate" property="createdate" />
+		<result column="OldOrderingnumber" property="oldOrderingnumber" />
+	</resultMap>
+
+
+
+	<update id="updateOrdringnursing" parameterType="com.slk.wph.module.WPH_Orderingnursing.po.WphOrderingnursing" >
+		update wph_orderingnursing
+		<set >
+			<if test="orderingnumber != null" >
+				OrderingNumber = #{orderingnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null" >
+				Title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="depict != null" >
+				Depict = #{depict,jdbcType=VARCHAR},
+			</if>
+			<if test="wphWardOmFid != null" >
+				WPH_Ward_OM_Fid = #{wphWardOmFid,jdbcType=INTEGER},
+			</if>
+			<if test="nursingName != null" >
+				Nursing_Name = #{nursingName,jdbcType=VARCHAR},
+			</if>
+			<if test="money != null" >
+				Money = #{money,jdbcType=DOUBLE},
+			</if>
+			<if test="nursingdate != null" >
+				NursingDate = #{nursingdate,jdbcType=DATE},
+			</if>
+			<if test="nursingstates != null" >
+				NursingStates = #{nursingstates,jdbcType=INTEGER},
+			</if>
+			<if test="customerFid != null" >
+				Customer_Fid = #{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerHospitalld != null" >
+				Customer_Hospitalld = #{customerHospitalld,jdbcType=VARCHAR},
+			</if>
+			<if test="nursingType != null" >
+				Nursing_Type = #{nursingType,jdbcType=INTEGER},
+			</if>
+			<if test="wphOneFid != null" >
+				WPH_One_Fid = #{wphOneFid,jdbcType=INTEGER},
+			</if>
+			<if test="workersFid != null" >
+				Workers_Fid = #{workersFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerCardid != null" >
+				Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+			</if>
+			<if test="userFid != null" >
+				User_Fid = #{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null" >
+				UserRole = #{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null" >
+				UserName = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="notes != null" >
+				Notes = #{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null" >
+				CreateDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="oldOrderingnumber!=null">
+				OldOrderingnumber=#{oldOrderingnumber},
+			</if>
+		</set>
+		where fid = #{fid,jdbcType=INTEGER}
+	</update>
+
+
+
+
+
+	<!-- 查询患者护理开始到结束的总费用 (一对一)-->
+	<select id="totalCost" resultType="java.lang.Double">
+		select sum(b.money) from wph_orderingnursing b where b.WPH_One_Fid=#{wphOneFid}
+		and DATE_FORMAT(b.NursingDate, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate}, '%Y-%m-%d')
+		and b.Nursing_Type='2' and b.NursingStates='1'
+		GROUP BY b.WPH_One_Fid
+		<!-- select sum(a.Money) from wph_orderingnursing a
+		LEFT JOIN wph_one b
+		on a.WPH_One_Fid=b.fid
+		where b.fid=#{wphOneFid}
+		and  a.CreateDate BETWEEN #{startDate} and #{endDate}
+		and a.Nursing_Type='2' and a.NursingStates='1' -->
+	</select>
+
+	<!-- 查询某天患者 是否订过护理 -->
+	<select id="selectNursinggradeByCusFidAndDate" resultType="java.lang.Integer">
+		select count(*) from wph_orderingnursing e
+		where e.fid =
+		(select max(f.fid) from  wph_orderingnursing f where f.NursingDate=#{date}
+		and f.Customer_Fid=#{customFid}
+		)
+		and  e.NursingStates='1'
+	</select>
+
+	<!-- 自动订护理时用的查询功能 --><!-- 按类型查询所有定理护理的信息 -->
+	<select id="selectCustomerAllNursing" resultMap="BaseResultMap">
+		select * from wph_orderingnursing e
+		where e.fid=(
+		select max(f.fid) from wph_orderingnursing f  LEFT JOIN wph_customer z
+		on f.Customer_Fid=z.fid
+		where  z.HospitalldStatus='1' and e.Customer_Fid=f.Customer_Fid and f.NursingDate=DATE_SUB(curdate(),INTERVAL 0 DAY))
+		and e.NursingStates='1' and e.Nursing_Type=#{type}
+		and (select count(1) from wph_orderingnursing t where  t.Customer_Fid=e.Customer_Fid and t.NursingDate = DATE_SUB(curdate(),INTERVAL -1 DAY) )=0;
+		<!--  -->
+		<!-- select * from wph_orderingnursing e
+		where e.fid=(
+		select max(f.fid) from wph_orderingnursing f  LEFT JOIN wph_customer z
+		on f.Customer_Fid=z.fid
+		where  z.HospitalldStatus='1' and e.Customer_Fid=f.Customer_Fid and f.NursingDate=DATE_SUB(curdate(),INTERVAL 1 DAY))
+		and e.NursingStates='1' and e.Nursing_Type=#{type}
+		and (select count(1) from wph_orderingnursing t where  t.Customer_Fid=e.Customer_Fid and t.NursingDate = DATE_SUB(curdate(),INTERVAL 0 DAY) )=0; -->
+	</select>
+
+	<select id="_selectCustomerAllNursing" resultMap="BaseResultMap">
+
+		<if test="type==1">
+			select x.*,c.Balance as cBalance,c.WPH_Ward_Fid as wphWardFid,
+			(c.Balance-d.Money) as newBalance,c.fid as cfid,
+			d.fid as wardOMFid,
+			d.Money as newMoney,
+			f.fid as detailsFid,
+			f.WPH_Query_Fid as queryFid,
+			f.WPH_ServiceType_Fid as serviceFid,
+			c.WPH_Card_Number  as newCardId,
+			concat('phd_',CEILING((RAND()*9+1)*10000000),x.Customer_Fid) as newOrdering
+			from wph_orderingnursing x
+			LEFT JOIN wph_customer c on x.Customer_Fid=c.fid
+			left join wph_ward_om d on x.WPH_Ward_OM_Fid=d.fid
+			left join wph_nursinggrade e on e.fid=d.WPH_NursingGrade_Fid
+			left join wph_servicedetails f on e.UUID=f.JoinUUID
+			where
+			x.Nursing_Type=#{type}
+			and x.NursingDate=DATE_SUB(curdate(),INTERVAL 0 DAY)
+			and c.HospitalldStatus='1'
+			and c.Balance>=x.Money
+			and x.NursingStates=1
+			and d.fid is not null
+			and d.Money is not null
+			and x.OrderingNumber not in (
+			select xcc.OldOrderingNumber from wph_orderingnursing xcc
+			where xcc.NursingDate =DATE_SUB(curdate(),INTERVAL 0 DAY) and
+			xcc.Nursing_Type=#{type} and xcc.NursingStates=2
+			)
+
+
+
+		</if>
+		<if test="type==2">
+			select x.*,c.Balance as cBalance,c.WPH_Ward_Fid as wphWardFid,
+			(c.Balance-d.Money) as newBalance,c.fid as cfid,
+			z.EndDate as oendDate,z.fid as ofid,
+			d.fid as wardOMFid,
+			d.Money as newMoney,
+			f.fid as detailsFid,
+			f.WPH_Query_Fid as queryFid,
+			f.WPH_ServiceType_Fid as serviceFid,
+			c.WPH_Card_Number  as newCardId,
+			concat('phd_',CEILING((RAND()*9+1)*10000000),x.Customer_Fid) as newOrdering
+			from wph_orderingnursing x
+			LEFT JOIN wph_customer c on x.Customer_Fid=c.fid
+			LEFT JOIN wph_one z on x.WPH_One_Fid=z.fid
+			left join wph_ward_om d on x.WPH_Ward_OM_Fid=d.fid
+			left join wph_nursinggrade e on e.fid=d.WPH_NursingGrade_Fid
+			left join wph_servicedetails f on e.UUID=f.JoinUUID
+			where z.statse='0'
+			and d.fid is not null
+			and d.Money is not null
+			and x.Nursing_Type=#{type}
+			and x.NursingDate=DATE_SUB(curdate(),INTERVAL 0 DAY)
+		</if>
+	</select>
+
+
+	<insert id="insertWphOrderingnursing">
+		insert into wph_orderingnursing
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="orderingnumber != null">
+				OrderingNumber,
+			</if>
+			<if test="title != null">
+				Title,
+			</if>
+			<if test="depict != null">
+				Depict,
+			</if>
+			<if test="wphWardOmFid != null">
+				WPH_Ward_OM_Fid,
+			</if>
+			<if test="nursingName != null">
+				Nursing_Name,
+			</if>
+			<if test="money != null">
+				Money,
+			</if>
+			<if test="nursingdate != null">
+				NursingDate,
+			</if>
+			<if test="nursingstates != null">
+				NursingStates,
+			</if>
+			<if test="customerFid != null">
+				Customer_Fid,
+			</if>
+			<if test="customerHospitalld != null">
+				Customer_Hospitalld,
+			</if>
+			<if test="nursingType != null">
+				Nursing_Type,
+			</if>
+			<if test="wphOneFid != null">
+				WPH_One_Fid,
+			</if>
+			<if test="workersFid != null">
+				Workers_Fid,
+			</if>
+			<if test="customerCardid != null">
+				Customer_CardId,
+			</if>
+			<if test="userFid != null">
+				User_Fid,
+			</if>
+			<if test="userrole != null">
+				UserRole,
+			</if>
+			<if test="username != null">
+				UserName,
+			</if>
+			<if test="notes != null">
+				Notes,
+			</if>
+			<if test="createdate != null">
+				CreateDate,
+			</if>
+			<if test="oldOrderingnumber!=null">
+				OldOrderingnumber,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="orderingnumber != null">
+				#{orderingnumber},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="depict != null">
+				#{depict,jdbcType=VARCHAR},
+			</if>
+			<if test="wphWardOmFid != null">
+				#{wphWardOmFid,jdbcType=INTEGER},
+			</if>
+			<if test="nursingName != null">
+				#{nursingName,jdbcType=VARCHAR},
+			</if>
+			<if test="money != null">
+				#{money,jdbcType=DOUBLE},
+			</if>
+			<if test="nursingdate != null">
+				#{nursingdate,jdbcType=DATE},
+			</if>
+			<if test="nursingstates != null">
+				#{nursingstates,jdbcType=INTEGER},
+			</if>
+			<if test="customerFid != null">
+				#{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerHospitalld != null">
+				#{customerHospitalld,jdbcType=VARCHAR},
+			</if>
+			<if test="nursingType != null">
+				#{nursingType,jdbcType=INTEGER},
+			</if>
+			<if test="wphOneFid != null">
+				#{wphOneFid,jdbcType=INTEGER},
+			</if>
+			<if test="workersFid != null">
+				#{workersFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerCardid != null">
+				#{customerCardid,jdbcType=VARCHAR},
+			</if>
+			<if test="userFid != null">
+				#{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null">
+				#{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="notes != null">
+				#{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="oldOrderingnumber!=null">
+				#{oldOrderingnumber},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="_insertWphOrderingnursing" parameterType="java.util.List">
+		insert into wph_orderingnursing(
+		OrderingNumber,
+		Title,
+		Depict,
+		WPH_Ward_OM_Fid,
+		Nursing_Name,
+		Money,
+		NursingDate,
+		NursingStates,
+		Customer_Fid,
+		Customer_Hospitalld,
+		Nursing_Type,
+		Customer_CardId,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对多护理费用",
+			"一对多护理费用扣除",
+			#{item.wardOMFid},
+			#{item.nursingName},
+			#{item.newMoney},
+			concat(DATE_SUB(curdate(),INTERVAL -1 DAY)," 00:00:00"),
+			"1",
+			#{item.customerFid},
+			#{item.customerHospitalld},
+			"1",
+			#{item.newCardId},
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="_insertoWphOrderingnursing" parameterType="java.util.List">
+		insert into wph_orderingnursing(
+		OrderingNumber,
+		Title,
+		Depict,
+		WPH_Ward_OM_Fid,
+		Nursing_Name,
+		Money,
+		NursingDate,
+		NursingStates,
+		Customer_Fid,
+		Customer_Hospitalld,
+		Nursing_Type,
+		Customer_CardId,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes,
+		WPH_One_Fid,
+		Workers_Fid
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对一护理费用",
+			"一对一护理费用扣除",
+			#{item.wphWardOmFid},
+			#{item.nursingName},
+			#{item.newMoney},
+			concat(DATE_SUB(curdate(),INTERVAL -1 DAY)," 00:00:00"),
+			"1",
+			#{item.customerFid},
+			#{item.customerHospitalld},
+			"2",
+			#{item.newCardId},
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes},
+			#{item.wphOneFid},
+			#{item.workersFid}
+			)
+		</foreach>
+	</insert>
+
+
+	<insert id="_tinsertWphOrderingnursing" parameterType="java.util.List">
+		insert into wph_orderingnursing(
+		OrderingNumber,Title,Depict,WPH_Ward_OM_Fid,
+		Nursing_Name,Money,NursingDate,NursingStates,
+		Customer_Fid,Customer_Hospitalld,Nursing_Type,
+		Customer_CardId,User_Fid,UserRole,UserName,Notes,OldOrderingNumber,
+		WPH_One_Fid,Workers_Fid)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对一护理费用","一对一护理费用退费",#{item.wphWardOmFid},
+			#{item.nursingName},"0.0",
+			now(),"2",
+			#{item.customerFid},#{item.customerHospitalld},"2",
+			#{item.newCardId},#{item.userFid},#{item.userrole},
+			#{item.username},#{item.notes},#{item.orderingnumber},
+			#{item.wphOneFid},#{item.workersFid}
+			)
+		</foreach>
+	</insert>
+
+	<!-- 按日期和类型查询患者的护理信息 -->
+	<select id="selectOrderingByCustomerFid" resultMap="BaseResultMap">
+		select * from wph_orderingnursing e
+		where e.fid=(select max(f.fid) from wph_orderingnursing f
+		where f.Customer_Fid=#{customerFid} and f.NursingDate=DATE_SUB(DATE_FORMAT(#{date},'%y-%m-%d'),INTERVAL 0 DAY))
+		and e.NursingStates='1' and
+		e.Nursing_Type=#{type} and e.Customer_Fid=#{customerFid}
+	</select>
+
+
+	<!-- 按日期查询患者的护理信息 -->
+	<select id="selectOrderingBycusFid" resultMap="BaseResultMap">
+		select * from wph_orderingnursing e
+		where e.fid=(select max(f.fid) from wph_orderingnursing f
+		where f.Customer_Fid=#{customerFid} and f.NursingDate=DATE_SUB(DATE_FORMAT(#{date},'%y-%m-%d'),INTERVAL 0 DAY))
+		and e.NursingStates='1'  and e.Customer_Fid=#{customerFid}
+	</select>
+
+
+
+
+	<!-- 患者信息表 -->
+	<resultMap id="ResultMap_Customer"
+			   type="com.slk.wph.module.WPH_Customer.po.WphCustomerCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="CodeId" property="codeid" jdbcType="VARCHAR" />
+		<result column="Birthday" property="birthday" jdbcType="VARCHAR" />
+		<result column="Sex" property="sex" jdbcType="VARCHAR" />
+		<result column="Age" property="age" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="Hospitalld" property="hospitalld" jdbcType="VARCHAR" />
+		<result column="BindingTime" property="bindingtime" jdbcType="TIMESTAMP" />
+		<result column="WPH_Hospita_Fid" property="wphHospitaFid"
+				jdbcType="INTEGER" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+		<result column="Nation" property="nation" jdbcType="INTEGER" />
+		<result column="WPH_Card_Fid" property="wphCardFid" jdbcType="INTEGER" />
+		<result column="WPH_Card_Number" property="wphCardNumber"
+				jdbcType="INTEGER" />
+		<result column="Balance" property="balance" jdbcType="DOUBLE" />
+		<result column="HospitalldStatus" property="hospitalldstatus"
+				jdbcType="INTEGER" />
+		<result column="HospitalldDate" property="hospitallddate"
+				jdbcType="TIMESTAMP" />
+		<result column="Nursing_Type" property="nursingType" jdbcType="INTEGER" />
+		<result column="Worker" property="worker" jdbcType="INTEGER" />
+		<result column="WorkerStatus" property="workerstatus" jdbcType="INTEGER" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="notes" property="notes" jdbcType="VARCHAR" />
+
+		<result column="wardName" property="wardName" />
+		<result column="nursingGType" property="nursingGType"/>
+		<result column="nursingName" property="nursingName"/>
+		<result column="workerName" property="workerName"/>
+		<result column="starDate" property="starDate" />
+		<result column="endDate" property="endDate" />
+	</resultMap>
+	<!-- 查询已办理一对一护理的患者(自动订护理)-->
+	<select id ="selectCustomerAllOne"  resultMap="ResultMap_Customer">
+		select * from wph_customer a
+		LEFT JOIN wph_one b
+		on b.Customer_Fid=a.fid
+		where
+		b.statse='0'
+		and a.HospitalldStatus='1'
+	</select>
+
+	<!-- 通过日期和病区fid查询已办理 护理的用户-->
+	<select id="selectCustomerByWardAndDate" resultMap="ResultMap_Customer">
+		select
+		distinct
+		a.*,z.money as nursingName from
+		wph_customer a
+		left JOIN
+		wph_ward_om c
+		on c.WPH_Ward_Fid=a.WPH_Ward_Fid
+		LEFT JOIN
+		wph_orderingnursing d
+		on
+		a.fid=d.Customer_Fid
+		LEFT JOIN wph_ward_om z
+		on
+		z.fid=d.WPH_Ward_OM_Fid
+		where
+		c.WPH_Ward_Fid=#{wardFid}
+		and
+		d.fid
+		in
+		(select max(f.fid)
+		from wph_orderingnursing f
+		where  f.NursingDate=#{date}
+		and f.Nursing_Type=#{type} GROUP BY f.Customer_Fid
+		)
+		and  d.NursingStates='1'
+		ORDER BY a.fid
+	</select>
+
+
+
+	<!-- 按登录用户查找 用户管辖下病区中 未办理 护理的患者 -->
+	<select id="selectNotNursing" resultMap="ResultMap_Customer">
+		select x.* from wph_customer x
+		left join (select * from  wph_orderingnursing c where DATE_FORMAT(c.NursingDate,"%y-%m-%d")= DATE_FORMAT(#{date},"%y-%m-%d") and c.NursingStates=1 and c.OrderingNumber
+		not in (select OldOrderingNumber from  wph_orderingnursing cc where cc.NursingStates=2 and DATE_FORMAT(cc.NursingDate,"%y-%m-%d")=DATE_FORMAT(#{date},"%y-%m-%d"))
+		) c on x.fid=c.Customer_Fid
+		left join (select * from wph_user_ward xc where xc.WPH_User_Fid=#{userFid}) xc on x.WPH_Ward_Fid=xc.WPH_Ward_Fid
+		where  x.WPH_Ward_Fid=xc.WPH_Ward_Fid and c.fid is null
+		and  x.HospitalldStatus='1'
+	</select>
+
+	<!--按登录用户查找该日期中所有已办理的一对多 患者 -->
+	<select id="selectCustomerNursing" resultMap="ResultMap_Customer">
+		select distinct
+		a.*,z.WPH_NursingGrade_Fid as nursingFid from
+		wph_customer a
+		LEFT JOIN
+		wph_user_ward b
+		on a.WPH_Ward_Fid=b.WPH_Ward_Fid
+		left JOIN wph_ward_om c
+		on c.WPH_Ward_Fid=b.WPH_Ward_Fid
+		LEFT JOIN wph_orderingnursing d
+		on
+		a.fid=d.Customer_Fid
+		LEFT JOIN wph_ward_om z
+		on z.fid=d.WPH_Ward_OM_Fid
+		where b.WPH_User_Fid=#{userFid}
+		and d.NursingDate=#{date}
+		and a.HospitalldStatus='1'
+		and d.NursingStates='1'
+		and
+		d.fid in
+		(select max(xcc.fid) from wph_orderingnursing xcc
+		where xcc.NursingDate =#{date} and
+		xcc.Nursing_Type=1
+		GROUP BY xcc.Customer_Fid
+		) ORDER BY a.fid
+	</select>
+
+
+	<!--陪护汇总查询已订护理一对多-->
+	<select id="selectSummaryNursing" resultMap="ResultMap_Customer">
+		select distinct
+		a.*,z.WPH_NursingGrade_Fid as nursingFid,
+		d.Notes as nursingNotes
+		from
+		wph_customer a
+		LEFT JOIN
+		wph_user_ward b
+		on
+		a.WPH_Ward_Fid=b.WPH_Ward_Fid
+		left JOIN wph_ward_om c
+		on
+		c.WPH_Ward_Fid=b.WPH_Ward_Fid
+		LEFT JOIN wph_orderingnursing d
+		on
+		a.fid=d.Customer_Fid
+		LEFT JOIN wph_ward_om z
+		on z.fid=d.WPH_Ward_OM_Fid
+		where b.WPH_User_Fid=#{userFid}
+		and z.WPH_NursingGrade_Fid=#{nursingGradeFid}
+		and a.HospitalldStatus='1'
+		and d.NursingStates=1
+		and a.worker!=1
+		and d.fid in
+		(select max(xcc.fid) from wph_orderingnursing xcc
+		where xcc.NursingDate =#{date} and
+		xcc.Nursing_Type=1
+		GROUP BY xcc.Customer_Fid
+		) ORDER BY a.fid
+	</select>
+
+
+
+
+
+
+	<!-- 按卡片number或者住院号/日期，查询已办理一对一的患者信息 -->
+	<select id="selectCustomerNursingType" resultMap="ResultMap_Customer">
+		select distinct a.*,b.Name as wardName,c.Nursing_Type as
+		nursingGType,y.money as nursingName,
+		(select x.Name from
+		wph_customer x where x.fid=d.Workers_Fid) as workerName,
+		d.StartDate as startDate,d.EndDate as endDate
+		from wph_customer a
+		left join wph_ward b
+		on a.WPH_Ward_Fid=b.fid
+		LEFT JOIN
+		wph_orderingnursing c
+		on
+		a.fid=c.Customer_Fid
+		LEFT JOIN wph_one d
+		on
+		c.WPH_One_Fid=d.fid
+		left join wph_card z
+		on a.WPH_Card_Fid=z.fid
+		LEFT JOIN wph_ward_om y
+		on y.fid=c.WPH_Ward_OM_Fid
+		<where>
+			<if test="cardId!=null and cardId!=''">
+				and z.CardId=#{cardId}
+			</if>
+			<if test="hospita!=null and hospita!=''">
+				and a.Hospitalld=#{hospita}
+			</if>
+			and c.NursingStates='1'
+			and (d.statse='0' or d.statse is null)
+			and c.fid in (select max(nurs.fid) from wph_orderingnursing nurs where
+			nurs.NursingDate=#{date} GROUP BY nurs.Customer_Fid)
+			ORDER BY a.fid
+		</where>
+	</select>
+
+
+	<!-- 按卡片number或者住院号/日期，查询已办理一对多或一对1的患者信息 -->
+	<select id="selectCustomerNursingGrade" resultMap="ResultMap_Customer">
+		select distinct a.*,b.Name as wardName,c.Nursing_Type as
+		nursingGType,y.money as nursingName,
+		(select x.Name from
+		wph_customer x where x.fid=d.Workers_Fid) as workerName,
+		d.StartDate as
+		startDate,d.EndDate as endDate
+		from wph_customer a
+		left join wph_ward b
+		on a.WPH_Ward_Fid=b.fid
+		LEFT JOIN
+		wph_orderingnursing c
+		on
+		a.fid=c.Customer_Fid
+		LEFT JOIN wph_one d
+		on
+		c.WPH_One_Fid=d.fid
+		left join wph_card z
+		on a.WPH_Card_Fid=z.fid
+		LEFT JOIN wph_ward_om y
+		on y.fid=c.WPH_Ward_OM_Fid
+		<where>
+
+			<if test="cardId!=null and cardId!=''">
+				and z.CardId=#{cardId}
+			</if>
+			<if test="hospita!=null and hospita!=''">
+				and a.Hospitalld=#{hospita}
+			</if>
+			and c.NursingDate=#{date}
+			and a.HospitalldStatus='1'
+			and c.NursingStates='1'
+			and (d.statse='0' or d.statse is null)
+			and c.fid in
+			(select max(e.fid)
+			from wph_orderingnursing e
+			where e.NursingDate=#{date}
+			GROUP BY e.Customer_Fid
+			) ORDER BY a.fid
+		</where>
+	</select>
+
+	<update id="updateCustomerWard">
+		update wph_customer a set a.WPH_Ward_Fid=#{wardFid},
+		a.WPH_Hospita_Fid=(select WPH_Hospita_fid from wph_ward b
+		LEFT JOIN wph_hospita c on b.WPH_Hospita_fid=c.fid
+		where c.`Status`='0' and b.fid=#{wardFid})
+		where a.fid=#{customerFid}
+	</update>
+
+	<!-- 根据患者/护工fid 修改病区 -->
+	<update id="updateWork">
+		update wph_customer a set a.WPH_Ward_Fid=#{wardFid},
+			WorkerStatus='1' where a.fid=#{workFid}
+	</update>
+	<!-- 修改护工状态 -->
+	<update id="updateWorkStatus">
+		update wph_customer a set a.WorkerStatus=#{status} where a.fid=#{workFid}
+	</update>
+
+	<update id="_updateWorkStatus">
+
+			update wph_customer a
+			set a.WorkerStatus='0'
+			where a.fid in
+			<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+				 ${item.workersFid}
+			</foreach>
+	</update>
+
+
+
+
+
+	<!-- 根据卡号或者住院号查询患者 -->
+	<select id="selectByCardIdOrHospita" resultMap="ResultMap_Customer">
+		select a.*,b.Name
+		as wardName from wph_customer a
+		left join wph_ward b
+		on
+		a.WPH_Ward_Fid=b.fid
+		left join wph_card c
+		on a.WPH_Card_Fid=c.fid
+		<where>
+			<if test="cardId!=null and cardId!=''">
+				and  c.CardId=#{cardId}
+			</if>
+			<if test="hospita!=null and hospita!=''">
+				and a.Hospitalld=#{hospita}
+			</if>
+			and a.Worker!=1
+		</where>
+	</select>
+
+	<!-- 根据患者fid查询患者 -->
+	<select id="getCustomerByFid" resultMap="ResultMap_Customer">
+		select * from
+		wph_customer where
+		fid=#{value}
+	</select>
+
+
+	<!-- 根据fid修改患者信息 -->
+	<update id="updateCustomer">
+		update wph_customer
+		<set>
+			<if test="fid != null">
+				fid = #{fid},
+			</if>
+			<if test="name != null">
+				Name = #{name},
+			</if>
+			<if test="codeid != null">
+				CodeId = #{codeid},
+			</if>
+			<if test="birthday != null">
+				Birthday = #{birthday},
+			</if>
+			<if test="sex != null">
+				Sex = #{sex},
+			</if>
+			<if test="age != null">
+				Age = #{age},
+			</if>
+			<if test="phone != null">
+				phone = #{phone},
+			</if>
+			<if test="hospitalld != null">
+				Hospitalld = #{hospitalld},
+			</if>
+			<if test="bindingtime != null">
+				BindingTime = #{bindingtime},
+			</if>
+			<if test="wphHospitaFid != null">
+				WPH_Hospita_Fid = #{wphHospitaFid},
+			</if>
+			<if test="wphWardFid != null">
+				WPH_Ward_Fid = #{wphWardFid},
+			</if>
+			<if test="nation != null">
+				Nation = #{nation},
+			</if>
+			<if test="wphCardFid != null">
+				WPH_Card_Fid = #{wphCardFid},
+			</if>
+			<if test="wphCardNumber != null">
+				WPH_Card_Number = #{wphCardNumber},
+			</if>
+			<if test="balance != null">
+				Balance = #{balance},
+			</if>
+			<if test="hospitalldstatus != null">
+				HospitalldStatus = #{hospitalldstatus},
+			</if>
+			<if test="hospitallddate != null">
+				HospitalldDate = #{hospitallddate},
+			</if>
+			<if test="nursingType != null">
+				Nursing_Type = #{nursingType},
+			</if>
+			<if test="worker != null">
+				Worker = #{worker},
+			</if>
+			<if test="workerstatus != null">
+				WorkerStatus = #{workerstatus},
+			</if>
+			<if test="createdate != null">
+				CreateDate = #{createdate},
+			</if>
+			<if test="notes != null">
+				notes = #{notes},
+			</if>
+		</set>
+		where fid = #{fid}
+	</update>
+
+	<update id="_updateCustomer"  parameterType="java.util.List">
+		update wph_customer
+		set Balance=
+		<foreach collection="list" item="item" index="index"
+				 separator=" " open="case FID" close="end">
+			when #{item.cfid} then #{item.newBalance}
+		</foreach>
+		where fid in
+		<foreach collection="list" index="index" item="item"
+				 separator="," open="(" close=")">
+			#{item.cfid}
+		</foreach>
+	</update>
+
+
+
+	<!-- 病区信息表 -->
+	<resultMap type="com.slk.wph.module.WPH_Ward.po.WphWardCustom"
+			   id="ResultMap_Ward">
+		<id column="fid" property="fid" />
+		<result column="WPH_Hospita_fid" property="wphHospitaFid" />
+		<result column="Name" property="name" />
+		<result column="Abbreviation" property="abbreviation" />
+		<result column="CreateDate" property="createdate" />
+		<result column="Notes" property="notes" />
+		<result column="SaveMoney" property="savemoney" />
+		<result column="WaringMoney" property="waringmoney" />
+		<result column="Status" property="status" />
+	</resultMap>
+
+
+	<!-- 通过用户是否管理该病区 -->
+	<select id="selectCountByUserFid" resultType="java.lang.Integer">
+		select count(a.fid)
+		from wph_ward a LEFT JOIN wph_user_ward b
+		on a.fid=b.WPH_Ward_Fid
+		left
+		join wph_user c
+		on c.fid=b.WPH_User_Fid
+		where c.Status='2' and
+		b.WPH_User_Fid=#{userFid} and a.fid=#{wardFid}
+	</select>
+
+	<select id="selectWardListByUserFid" resultMap="ResultMap_Ward">
+		select a.*
+		from wph_ward a LEFT JOIN wph_user_ward b
+		on a.fid=b.WPH_Ward_Fid
+		left
+		join wph_user c
+		on c.fid=b.WPH_User_Fid
+		where c.Status='2' and
+		b.WPH_User_Fid=#{userFid}
+	</select>
+
+	<!-- 卡片信息表 -->
+	<resultMap id="ResultMap_Card" type="com.slk.wph.module.WPH_Card.po.WphCard">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="CardId" property="cardid" jdbcType="VARCHAR" />
+		<result column="CardNumber" property="cardnumber" jdbcType="VARCHAR" />
+		<result column="CardStatus" property="cardstatus" jdbcType="INTEGER" />
+		<result column="Type" property="type" jdbcType="INTEGER" />
+	</resultMap>
+	<!-- 用过fid 修改卡片id -->
+	<select id="getWphCardById" resultMap="ResultMap_Card"
+			parameterType="java.lang.Integer">
+		select
+		fid, CardId, CardNumber, CardStatus, Type,
+		CreateDate
+		from wph_card
+		where fid = #{fid,jdbcType=INTEGER}
+	</select>
+	<!-- 用过fid 修改卡片信息 -->
+	<update id="updateCard">
+		update wph_card
+		<set>
+			<if test="cardid != null">
+				CardId = #{cardid,jdbcType=VARCHAR},
+			</if>
+			<if test="cardnumber != null">
+				CardNumber = #{cardnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="cardstatus != null">
+				CardStatus = #{cardstatus,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				Type = #{type,jdbcType=INTEGER},
+			</if>
+		</set>
+		where fid = #{fid,jdbcType=INTEGER}
+	</update>
+
+	<!-- 护理等级表 -->
+	<resultMap id="BaseResultMap_Nursinggrade"
+			   type="com.slk.wph.module.WPH_NursingGrade.po.WphNursinggradeCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="Notes" property="notes" jdbcType="VARCHAR" />
+		<result column="Type" property="type" jdbcType="INTEGER" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="UUID" property="uuid" jdbcType="VARCHAR" />
+	</resultMap>
+	<!-- 通过护理等级fid获取护理等级的扩展信息 -->
+	<select id="selectNursingGradeByFid" resultMap="BaseResultMap_Nursinggrade">
+		select
+		a.*,b.Money as nursingMoney,c.fid as serivceDetailsFid,c.WPH_Query_Fid
+		as
+		queryFid,c.WPH_ServiceType_Fid as serviceTypeFid,b.fid as warOmFid
+		from wph_nursinggrade
+		a
+		LEFT JOIN wph_ward_om b
+		on
+		a.fid=b.WPH_NursingGrade_Fid
+		LEFT JOIN wph_servicedetails c
+		on c.JoinUUID=a.UUID
+		where  a.fid=#{fid} and b.money is not null and b.WPH_Ward_Fid=#{wardFid} and a.Type=#{type}
+	</select>
+	<!--  -->
+	<select id="selectNursingGradeByCustomerFid" resultMap="BaseResultMap_Nursinggrade">
+		select a.*,b.Money as nursingMoney,c.fid as
+		serivceDetailsFid,c.WPH_Query_Fid as
+		queryFid,c.WPH_ServiceType_Fid as
+		serviceTypeFid,b.fid as warOmFid from wph_nursinggrade
+		a
+		LEFT JOIN
+		wph_ward_om b
+		on a.fid=b.WPH_NursingGrade_Fid
+		LEFT JOIN
+		wph_servicedetails c
+		on c.JoinUUID=a.UUID
+		where b.fid=
+		(select e.WPH_Ward_OM_Fid from wph_orderingnursing e
+		where e.fid=
+		(select max(f.fid)
+		from wph_orderingnursing f
+		where e.Customer_Fid=f.Customer_Fid)
+		and e.NursingStates='1'
+		and e.NursingDate=#{date}
+		and e.Customer_Fid=#{customerFid}
+		) ORDER BY a.fid
+
+	</select>
+
+
+
+
+	<!-- 通过用户userfid获取管辖病区的护理等级 -->
+	<select id="selectNursingGradeByUserFid" resultMap="BaseResultMap_Nursinggrade">
+		select a.*,b.Money as nursingMoney
+		from wph_nursinggrade a
+		LEFT JOIN wph_ward_om b
+		on
+		a.fid=b.WPH_NursingGrade_Fid
+		LEFT JOIN wph_user_ward c
+		on
+		b.WPH_Ward_Fid=c.WPH_Ward_Fid
+		LEFT JOIN wph_ward d
+		on b.WPH_Ward_Fid=d.fid
+		left join wph_hospita e
+		on d.WPH_Hospita_fid=e.fid
+		where c.WPH_User_Fid=#{userFid}
+		and b.money is not null
+		and a.Type=#{type}
+		and d.`Status`='0'
+		and e.`Status`='0'
+		order by a.fid asc
+	</select>
+	<!-- 根据病区和护理类型获取护理等级 -->
+	<select id="selectNursingGradeByWardFid" resultMap="BaseResultMap_Nursinggrade">
+		select a.*,b.Money as nursingMoney
+		from wph_nursinggrade a
+		LEFT JOIN wph_ward_om b on
+		a.fid=b.WPH_NursingGrade_Fid
+		where a.Type=#{type} and
+		b.WPH_Ward_Fid=#{wardFid}
+		and b.money is not null
+	</select>
+
+
+	<!-- 用户表 -->
+	<resultMap type="com.slk.wph.module.WPH_User.po.WphUserCustom"
+			   id="BaseResultMap_User">
+		<id column="fid" property="fid" />
+		<result column="Name" property="name" />
+		<result column="Username" property="username" />
+		<result column="Password" property="password" />
+		<result column="Sex" property="sex" />
+		<result column="Phone" property="phone" />
+		<result column="Manager" property="manager" />
+		<result column="Status" property="status" />
+		<result column="CreateDate" property="createdate" />
+		<result column="managerName" property="managerName" />
+
+	</resultMap>
+	<select id="getRoleAndUserByUser" resultMap="BaseResultMap_User">
+		SELECT
+		u.fid,u.Username,u.Name,u.Phone,group_concat(u_r.Role_Fid separator ",") AS
+		roleFid,group_concat(r.RoleName separator ",") AS roleName FROM
+		wph_user_role u_r
+		LEFT JOIN wph_role r ON u_r.Role_Fid = r.fid
+		LEFT JOIN
+		wph_user u ON u.fid = u_r.User_Fid
+		WHERE u.fid = #{fid}
+	</select>
+
+	<!-- 病区与护理等级信息 -->
+	<resultMap id="Result_WardOm"
+			   type="com.slk.wph.module.Wph_Ward_Om.po.WphWardOmCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+		<result column="OM_Name" property="omName" jdbcType="VARCHAR" />
+		<result column="WPH_NursingGrade_type" property="wphNursinggradeType"
+				jdbcType="INTEGER" />
+		<result column="WPH_NursingGrade_Fid" property="wphNursinggradeFid"
+				jdbcType="INTEGER" />
+		<result column="Money" property="money" jdbcType="DOUBLE" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="Wages" property="wages" jdbcType="DOUBLE" />
+	</resultMap>
+	<!-- 通过病区Fid，护理等级获取护理关联表信息 -->
+	<select id="selectWardOmCustom" resultMap="Result_WardOm">
+		select * from
+		wph_ward_om where WPH_NursingGrade_type=#{type} and
+		WPH_Ward_Fid=#{wardFid} and WPH_NursingGrade_Fid=#{nursingGradeFid}
+	</select>
+
+	<select id="selectWardOmCustomByWM" resultMap="Result_WardOm">
+		select * from
+		wph_ward_om where WPH_NursingGrade_type=#{type} and
+		WPH_Ward_Fid=#{wardFid} and money=#{money}
+	</select>
+
+
+	<!-- 通过fid查询护理等级 -->
+	<select id="selectWardOmByFid" resultMap="Result_WardOm">
+		select * from
+		wph_ward_om where fid=#{fid}
+	</select>
+	<!-- 消费信息表 -->
+	<resultMap id="ResultOrdering"
+			   type="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Title" property="title" jdbcType="VARCHAR" />
+		<result column="Depict" property="depict" jdbcType="VARCHAR" />
+		<result column="Money" property="money" jdbcType="DOUBLE" />
+		<result column="OrderingStatse" property="orderingstatse"
+				jdbcType="INTEGER" />
+		<result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+		<result column="Customer_CarId" property="customerCarid"
+				jdbcType="VARCHAR" />
+		<result column="Customer_Hospitalld" property="customerHospitalld"
+				jdbcType="VARCHAR" />
+		<result column="Customer_Balance" property="customerBalance"
+				jdbcType="DOUBLE" />
+		<result column="WPH_InvoiceRate_Fid" property="wphInvoicerateFid"
+				jdbcType="INTEGER" />
+		<result column="WPH_Query_Fid" property="wphQueryFid" jdbcType="INTEGER" />
+		<result column="WPH_ServiceType_Fid" property="wphServicetypeFid"
+				jdbcType="INTEGER" />
+		<result column="WPH_ServiceDetails_Fid" property="wphServicedetailsFid"
+				jdbcType="INTEGER" />
+		<result column="OrderingDate" property="orderingdate" jdbcType="TIMESTAMP" />
+		<result column="PayType" property="paytype" jdbcType="INTEGER" />
+		<result column="PayOrderNumber" property="payordernumber"
+				jdbcType="VARCHAR" />
+		<result column="OrderingNumber" property="orderingnumber"
+				jdbcType="VARCHAR" />
+		<result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+		<result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+		<result column="UserName" property="username" jdbcType="VARCHAR" />
+		<result column="Notes" property="notes" jdbcType="VARCHAR" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="OldOrderingNumber" property="oldorderingnumber" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+	<select id="selectOrderingByOrderNumber" resultMap="ResultOrdering">
+		select * from wph_ordering e where e.OrderingNumber=#{orderingNumber}
+	</select>
+
+	<update id="updateOrdering" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrdering">
+		update wph_ordering
+		<set >
+			<if test="title != null" >
+				Title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="depict != null" >
+				Depict = #{depict,jdbcType=VARCHAR},
+			</if>
+			<if test="money != null" >
+				Money = #{money,jdbcType=DOUBLE},
+			</if>
+			<if test="orderingstatse != null" >
+				OrderingStatse = #{orderingstatse,jdbcType=INTEGER},
+			</if>
+			<if test="customerFid != null" >
+				Customer_Fid = #{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerCarid != null" >
+				Customer_CarId = #{customerCarid,jdbcType=VARCHAR},
+			</if>
+			<if test="customerHospitalld != null" >
+				Customer_Hospitalld = #{customerHospitalld,jdbcType=VARCHAR},
+			</if>
+			<if test="customerBalance != null" >
+				Customer_Balance = #{customerBalance,jdbcType=DOUBLE},
+			</if>
+			<if test="wphInvoicerateFid != null" >
+				WPH_InvoiceRate_Fid = #{wphInvoicerateFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphQueryFid != null" >
+				WPH_Query_Fid = #{wphQueryFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphServicetypeFid != null" >
+				WPH_ServiceType_Fid = #{wphServicetypeFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphServicedetailsFid != null" >
+				WPH_ServiceDetails_Fid = #{wphServicedetailsFid,jdbcType=INTEGER},
+			</if>
+			<if test="orderingdate != null" >
+				OrderingDate = #{orderingdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="paytype != null" >
+				PayType = #{paytype,jdbcType=INTEGER},
+			</if>
+			<if test="payordernumber != null" >
+				PayOrderNumber = #{payordernumber,jdbcType=VARCHAR},
+			</if>
+			<if test="orderingnumber != null" >
+				OrderingNumber = #{orderingnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="oldorderingnumber != null" >
+				OldOrderingNumber = #{oldorderingnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="userFid != null" >
+				User_Fid = #{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null" >
+				UserRole = #{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null" >
+				UserName = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="notes != null" >
+				Notes = #{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="wphWardFid != null" >
+				WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null" >
+				CreateDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where OrderingNumber = #{orderingnumber,jdbcType=INTEGER}
+	</update>
+
+	<!--2018-6-22 赵福岭 -->
+	<update id="updateOrderingByOrderingNumber" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrdering">
+		update wph_ordering
+		<set >
+			<if test="title != null" >
+				Title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="depict != null" >
+				Depict = #{depict,jdbcType=VARCHAR},
+			</if>
+			<if test="money != null" >
+				Money = #{money,jdbcType=DOUBLE},
+			</if>
+			<if test="orderingstatse != null" >
+				OrderingStatse = #{orderingstatse,jdbcType=INTEGER},
+			</if>
+			<if test="customerFid != null" >
+				Customer_Fid = #{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerCarid != null" >
+				Customer_CarId = #{customerCarid,jdbcType=VARCHAR},
+			</if>
+			<if test="customerHospitalld != null" >
+				Customer_Hospitalld = #{customerHospitalld,jdbcType=VARCHAR},
+			</if>
+			<if test="customerBalance != null" >
+				Customer_Balance = #{customerBalance,jdbcType=DOUBLE},
+			</if>
+			<if test="wphInvoicerateFid != null" >
+				WPH_InvoiceRate_Fid = #{wphInvoicerateFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphQueryFid != null" >
+				WPH_Query_Fid = #{wphQueryFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphServicetypeFid != null" >
+				WPH_ServiceType_Fid = #{wphServicetypeFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphServicedetailsFid != null" >
+				WPH_ServiceDetails_Fid = #{wphServicedetailsFid,jdbcType=INTEGER},
+			</if>
+			<if test="orderingdate != null" >
+				OrderingDate = #{orderingdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="paytype != null" >
+				PayType = #{paytype,jdbcType=INTEGER},
+			</if>
+			<if test="payordernumber != null" >
+				PayOrderNumber = #{payordernumber,jdbcType=VARCHAR},
+			</if>
+			<if test="oldorderingnumber != null" >
+				OldOrderingNumber = #{oldorderingnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="userFid != null" >
+				User_Fid = #{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null" >
+				UserRole = #{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null" >
+				UserName = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="notes != null" >
+				Notes = #{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="wphWardFid != null" >
+				WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null" >
+				CreateDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where OrderingNumber = #{orderingnumber}
+	</update>
+
+
+
+	<insert id="insertOrdering" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrdering">
+		insert into wph_ordering
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="title != null">
+				Title,
+			</if>
+			<if test="depict != null">
+				Depict,
+			</if>
+			<if test="money != null">
+				Money,
+			</if>
+			<if test="orderingstatse != null">
+				OrderingStatse,
+			</if>
+			<if test="customerFid != null">
+				Customer_Fid,
+			</if>
+			<if test="customerCarid != null">
+				Customer_CarId,
+			</if>
+			<if test="customerHospitalld != null">
+				Customer_Hospitalld,
+			</if>
+			<if test="customerBalance != null">
+				Customer_Balance,
+			</if>
+			<if test="wphInvoicerateFid != null">
+				WPH_InvoiceRate_Fid,
+			</if>
+			<if test="wphQueryFid != null">
+				WPH_Query_Fid,
+			</if>
+			<if test="wphServicetypeFid != null">
+				WPH_ServiceType_Fid,
+			</if>
+			<if test="wphServicedetailsFid != null">
+				WPH_ServiceDetails_Fid,
+			</if>
+			<if test="orderingdate != null">
+				OrderingDate,
+			</if>
+			<if test="paytype != null">
+				PayType,
+			</if>
+			<if test="payordernumber != null">
+				PayOrderNumber,
+			</if>
+			<if test="orderingnumber != null">
+				OrderingNumber,
+			</if>
+			<if test="userFid != null">
+				User_Fid,
+			</if>
+			<if test="userrole != null">
+				UserRole,
+			</if>
+			<if test="username != null">
+				UserName,
+			</if>
+			<if test="notes != null">
+				Notes,
+			</if>
+			<if test="wphWardFid != null">
+				WPH_Ward_Fid,
+			</if>
+			<if test="createdate != null">
+				CreateDate,
+			</if>
+			<if test="oldorderingnumber != null" >
+				OldOrderingNumber,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="depict != null">
+				#{depict,jdbcType=VARCHAR},
+			</if>
+			<if test="money != null">
+				#{money,jdbcType=DOUBLE},
+			</if>
+			<if test="orderingstatse != null">
+				#{orderingstatse,jdbcType=INTEGER},
+			</if>
+			<if test="customerFid != null">
+				#{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerCarid != null">
+				#{customerCarid,jdbcType=VARCHAR},
+			</if>
+			<if test="customerHospitalld != null">
+				#{customerHospitalld,jdbcType=VARCHAR},
+			</if>
+			<if test="customerBalance != null">
+				#{customerBalance,jdbcType=DOUBLE},
+			</if>
+			<if test="wphInvoicerateFid != null">
+				#{wphInvoicerateFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphQueryFid != null">
+				#{wphQueryFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphServicetypeFid != null">
+				#{wphServicetypeFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphServicedetailsFid != null">
+				#{wphServicedetailsFid,jdbcType=INTEGER},
+			</if>
+			<if test="orderingdate != null">
+				#{orderingdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="paytype != null">
+				#{paytype,jdbcType=INTEGER},
+			</if>
+			<if test="payordernumber != null">
+				#{payordernumber,jdbcType=VARCHAR},
+			</if>
+			<if test="orderingnumber != null">
+				#{orderingnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="userFid != null">
+				#{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null">
+				#{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="notes != null">
+				#{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="wphWardFid != null">
+				#{wphWardFid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="oldorderingnumber != null" >
+				#{oldorderingnumber,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="_insertOrdering"  parameterType="java.util.List">
+		insert into wph_ordering(
+		OrderingNumber,
+		Title,
+		Depict,
+		Money,
+		OrderingStatse,
+		Customer_Fid,
+		Customer_CarId,
+		Customer_Hospitalld,
+		Customer_Balance,
+		WPH_InvoiceRate_Fid,
+		WPH_Query_Fid,
+		WPH_ServiceType_Fid,
+		WPH_ServiceDetails_Fid,
+		OrderingDate,
+		PayType,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes,
+		WPH_Ward_Fid
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对多护理费用",
+			"一对多护理费用扣除",
+			#{item.newMoney},
+			"1",
+			#{item.customerFid},
+			#{item.newCardId},
+			#{item.customerHospitalld},
+			#{item.newBalance},
+			"4",
+			#{item.queryFid},
+			#{item.serviceFid},
+			#{item.detailsFid},
+			concat(DATE_SUB(curdate(),INTERVAL -1 DAY)," 00:00:00"),
+			"5",
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes},
+			#{item.wphWardFid}
+			)
+		</foreach>
+	</insert>
+	<insert id="_insertoOrdering"  parameterType="java.util.List">
+		insert into wph_ordering(
+		OrderingNumber,
+		Title,
+		Depict,
+		Money,
+		OrderingStatse,
+		Customer_Fid,
+		Customer_CarId,
+		Customer_Hospitalld,
+		Customer_Balance,
+		WPH_InvoiceRate_Fid,
+		WPH_Query_Fid,
+		WPH_ServiceType_Fid,
+		WPH_ServiceDetails_Fid,
+		OrderingDate,
+		PayType,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes,
+		WPH_Ward_Fid
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对一护理费用",
+			"一对一护理费用扣除",
+			#{item.newMoney},
+			"1",
+			#{item.customerFid},
+			#{item.newCardId},
+			#{item.customerHospitalld},
+			#{item.newBalance},
+			"1",
+			#{item.queryFid},
+			#{item.serviceFid},
+			#{item.detailsFid},
+			concat(DATE_SUB(curdate(),INTERVAL -1 DAY)," 00:00:00"),
+			"5",
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes},
+			#{item.wphWardFid}
+			)
+		</foreach>
+	</insert>
+
+
+	<insert id="_tinsertOrdering"  parameterType="java.util.List">
+		insert into wph_ordering(
+		Title,
+		Depict,
+		Money,
+		OrderingStatse,
+		Customer_Fid,
+		Customer_CarId,
+		Customer_Hospitalld,
+		Customer_Balance,
+		WPH_InvoiceRate_Fid,
+		WPH_Query_Fid,
+		WPH_ServiceType_Fid,
+		WPH_ServiceDetails_Fid,
+		OrderingDate,
+		PayType,
+		OrderingNumber,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes,
+		WPH_Ward_Fid,
+		OldOrderingNumber
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			"一对一护理费用",
+			"一对一护理费用退费",
+			"0.0",
+			"2",
+			#{item.customerFid},
+			#{item.newCardId},
+			#{item.customerHospitalld},
+			#{item.cBalance},
+			"1",
+			#{item.queryFid},
+			#{item.serviceFid},
+			#{item.detailsFid},
+			now(),
+			"5",
+			#{item.newOrdering},
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes},
+			#{item.wphWardFid},
+			#{item.orderingnumber}
+			)
+		</foreach>
+	</insert>
+
+	<select id="getOrderingByCustomerFid" resultMap="ResultOrdering">
+		select * from wph_ordering a where a.fid=(select max(b.fid) from wph_ordering b where b.Customer_Fid=a.Customer_Fid and b.Customer_Fid=#{customerFid})
+	</select>
+	<!-- 查询所有护工 -->
+	<select id="selectWorker"
+			resultType="com.slk.wph.module.WPH_Customer.po.WphCustomerCustom">
+		select * from wph_customer where WorkerStatus='0' and
+		Worker='1' and HospitalldStatus='0' and  WPH_Card_fid is not null
+		and WorkerStatus='0'
+		order by fid
+	</select>
+
+	<select id="selectOrderingByCustomer"  resultMap="ResultOrdering">
+		select a.*,c.Nursing_Type as nursingType, c.WPH_Ward_OM_Fid as count,
+		c.Nursing_Name as workName from wph_ordering a
+		LEFT JOIN wph_orderingnursing c on a.OrderingNumber=c.OrderingNumber
+		where a.OrderingNumber=#{orderingnumber}
+	</select>
+	<!-- 一对一 -->
+	<resultMap id="BaseResultWphOne" type="com.slk.wph.module.WPH_One.po.WphOneCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="WPH_Ward_fid" property="wphWardFid" jdbcType="INTEGER" />
+		<result column="WPH_NursingGrade_Fid" property="wphNursinggradeFid"
+				jdbcType="INTEGER" />
+		<result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+		<result column="Workers_Fid" property="workersFid" jdbcType="INTEGER" />
+		<result column="StartDate" property="startdate" jdbcType="TIMESTAMP" />
+		<result column="EndDate" property="enddate" jdbcType="TIMESTAMP" />
+		<result column="Money" property="money" jdbcType="DOUBLE" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+		<result column="statse" property="statse" jdbcType="INTEGER" />
+		<result column="imgs" property="imgs"/>
+		<result column="trueEndDate" property="trueenddate"/>
+		<result column="WagesStates" property="wagesstates" jdbcType="INTEGER" />
+		<result column="SettlementMoney" property="settlementmoney" jdbcType="DOUBLE" />
+		<result column="workermoney" property="workermoney" jdbcType="DOUBLE" />
+	</resultMap>
+	<select id="selectWphOneByCustomerFid" resultMap="BaseResultWphOne">
+		select * from wph_one a where a.statse='0' and a.Customer_Fid=#{value} ORDER BY  a.fid desc limit 1
+	</select>
+
+	<insert id="insertSelective"  useGeneratedKeys="true" keyProperty="fid">
+		insert into wph_one
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="wphWardFid != null">
+				WPH_Ward_fid,
+			</if>
+			<if test="wphNursinggradeFid != null">
+				WPH_NursingGrade_Fid,
+			</if>
+			<if test="customerFid != null">
+				Customer_Fid,
+			</if>
+			<if test="workersFid != null">
+				Workers_Fid,
+			</if>
+			<if test="startdate != null">
+				StartDate,
+			</if>
+			<if test="enddate != null">
+				EndDate,
+			</if>
+			<if test="money != null">
+				Money,
+			</if>
+			<if test="createdate != null">
+				CreateDate,
+			</if>
+			<if test="userFid != null">
+				User_Fid,
+			</if>
+			<if test="statse != null">
+				statse,
+			</if>
+			<if test="imgs != null">
+				imgs,
+			</if>
+			<if test="trueenddate != null">
+				trueEndDate,
+			</if>
+			<if test="wagesstates !=null">
+				WagesStates,
+			</if>
+			<if test="settlementmoney !=null">
+				SettlementMoney,
+			</if>
+			<if test="workermoney != null" >
+				workermoney,
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="wphWardFid != null">
+				#{wphWardFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphNursinggradeFid != null">
+				#{wphNursinggradeFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerFid != null">
+				#{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="workersFid != null">
+				#{workersFid,jdbcType=INTEGER},
+			</if>
+			<if test="startdate != null">
+				#{startdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="enddate != null">
+				#{enddate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="money != null">
+				#{money,jdbcType=DOUBLE},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userFid != null">
+				#{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="statse != null">
+				#{statse,jdbcType=INTEGER},
+			</if>
+			<if test="imgs != null">
+				#{imgs},
+			</if>
+			<if test="trueenddate != null">
+				#{trueenddate},
+			</if>
+			<if test="wagesstates !=null">
+				#{wagesstates},
+			</if>
+			<if test="settlementmoney !=null">
+				#{settlementmoney},
+			</if>
+			<if test="workermoney != null" >
+				#{workermoney},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByWphOne"  useGeneratedKeys="true" keyProperty="fid">
+		update wph_one
+		<set>
+			<if test="wphWardFid != null">
+				WPH_Ward_fid = #{wphWardFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphNursinggradeFid != null">
+				WPH_NursingGrade_Fid =
+				#{wphNursinggradeFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerFid != null">
+				Customer_Fid = #{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="workersFid != null">
+				Workers_Fid = #{workersFid,jdbcType=INTEGER},
+			</if>
+			<if test="startdate != null">
+				StartDate = #{startdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="enddate != null">
+				EndDate = #{enddate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="money != null">
+				Money = #{money,jdbcType=DOUBLE},
+			</if>
+			<if test="createdate != null">
+				CreateDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="userFid != null">
+				User_Fid = #{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="statse != null">
+				statse = #{statse,jdbcType=INTEGER},
+			</if>
+			<if test="imgs != null">
+				imgs=#{imgs},
+			</if>
+			<if test="trueenddate != null">
+				trueenddate=#{trueenddate},
+			</if>
+			<if test="wagesstates != null">
+				WagesStates=#{wagesstates},
+			</if>
+			<if test="settlementmoney != null">
+				SettlementMoney=#{settlementmoney},
+			</if>
+			<if test="workermoney != null" >
+				workermoney = #{workermoney,jdbcType=DOUBLE},
+			</if>
+		</set>
+		where fid = #{fid,jdbcType=INTEGER}
+	</update>
+	<update id="_updateByWphOne"  parameterType="java.util.List">
+		update wph_one
+		set statse=1,
+		TrueEndDate=NOW()
+		where fid in
+		<foreach collection="list" index="index" item="item"
+				 separator="," open="(" close=")">
+			${item.ofid}
+		</foreach>
+	</update>
+
+
+	<resultMap id="orderingfoodMap" type="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="OrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+		<result column="Title" property="title" jdbcType="VARCHAR" />
+		<result column="Depict" property="depict" jdbcType="VARCHAR" />
+		<result column="Numbers" property="numbers" jdbcType="INTEGER" />
+		<result column="Money" property="money" jdbcType="DOUBLE" />
+		<result column="MealDate" property="mealdate" jdbcType="DATE" />
+		<result column="MealStatse" property="mealstatse" jdbcType="INTEGER" />
+		<result column="MealAdd" property="mealadd" jdbcType="INTEGER" />
+		<result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+		<result column="Customer_CardId" property="customerCardid" jdbcType="VARCHAR" />
+		<result column="Customer_HosPitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+		<result column="LunchFood" property="lunchfood" jdbcType="INTEGER" />
+		<result column="DinnerFood" property="dinnerfood" jdbcType="INTEGER" />
+		<result column="AddFood" property="addfood" jdbcType="INTEGER" />
+		<result column="Race" property="race" jdbcType="INTEGER" />
+		<result column="WPH_MealMenu_Fid" property="wphMealmenuFid" jdbcType="INTEGER" />
+		<result column="WPH_MealNume_Name" property="wphMealnumeName" jdbcType="VARCHAR" />
+		<result column="WPH_MealTime_Fid" property="wphMealtimeFid" jdbcType="INTEGER" />
+		<result column="WPH_MealTime_Name" property="wphMealtimeName" jdbcType="VARCHAR" />
+		<result column="WPH_MealType_Fid" property="wphMealtypeFid" jdbcType="INTEGER" />
+		<result column="WPH_MealType_Name" property="wphMealtypeName" jdbcType="VARCHAR" />
+		<result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+		<result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+		<result column="UserName" property="username" jdbcType="VARCHAR" />
+		<result column="Notes" property="notes" jdbcType="VARCHAR" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="BedNo" property="bedno" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<update id="updateByOrderingfoodFid" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+		update wph_orderingfood d set d.BedNo=null  where d.fid in
+		(select c.fid from(select a.fid from wph_orderingfood a,wph_unsubscribetime b
+		where
+		a.WPH_MealTime_Fid=b.WPH_MealTime_Fid
+		and a.WPH_MealType_Fid=b.Type
+		and
+		((a.MealDate=#{date} and b.EndTime>#{time}) or (a.MealDate>#{date}))
+		and a.MealStatse='1'
+		and a.BedNo!=''
+		and a.BedNo is not null
+		and a.Customer_Fid=#{customerFid}) c)
+	</update>
+
+	<update id="updateOrderingByOrderingfood" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+		update wph_ordering d set d.WPH_Ward_Fid=#{wardFid}  where d.OrderingNumber in
+		(select c.OrderingNumber from(select a.OrderingNumber from wph_orderingfood a,wph_unsubscribetime b
+		where
+		a.WPH_MealTime_Fid=b.WPH_MealTime_Fid
+		and a.WPH_MealType_Fid=b.Type
+		and
+		((a.MealDate=#{date} and b.EndTime>#{time}) or (a.MealDate>#{date}))
+		and a.MealStatse='1'
+		and a.Customer_Fid=#{customerFid}) c)
+	</update>
+
+	<select id="_selectCustomerAllNursing_" resultMap="BaseResultMap">
+
+		<if test="type==1">
+			select x.*,c.Balance as cBalance,c.WPH_Ward_Fid as wphWardFid,
+			(c.Balance-d.Money) as newBalance,c.fid as cfid,
+			d.fid as wardOMFid,
+			d.Money as newMoney,
+			f.fid as detailsFid,
+			f.WPH_Query_Fid as queryFid,
+			f.WPH_ServiceType_Fid as serviceFid,
+			concat('phd_',CEILING((RAND()*9+1)*10000000),x.Customer_Fid) as newOrdering
+			from wph_orderingnursing x
+			LEFT JOIN wph_customer c on x.Customer_Fid=c.fid
+			left join wph_ward_om d on x.WPH_Ward_OM_Fid=d.fid
+			left join wph_nursinggrade e on e.fid=d.WPH_NursingGrade_Fid
+			left join wph_servicedetails f on e.UUID=f.JoinUUID
+			where
+			x.Nursing_Type=#{type}
+			and x.NursingDate=#{date}
+			and c.HospitalldStatus='1'
+			and c.Balance>=x.Money
+			and x.NursingStates=1
+			and d.fid is not null
+			and d.Money is not null
+			and x.OrderingNumber not in (
+			select xcc.OldOrderingNumber from wph_orderingnursing xcc
+			where xcc.NursingDate =#{date} and
+			xcc.Nursing_Type=#{type} and xcc.NursingStates=2
+			)
+
+
+
+		</if>
+		<if test="type==2">
+			select x.*,c.Balance as cBalance,c.WPH_Ward_Fid as wphWardFid,
+			(c.Balance-d.Money) as newBalance,c.fid as cfid,
+			z.EndDate as oendDate,z.fid as ofid,
+			d.fid as wardOMFid,
+			d.Money as newMoney,
+			f.fid as detailsFid,
+			f.WPH_Query_Fid as queryFid,
+			f.WPH_ServiceType_Fid as serviceFid,
+			concat('phd_',CEILING((RAND()*9+1)*10000000),x.Customer_Fid) as newOrdering
+			from wph_orderingnursing x
+			LEFT JOIN wph_customer c on x.Customer_Fid=c.fid
+			LEFT JOIN wph_one z on x.WPH_One_Fid=z.fid
+			left join wph_ward_om d on x.WPH_Ward_OM_Fid=d.fid
+			left join wph_nursinggrade e on e.fid=d.WPH_NursingGrade_Fid
+			left join wph_servicedetails f on e.UUID=f.JoinUUID
+			where z.statse='0'
+			and d.fid is not null
+			and d.Money is not null
+			and x.Nursing_Type=#{type}
+			and x.NursingDate=#{date}
+		</if>
+	</select>
+
+	<insert id="_insertoWphOrderingnursing_" parameterType="java.util.List">
+		insert into wph_orderingnursing(
+		OrderingNumber,
+		Title,
+		Depict,
+		WPH_Ward_OM_Fid,
+		Nursing_Name,
+		Money,
+		NursingDate,
+		NursingStates,
+		Customer_Fid,
+		Customer_Hospitalld,
+		Nursing_Type,
+		Customer_CardId,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes,
+		WPH_One_Fid,
+		Workers_Fid
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对一护理费用",
+			"一对一护理费用扣除",
+			#{item.wphWardOmFid},
+			#{item.nursingName},
+			#{item.newMoney},
+			#{item.orderDate},
+			"1",
+			#{item.customerFid},
+			#{item.customerHospitalld},
+			"2",
+			#{item.customerCardid},
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes},
+			#{item.wphOneFid},
+			#{item.workersFid}
+			)
+		</foreach>
+	</insert>
+
+
+	<insert id="_insertoOrdering_"  parameterType="java.util.List">
+		insert into wph_ordering(
+		OrderingNumber,
+		Title,
+		Depict,
+		Money,
+		OrderingStatse,
+		Customer_Fid,
+		Customer_CarId,
+		Customer_Hospitalld,
+		Customer_Balance,
+		WPH_InvoiceRate_Fid,
+		WPH_Query_Fid,
+		WPH_ServiceType_Fid,
+		WPH_ServiceDetails_Fid,
+		OrderingDate,
+		PayType,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes,
+		WPH_Ward_Fid
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对一护理费用",
+			"一对一护理费用扣除",
+			#{item.newMoney},
+			"1",
+			#{item.customerFid},
+			#{item.customerCardid},
+			#{item.customerHospitalld},
+			#{item.newBalance},
+			"1",
+			#{item.queryFid},
+			#{item.serviceFid},
+			#{item.detailsFid},
+			#{item.orderDate},
+			"5",
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes},
+			#{item.wphWardFid}
+			)
+		</foreach>
+	</insert>
+
+
+	<insert id="_insertWphOrderingnursing_" parameterType="java.util.List">
+		insert into wph_orderingnursing(
+		OrderingNumber,
+		Title,
+		Depict,
+		WPH_Ward_OM_Fid,
+		Nursing_Name,
+		Money,
+		NursingDate,
+		NursingStates,
+		Customer_Fid,
+		Customer_Hospitalld,
+		Nursing_Type,
+		Customer_CardId,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对多护理费用",
+			"一对多护理费用扣除",
+			#{item.wardOMFid},
+			#{item.nursingName},
+			#{item.newMoney},
+			#{item.orderDate},
+			"1",
+			#{item.customerFid},
+			#{item.customerHospitalld},
+			"1",
+			#{item.customerCardid},
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes}
+			)
+		</foreach>
+	</insert>
+
+
+	<insert id="_insertOrdering_"  parameterType="java.util.List">
+		insert into wph_ordering(
+		OrderingNumber,
+		Title,
+		Depict,
+		Money,
+		OrderingStatse,
+		Customer_Fid,
+		Customer_CarId,
+		Customer_Hospitalld,
+		Customer_Balance,
+		WPH_InvoiceRate_Fid,
+		WPH_Query_Fid,
+		WPH_ServiceType_Fid,
+		WPH_ServiceDetails_Fid,
+		OrderingDate,
+		PayType,
+		User_Fid,
+		UserRole,
+		UserName,
+		Notes,
+		WPH_Ward_Fid
+		)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(
+			#{item.newOrdering},
+			"一对多护理费用",
+			"一对多护理费用扣除",
+			#{item.newMoney},
+			"1",
+			#{item.customerFid},
+			#{item.customerCardid},
+			#{item.customerHospitalld},
+			#{item.newBalance},
+			"4",
+			#{item.queryFid},
+			#{item.serviceFid},
+			#{item.detailsFid},
+			#{item.orderDate},
+			"5",
+			#{item.userFid},
+			#{item.userrole},
+			#{item.username},
+			#{item.notes},
+			#{item.wphWardFid}
+			)
+		</foreach>
+	</insert>
+</mapper>

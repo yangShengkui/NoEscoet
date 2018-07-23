@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.slk.wph.module.WPH_User_Ward.mapper.WphUserWardMapperCustom">
+	<resultMap id="BaseResultMap"
+		type="com.slk.wph.module.WPH_User_Ward.po.WphUserWardCustom">
+		<id column="fid" property="fid" />
+		<result column="WPH_User_Fid" property="wphUserFid" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" />
+		<result column="CreateDate" property="createdate" />
+		<result column="User_Fid" property="userFid" />
+		<result column="UserRole" property="userrole" />
+		<result column="UserName" property="username" />
+		<association property="wphUser"
+			javaType="com.slk.wph.module.WPH_User.po.WphUser">
+			<id column="ufid" property="fid" />
+			<result column="uName" property="name" />
+			<result column="uUsername" property="username" />
+			<result column="Password" property="password" />
+			<result column="Sex" property="sex" />
+			<result column="Phone" property="phone" />
+			<result column="Manager" property="manager" />
+			<result column="uStatus" property="status" />
+			<result column="uCreateDate" property="createdate" />
+			<result column="device_tokens" property="deviceTokens" />
+			<result column="tag" property="tag" />
+		</association>
+
+		<collection property="wardList"
+			ofType="com.slk.wph.module.WPH_Ward.po.WphWard">
+			<id column="fid" property="fid" />
+			<result column="WPH_Hospita_fid" property="wphHospitaFid" />
+			<result column="wName" property="name" />
+			<result column="Abbreviation" property="abbreviation" />
+			<result column="wCreateDate" property="createdate" />
+			<result column="Notes" property="notes" />
+			<result column="SaveMoney" property="savemoney" />
+			<result column="WaringMoney" property="waringmoney" />
+			<result column="wStatus" property="status" />
+		</collection>
+	</resultMap>
+	
+	<resultMap type="com.slk.wph.module.WPH_User_Ward.po.WphUserWard" id="ward_userMap">
+		<id column="fid" property="fid" />
+		<result column="WPH_User_Fid" property="wphUserFid" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" />
+		<result column="CreateDate" property="createdate" />
+		<result column="User_Fid" property="userFid" />
+		<result column="UserRole" property="userrole" />
+		<result column="UserName" property="username" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		WPH_User_Fid,WPH_Ward_Fid,User_Fid,UserRole,UserName
+	</sql>
+	<insert id="saveWphUserWard">
+		insert into wph_user_ward
+		(
+		<include refid="Base_Column_List" />
+		)
+		values
+		(
+		#{wphUserFid},
+		#{wphWardFid},
+		#{userFid},
+		#{userrole},
+		#{username}
+		)
+	</insert>
+	<update id="updateWphUserWard" parameterType="java.lang.Integer">
+		update wph_user_ward
+		<set>
+			<if test="wphUserFid!=null">
+				WPH_User_Fid=#{wphUserFid},
+			</if>
+			<if test="wphWardFid!=null">
+				WPH_Ward_Fid=#{wphWardFid},
+			</if>
+			<if test="userFid!=null">
+				User_Fid=#{userFid},
+			</if>
+			<if test="userrole!=null">
+				UserRole=#{userrole},
+			</if>
+			<if test="username!=null">
+				UserName=#{username},
+			</if>
+		</set>
+		where fid=#{fid}
+	</update>
+	<select id="getWphUserWardList" resultMap="BaseResultMap">
+		select
+		a.fid,
+		b.fid as
+		ufid,
+		b.Name as uName,
+		b.Sex,
+		b.Phone,
+		b.Status as uStatus,
+		c.fid as wfid,
+		c.Name as wName
+		from wph_user_ward A
+		LEFT JOIN
+		wph_user B on
+		A.WPH_User_Fid=B.fid
+		LEFT JOIN wph_ward C on A.WPH_Ward_Fid=C.fid
+		order
+		by b.fid
+	</select>
+	<insert id="saveUserWardArray" parameterType="map">
+		insert into wph_user_ward(<include refid="Base_Column_List" />) values 
+      <foreach collection="list" index="index" item="item" separator=",">
+         ( 
+         #{item.wphUserFid},
+		#{item.wphWardFid},
+		#{item.userFid},
+		#{item.userrole},
+		#{item.username} 
+		)
+      </foreach>
+	</insert>
+	<delete id="deleteUserWardByUserId">
+		delete from wph_user_ward where WPH_User_Fid=#{userFid}
+		and WPH_Ward_Fid=#{wardFid}
+	</delete>
+	
+	<select id="getWardListByUser" parameterType="java.lang.Integer" resultMap="ward_userMap">
+		SELECT * FROM wph_user_ward uw WHERE uw.WPH_User_Fid = #{value}
+	</select>
+
+	<select id="selectWardListByUser"  resultType="java.lang.String">
+		SELECT uw.WPH_Ward_Fid FROM wph_user_ward uw WHERE uw.WPH_User_Fid = #{value}
+	</select>
+
+</mapper>

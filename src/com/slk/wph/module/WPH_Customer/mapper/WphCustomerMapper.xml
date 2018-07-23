@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Customer.mapper.WphCustomerMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Customer.po.WphCustomer" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="Hospitalld" property="hospitalld" jdbcType="VARCHAR" />
+    <result column="BindingTime" property="bindingtime" jdbcType="TIMESTAMP" />
+    <result column="CodeId" property="codeid" jdbcType="VARCHAR" />
+    <result column="WPH_Hospita_Fid" property="wphHospitaFid" jdbcType="INTEGER" />
+    <result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+    <result column="WPH_Card_Fid" property="wphCardFid" jdbcType="INTEGER" />
+    <result column="WPH_Card_Number" property="wphCardNumber" jdbcType="VARCHAR" />
+    <result column="Birthday" property="birthday" jdbcType="VARCHAR" />
+    <result column="Sex" property="sex" jdbcType="VARCHAR" />
+    <result column="Age" property="age" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="Nation" property="nation" jdbcType="INTEGER" />
+    <result column="Balance" property="balance" jdbcType="DOUBLE" />
+    <result column="HospitalldStatus" property="hospitalldstatus" jdbcType="INTEGER" />
+    <result column="HospitalldDate" property="hospitallddate" jdbcType="TIMESTAMP" />
+    <result column="Nursing_Type" property="nursingType" jdbcType="INTEGER" />
+    <result column="Worker" property="worker" jdbcType="INTEGER" />
+    <result column="WorkerStatus" property="workerstatus" jdbcType="INTEGER" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="notes" property="notes" jdbcType="VARCHAR" />
+    <result column="Img" property="img" jdbcType="VARCHAR" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="CreateType" property="createtype" jdbcType="INTEGER" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, Name, Hospitalld, BindingTime, CodeId, WPH_Hospita_Fid, WPH_Ward_Fid, WPH_Card_Fid, 
+    WPH_Card_Number, Birthday, Sex, Age, phone, Nation, Balance, HospitalldStatus, HospitalldDate, 
+    Nursing_Type, Worker, WorkerStatus, CreateDate, notes, Img, User_Fid, UserRole, UserName, 
+    CreateType, password
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomerExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_customer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_customer
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_customer
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomerExample" >
+    delete from wph_customer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomer" >
+    insert into wph_customer (fid, Name, Hospitalld, 
+      BindingTime, CodeId, WPH_Hospita_Fid, 
+      WPH_Ward_Fid, WPH_Card_Fid, WPH_Card_Number, 
+      Birthday, Sex, Age, 
+      phone, Nation, Balance, 
+      HospitalldStatus, HospitalldDate, Nursing_Type, 
+      Worker, WorkerStatus, CreateDate, 
+      notes, Img, User_Fid, 
+      UserRole, UserName, CreateType, 
+      password)
+    values (#{fid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{hospitalld,jdbcType=VARCHAR}, 
+      #{bindingtime,jdbcType=TIMESTAMP}, #{codeid,jdbcType=VARCHAR}, #{wphHospitaFid,jdbcType=INTEGER}, 
+      #{wphWardFid,jdbcType=INTEGER}, #{wphCardFid,jdbcType=INTEGER}, #{wphCardNumber,jdbcType=VARCHAR}, 
+      #{birthday,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, #{age,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{nation,jdbcType=INTEGER}, #{balance,jdbcType=DOUBLE}, 
+      #{hospitalldstatus,jdbcType=INTEGER}, #{hospitallddate,jdbcType=TIMESTAMP}, #{nursingType,jdbcType=INTEGER}, 
+      #{worker,jdbcType=INTEGER}, #{workerstatus,jdbcType=INTEGER}, #{createdate,jdbcType=TIMESTAMP}, 
+      #{notes,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, #{userFid,jdbcType=INTEGER}, 
+      #{userrole,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{createtype,jdbcType=INTEGER}, 
+      #{password,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomer" >
+    insert into wph_customer
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="hospitalld != null" >
+        Hospitalld,
+      </if>
+      <if test="bindingtime != null" >
+        BindingTime,
+      </if>
+      <if test="codeid != null" >
+        CodeId,
+      </if>
+      <if test="wphHospitaFid != null" >
+        WPH_Hospita_Fid,
+      </if>
+      <if test="wphWardFid != null" >
+        WPH_Ward_Fid,
+      </if>
+      <if test="wphCardFid != null" >
+        WPH_Card_Fid,
+      </if>
+      <if test="wphCardNumber != null" >
+        WPH_Card_Number,
+      </if>
+      <if test="birthday != null" >
+        Birthday,
+      </if>
+      <if test="sex != null" >
+        Sex,
+      </if>
+      <if test="age != null" >
+        Age,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="nation != null" >
+        Nation,
+      </if>
+      <if test="balance != null" >
+        Balance,
+      </if>
+      <if test="hospitalldstatus != null" >
+        HospitalldStatus,
+      </if>
+      <if test="hospitallddate != null" >
+        HospitalldDate,
+      </if>
+      <if test="nursingType != null" >
+        Nursing_Type,
+      </if>
+      <if test="worker != null" >
+        Worker,
+      </if>
+      <if test="workerstatus != null" >
+        WorkerStatus,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+      <if test="notes != null" >
+        notes,
+      </if>
+      <if test="img != null" >
+        Img,
+      </if>
+      <if test="userFid != null" >
+        User_Fid,
+      </if>
+      <if test="userrole != null" >
+        UserRole,
+      </if>
+      <if test="username != null" >
+        UserName,
+      </if>
+      <if test="createtype != null" >
+        CreateType,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="hospitalld != null" >
+        #{hospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="bindingtime != null" >
+        #{bindingtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=VARCHAR},
+      </if>
+      <if test="wphHospitaFid != null" >
+        #{wphHospitaFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphWardFid != null" >
+        #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphCardFid != null" >
+        #{wphCardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphCardNumber != null" >
+        #{wphCardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        #{nation,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DOUBLE},
+      </if>
+      <if test="hospitalldstatus != null" >
+        #{hospitalldstatus,jdbcType=INTEGER},
+      </if>
+      <if test="hospitallddate != null" >
+        #{hospitallddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nursingType != null" >
+        #{nursingType,jdbcType=INTEGER},
+      </if>
+      <if test="worker != null" >
+        #{worker,jdbcType=INTEGER},
+      </if>
+      <if test="workerstatus != null" >
+        #{workerstatus,jdbcType=INTEGER},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="notes != null" >
+        #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null" >
+        #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="userFid != null" >
+        #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createtype != null" >
+        #{createtype,jdbcType=INTEGER},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomerExample" resultType="java.lang.Integer" >
+    select count(*) from wph_customer
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_customer
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null" >
+        Name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.hospitalld != null" >
+        Hospitalld = #{record.hospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bindingtime != null" >
+        BindingTime = #{record.bindingtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.codeid != null" >
+        CodeId = #{record.codeid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wphHospitaFid != null" >
+        WPH_Hospita_Fid = #{record.wphHospitaFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphWardFid != null" >
+        WPH_Ward_Fid = #{record.wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphCardFid != null" >
+        WPH_Card_Fid = #{record.wphCardFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphCardNumber != null" >
+        WPH_Card_Number = #{record.wphCardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.birthday != null" >
+        Birthday = #{record.birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sex != null" >
+        Sex = #{record.sex,jdbcType=VARCHAR},
+      </if>
+      <if test="record.age != null" >
+        Age = #{record.age,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null" >
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nation != null" >
+        Nation = #{record.nation,jdbcType=INTEGER},
+      </if>
+      <if test="record.balance != null" >
+        Balance = #{record.balance,jdbcType=DOUBLE},
+      </if>
+      <if test="record.hospitalldstatus != null" >
+        HospitalldStatus = #{record.hospitalldstatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.hospitallddate != null" >
+        HospitalldDate = #{record.hospitallddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.nursingType != null" >
+        Nursing_Type = #{record.nursingType,jdbcType=INTEGER},
+      </if>
+      <if test="record.worker != null" >
+        Worker = #{record.worker,jdbcType=INTEGER},
+      </if>
+      <if test="record.workerstatus != null" >
+        WorkerStatus = #{record.workerstatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.notes != null" >
+        notes = #{record.notes,jdbcType=VARCHAR},
+      </if>
+      <if test="record.img != null" >
+        Img = #{record.img,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userFid != null" >
+        User_Fid = #{record.userFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.userrole != null" >
+        UserRole = #{record.userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        UserName = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createtype != null" >
+        CreateType = #{record.createtype,jdbcType=INTEGER},
+      </if>
+      <if test="record.password != null" >
+        password = #{record.password,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_customer
+    set fid = #{record.fid,jdbcType=INTEGER},
+      Name = #{record.name,jdbcType=VARCHAR},
+      Hospitalld = #{record.hospitalld,jdbcType=VARCHAR},
+      BindingTime = #{record.bindingtime,jdbcType=TIMESTAMP},
+      CodeId = #{record.codeid,jdbcType=VARCHAR},
+      WPH_Hospita_Fid = #{record.wphHospitaFid,jdbcType=INTEGER},
+      WPH_Ward_Fid = #{record.wphWardFid,jdbcType=INTEGER},
+      WPH_Card_Fid = #{record.wphCardFid,jdbcType=INTEGER},
+      WPH_Card_Number = #{record.wphCardNumber,jdbcType=VARCHAR},
+      Birthday = #{record.birthday,jdbcType=VARCHAR},
+      Sex = #{record.sex,jdbcType=VARCHAR},
+      Age = #{record.age,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      Nation = #{record.nation,jdbcType=INTEGER},
+      Balance = #{record.balance,jdbcType=DOUBLE},
+      HospitalldStatus = #{record.hospitalldstatus,jdbcType=INTEGER},
+      HospitalldDate = #{record.hospitallddate,jdbcType=TIMESTAMP},
+      Nursing_Type = #{record.nursingType,jdbcType=INTEGER},
+      Worker = #{record.worker,jdbcType=INTEGER},
+      WorkerStatus = #{record.workerstatus,jdbcType=INTEGER},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      notes = #{record.notes,jdbcType=VARCHAR},
+      Img = #{record.img,jdbcType=VARCHAR},
+      User_Fid = #{record.userFid,jdbcType=INTEGER},
+      UserRole = #{record.userrole,jdbcType=VARCHAR},
+      UserName = #{record.username,jdbcType=VARCHAR},
+      CreateType = #{record.createtype,jdbcType=INTEGER},
+      password = #{record.password,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomer" >
+    update wph_customer
+    <set >
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="hospitalld != null" >
+        Hospitalld = #{hospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="bindingtime != null" >
+        BindingTime = #{bindingtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="codeid != null" >
+        CodeId = #{codeid,jdbcType=VARCHAR},
+      </if>
+      <if test="wphHospitaFid != null" >
+        WPH_Hospita_Fid = #{wphHospitaFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphWardFid != null" >
+        WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphCardFid != null" >
+        WPH_Card_Fid = #{wphCardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphCardNumber != null" >
+        WPH_Card_Number = #{wphCardNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null" >
+        Birthday = #{birthday,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        Sex = #{sex,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null" >
+        Age = #{age,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="nation != null" >
+        Nation = #{nation,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        Balance = #{balance,jdbcType=DOUBLE},
+      </if>
+      <if test="hospitalldstatus != null" >
+        HospitalldStatus = #{hospitalldstatus,jdbcType=INTEGER},
+      </if>
+      <if test="hospitallddate != null" >
+        HospitalldDate = #{hospitallddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nursingType != null" >
+        Nursing_Type = #{nursingType,jdbcType=INTEGER},
+      </if>
+      <if test="worker != null" >
+        Worker = #{worker,jdbcType=INTEGER},
+      </if>
+      <if test="workerstatus != null" >
+        WorkerStatus = #{workerstatus,jdbcType=INTEGER},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="notes != null" >
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null" >
+        Img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="userFid != null" >
+        User_Fid = #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        UserRole = #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        UserName = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createtype != null" >
+        CreateType = #{createtype,jdbcType=INTEGER},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomer" >
+    update wph_customer
+    set Name = #{name,jdbcType=VARCHAR},
+      Hospitalld = #{hospitalld,jdbcType=VARCHAR},
+      BindingTime = #{bindingtime,jdbcType=TIMESTAMP},
+      CodeId = #{codeid,jdbcType=VARCHAR},
+      WPH_Hospita_Fid = #{wphHospitaFid,jdbcType=INTEGER},
+      WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+      WPH_Card_Fid = #{wphCardFid,jdbcType=INTEGER},
+      WPH_Card_Number = #{wphCardNumber,jdbcType=VARCHAR},
+      Birthday = #{birthday,jdbcType=VARCHAR},
+      Sex = #{sex,jdbcType=VARCHAR},
+      Age = #{age,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      Nation = #{nation,jdbcType=INTEGER},
+      Balance = #{balance,jdbcType=DOUBLE},
+      HospitalldStatus = #{hospitalldstatus,jdbcType=INTEGER},
+      HospitalldDate = #{hospitallddate,jdbcType=TIMESTAMP},
+      Nursing_Type = #{nursingType,jdbcType=INTEGER},
+      Worker = #{worker,jdbcType=INTEGER},
+      WorkerStatus = #{workerstatus,jdbcType=INTEGER},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      notes = #{notes,jdbcType=VARCHAR},
+      Img = #{img,jdbcType=VARCHAR},
+      User_Fid = #{userFid,jdbcType=INTEGER},
+      UserRole = #{userrole,jdbcType=VARCHAR},
+      UserName = #{username,jdbcType=VARCHAR},
+      CreateType = #{createtype,jdbcType=INTEGER},
+      password = #{password,jdbcType=VARCHAR}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

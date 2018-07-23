@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Orderingfood.mapper.WphOrderingfoodMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="OrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+    <result column="Title" property="title" jdbcType="VARCHAR" />
+    <result column="Depict" property="depict" jdbcType="VARCHAR" />
+    <result column="Numbers" property="numbers" jdbcType="INTEGER" />
+    <result column="Money" property="money" jdbcType="DOUBLE" />
+    <result column="MealDate" property="mealdate" jdbcType="DATE" />
+    <result column="MealStatse" property="mealstatse" jdbcType="INTEGER" />
+    <result column="MealAdd" property="mealadd" jdbcType="INTEGER" />
+    <result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+    <result column="Customer_CardId" property="customerCardid" jdbcType="VARCHAR" />
+    <result column="Customer_HosPitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+    <result column="LunchFood" property="lunchfood" jdbcType="INTEGER" />
+    <result column="DinnerFood" property="dinnerfood" jdbcType="INTEGER" />
+    <result column="AddFood" property="addfood" jdbcType="INTEGER" />
+    <result column="Race" property="race" jdbcType="INTEGER" />
+    <result column="WPH_MealMenu_Fid" property="wphMealmenuFid" jdbcType="INTEGER" />
+    <result column="WPH_MealNume_Name" property="wphMealnumeName" jdbcType="VARCHAR" />
+    <result column="WPH_MealTime_Fid" property="wphMealtimeFid" jdbcType="INTEGER" />
+    <result column="WPH_MealTime_Name" property="wphMealtimeName" jdbcType="VARCHAR" />
+    <result column="WPH_MealType_Fid" property="wphMealtypeFid" jdbcType="INTEGER" />
+    <result column="WPH_MealType_Name" property="wphMealtypeName" jdbcType="VARCHAR" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="Notes" property="notes" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="BedNo" property="bedno" jdbcType="VARCHAR" />
+    <result column="VegetarianFood" property="vegetarianfood" jdbcType="INTEGER" />
+  	<result column="Facting" jdbcType="INTEGER" property="facting" />
+  </resultMap>
+
+
+  <select id="getHistoryByInfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="BaseResultMap">
+  		SELECT of.* FROM wph_orderingfood of
+  				WHERE of.Customer_Fid = #{customerFid} AND of.WPH_MealMenu_Fid
+  				<foreach collection="fids" item="fids" open="IN(" separator="," close=")" >#{fids}</foreach>
+  				AND of.MealStatse = 1
+  				ORDER BY of.fid DESC,of.CreateDate DESC LIMIT 1
+  </select>
+
+
+  <select id="getfoodRetreatByInfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="BaseResultMap">
+  	SELECT of.*,cu.`Name`  FROM wph_orderingfood of
+		LEFT JOIN wph_customer cu ON cu.fid = of.Customer_Fid
+		WHERE of.MealDate = #{mealdate} AND of.WPH_MealTime_Fid = #{wphMealtimeFid} AND of.Customer_HosPitalld = #{customerHospitalld}
+							AND of.MealStatse = 1 AND of.WPH_MealType_Fid IN(2,3)
+  </select>
+
+
+  <sql id="whereFoodSelect">
+  	<where>
+  		<if test="orderingnumber != null">
+  			AND OrderingNumber = #{orderingnumber}
+  		</if>
+  		<if test="mealdate != null">
+  			AND MealDate = #{mealdate}
+  		</if>
+  		<if test="mealstatse != null">
+  			AND MealStatse = #{mealstatse}
+  		</if>
+  		<if test="customerFid != null">
+  			AND Customer_Fid = #{customerFid}
+  		</if>
+  	</where>
+  </sql>
+
+  <select id="getFoodListByInfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="BaseResultMap" >
+		SELECT * FROM wph_orderingfood <include refid="whereFoodSelect"/>
+  </select>
+
+  <select id="getCurrentTweFoodByHospitaFid" parameterType="java.lang.String" resultMap="BaseResultMap">
+
+  	 	SELECT of.*,cu.`Name`  FROM wph_orderingfood of
+
+			LEFT JOIN wph_customer cu ON cu.fid = of.Customer_Fid
+			LEFT JOIN wph_unsubscribetime ub ON ub.WPH_MealTime_Fid = of.WPH_MealTime_Fid
+
+		WHERE   of.MealDate IN( DATE_FORMAT(now(),'%y-%m-%d'),date_sub(DATE_FORMAT(now(),'%y-%m-%d'),interval -1 day))
+
+				AND of.Customer_HosPitalld = #{value }
+				AND of.MealStatse = 1 AND of.WPH_MealType_Fid IN(2,3)
+  				AND ub.Type = 2
+				AND  (DATE_FORMAT(now(),'%T') &lt; ub.EndTime OR of.MealDate = date_sub(DATE_FORMAT(now(),'%y-%m-%d'),interval -1 day))
+  </select>
+
+
+
+  <!-- 传参Integer类型集合 -方式 -->
+  <select id="getFidsTimeLimtByFids" resultType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom">
+
+		SELECT of.* FROM wph_orderingfood of
+
+			LEFT JOIN wph_unsubscribetime ub ON ub.WPH_MealTime_Fid = of.WPH_MealTime_Fid
+
+		WHERE of.fid IN <foreach collection="list" item="fid" open="(" separator="," close=")"> #{fid} </foreach> AND of.MealStatse = 1 AND ub.Type = 2 AND  (DATE_FORMAT(now(),'%T') &lt; ub.EndTime OR of.MealDate = date_sub(DATE_FORMAT(now(),'%y-%m-%d'),interval -1 day))
+
+  </select>
+
+
+
+  <resultMap id="customerAndFoodMap" type="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" extends="BaseResultMap" >
+  		<result column="wardName" property="wardName" />
+	  	<result column="type" property="nownum" />
+		<association property="customer" javaType="com.slk.wph.module.WPH_Customer.po.WphCustomer">
+			<id column="cfid" property="fid" jdbcType="INTEGER" />
+			<result column="Name" property="name" jdbcType="VARCHAR" />
+			<result column="CodeId" property="codeid" jdbcType="VARCHAR" />
+			<result column="Birthday" property="birthday" jdbcType="VARCHAR" />
+			<result column="Sex" property="sex" jdbcType="VARCHAR" />
+			<result column="Age" property="age" jdbcType="VARCHAR" />
+			<result column="phone" property="phone" jdbcType="VARCHAR" />
+			<result column="Hospitalld" property="hospitalld" jdbcType="VARCHAR" />
+			<result column="BindingTime" property="bindingtime" jdbcType="TIMESTAMP" />
+			<result column="WPH_Hospita_Fid" property="wphHospitaFid" jdbcType="INTEGER" />
+			<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+			<result column="Nation" property="nation" jdbcType="INTEGER" />
+			<result column="WPH_Card_Fid" property="wphCardFid" jdbcType="INTEGER" />
+			<result column="WPH_Card_Number" property="wphCardNumber" jdbcType="INTEGER" />
+			<result column="Balance" property="balance" jdbcType="DOUBLE" />
+			<result column="HospitalldStatus" property="hospitalldstatus" jdbcType="INTEGER" />
+			<result column="HospitalldDate" property="hospitallddate" jdbcType="TIMESTAMP" />
+			<result column="Nursing_Type" property="nursingType" jdbcType="INTEGER" />
+			<result column="Worker" property="worker" jdbcType="INTEGER" />
+			<result column="WorkerStatus" property="workerstatus" jdbcType="INTEGER" />
+			<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+			<result column="notes" property="notes" jdbcType="VARCHAR" />
+		</association>
+
+	</resultMap>
+
+  <select id="getCustomerOrderingFoodByInfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="customerAndFoodMap" >
+
+		SELECT of.* ,c.*,w.`Name` wardName,meal.type FROM wph_orderingfood of
+			LEFT JOIN wph_customer c ON of.Customer_Fid = c.fid
+			LEFT JOIN wph_ward w ON w.fid = c.WPH_Ward_Fid
+	  		LEFT JOIN wph_mealmenu meal ON meal.fid = of.WPH_MealMenu_Fid
+		WHERE (c.HospitalldStatus = 1 OR (c.HospitalldStatus = 2 AND c.WPH_Card_Fid != '' AND c.WPH_Card_Fid IS NOT NULL ) OR  c.Worker = 1  OR w.fid IN (1,2,3))
+	  AND of.MealStatse = 1
+	  AND of.MealDate = #{mealdate }
+					AND (of.WPH_MealTime_Fid = #{wphMealtimeFid }  OR of.WPH_MealMenu_Fid = 28 OR of.WPH_MealType_Fid IN(15,16))
+	  				AND IF(of.WPH_MealTime_Fid = 1,  of.Facting != 1,1=1)
+					<choose>
+						<when test="wphWardFid != null and wphWardFid != ''">AND c.WPH_Ward_Fid = #{wphWardFid }</when>
+						<otherwise>AND c.WPH_Ward_Fid IN(SELECT fid FROM wph_ward WHERE `Status` = 0)</otherwise>
+					</choose>
+		ORDER BY of.fid
+
+
+	</select>
+
+
+  <select id="getCustomerOrderingAllByInfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="customerAndFoodMap" >
+
+      SELECT of.*, c.*, ward.`Name` wardName FROM wph_orderingfood of
+      LEFT JOIN wph_customer c ON of.Customer_Fid = c.fid
+      LEFT JOIN wph_ward ward ON c.WPH_Ward_Fid = ward.fid
+      LEFT JOIN wph_mealmenu meal ON meal.fid = of.WPH_MealMenu_Fid
+      WHERE
+      of.MealDate BETWEEN date_sub(
+      DATE_FORMAT(#{datetime }, '%y-%m-%d'),
+      INTERVAL 0 DAY
+      )
+      AND date_sub(
+      DATE_FORMAT(#{datetime2 }, '%y-%m-%d'),
+      INTERVAL 0 DAY
+      )
+      AND of.OrderingNumber NOT IN(SELECT oo.OldOrderingNumber FROM wph_ordering oo WHERE oo.OrderingStatse = 2  AND oo.OldOrderingNumber IS NOT NULL AND oo.OldOrderingNumber != '')#AND oo.Customer_Hospitalld = of.Customer_HosPitalld
+      AND of.WPH_MealType_Fid = #{wphMealtypeFid }
+      <if test="wphWardFid != null and wphWardFid != ''">
+          AND c.WPH_Ward_Fid = #{wphWardFid}
+      </if>
+      <if test="mealadd != null and mealadd != ''">
+          AND of.MealAdd = #{mealadd }
+      </if>
+      <if test="wphMealtypeFid == 5">
+          <if test="checkOn!=null and checkOn!=''">AND meal.Type = #{checkOn}</if>
+          GROUP BY of.OrderingNumber,of.WPH_MealMenu_Fid,of.WPH_MealTime_Fid
+      </if>
+      <if test="wphMealtypeFid != 5">
+          <if test="wphMealmenuFid!=null and wphMealmenuFid!=''">AND of.WPH_MealMenu_Fid = #{wphMealmenuFid }</if>
+          GROUP BY of.OrderingNumber,of.WPH_MealMenu_Fid
+      </if>
+
+
+      ORDER BY of.fid;
+
+
+      <!--SELECT of.*, c.*, ward.`Name` wardName FROM wph_orderingfood of
+	  LEFT JOIN wph_customer c ON of.Customer_Fid = c.fid
+	  LEFT JOIN wph_ward ward ON c.WPH_Ward_Fid = ward.fid
+	  LEFT JOIN wph_mealmenu meal ON meal.fid = of.WPH_MealMenu_Fid
+	  WHERE of.MealStatse = 1
+	  AND of.MealDate BETWEEN date_sub(DATE_FORMAT(#{datetime },'%y-%m-%d'),interval 0 day) AND date_sub(DATE_FORMAT(#{datetime2 },'%y-%m-%d'),interval 0 day)
+	  <choose>
+		  <when test="wphWardFid != null and wphWardFid != ''">AND c.WPH_Ward_Fid = #{wphWardFid }</when>
+	  </choose>
+	  <if test="wphMealtypeFid==6">
+		  AND of.WPH_MealType_Fid > #{wphMealtypeFid }
+	  </if>
+	  <if test="wphMealtypeFid!=6">
+		  AND of.WPH_MealType_Fid = #{wphMealtypeFid }
+	  </if>
+	  <if test="checkOn != null and checkOn != ''">
+		  AND meal.Type = #{checkOn}
+	  </if>
+	  <if test="wphMealtimeFid!=null and wphMealtimeFid!=''">
+		  AND of.WPH_MealTime_Fid = #{wphMealtimeFid }
+	  </if>
+	  <if test="wphMealmenuFid!=null and wphMealmenuFid!=''">
+		  AND of.WPH_MealMenu_Fid = #{wphMealmenuFid }
+	  </if>
+	  <if test="mealadd!=null and mealadd!=''">
+		  AND of.MealAdd = ${mealadd }
+	  </if>
+	  GROUP BY if( of.WPH_MealType_Fid IN(2,3,4) AND of.WPH_MealMenu_Fid != 28, of.OrderingNumber,of.fid)#of.fid只是迎合前者条件，无实际应用
+	  ORDER BY of.fid-->
+
+	</select>
+
+   <select id="getOrderingfoodRetreatByHospitalId" parameterType="java.lang.String" resultMap="BaseResultMap">
+       SELECT od.*,utime.* FROM wph_orderingfood od
+           LEFT JOIN wph_unsubscribetime utime ON utime.fid IN(4,5,6) AND od.WPH_MealTime_Fid = utime.WPH_MealTime_Fid
+       WHERE ((od.MealDate = (date_format(NOW(), '%y-%m-%d')-INTERVAL 0 DAY) AND utime.StartTime>date_format(NOW(), '%T')) OR ( od.MealDate = (date_format(now(), '%y-%m-%d')-INTERVAL-1 DAY)))
+             AND od.MealStatse = 1
+             AND od.Customer_HosPitalld = #{value}
+  </select>
+
+  <update id="updateAddFoodByOrderNumber" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood">
+  	UPDATE wph_orderingfood food SET food.AddFood = #{addfood } WHERE food.OrderingNumber = #{orderingnumber }
+  </update>
+
+
+  <resultMap type="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" id="foodAndOrderMap" extends="BaseResultMap">
+  	<association property="order" javaType="com.slk.wph.module.WPH_Ordering.po.WphOrdering">
+  		<id column="oofid" property="fid" jdbcType="INTEGER" />
+	    <result column="ootitle" property="title" jdbcType="VARCHAR" />
+	    <result column="ooDepiect" property="depict" jdbcType="VARCHAR" />
+	    <result column="oomoney" property="money" jdbcType="DOUBLE" />
+	    <result column="OrderingStatse" property="orderingstatse" jdbcType="INTEGER" />
+	    <result column="oocustomerFid" property="customerFid" jdbcType="INTEGER" />
+	    <result column="Customer_CarId" property="customerCarid" jdbcType="VARCHAR" />
+	    <result column="oohospitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+	    <result column="Customer_Balance" property="customerBalance" jdbcType="DOUBLE" />
+	    <result column="WPH_InvoiceRate_Fid" property="wphInvoicerateFid" jdbcType="INTEGER" />
+	    <result column="WPH_Query_Fid" property="wphQueryFid" jdbcType="INTEGER" />
+	    <result column="WPH_ServiceType_Fid" property="wphServicetypeFid" jdbcType="INTEGER" />
+	    <result column="WPH_ServiceDetails_Fid" property="wphServicedetailsFid" jdbcType="INTEGER" />
+	    <result column="OrderingDate" property="orderingdate" jdbcType="TIMESTAMP" />
+	    <result column="PayType" property="paytype" jdbcType="INTEGER" />
+	    <result column="PayOrderNumber" property="payordernumber" jdbcType="VARCHAR" />
+	    <result column="ooOrdernumber" property="orderingnumber" jdbcType="VARCHAR" />
+	    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+	    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+	    <result column="UserName" property="username" jdbcType="VARCHAR" />
+	    <result column="Notes" property="notes" jdbcType="VARCHAR" />
+	    <result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+	    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  	</association>
+  </resultMap>
+
+  <select id="getSugarMealList" resultMap="foodAndOrderMap">
+  		SELECT food.*,oo.*,
+			 oo.fid oofid,
+			 oo.Title ootitle,
+			 oo.Depict ooDepiect,
+			 oo.Money oomoney,
+			 oo.OrderingNumber ooOrdernumber,
+			 oo.Customer_Fid oocustomerFid,
+			 oo.Customer_Hospitalld oohospitalld
+  		FROM wph_orderingfood food
+		LEFT JOIN wph_ordering oo ON oo.OrderingNumber = food.OrderingNumber
+		WHERE food.WPH_MealType_Fid = 4
+		AND food.WPH_MealMenu_Fid = 27 AND food.MealDate IN(SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL 0 DAY))
+		AND food.MealStatse = 1 AND food.WPH_MealTime_Fid = 3 AND food.Customer_Fid NOT IN (
+			SELECT food2.Customer_Fid FROM wph_orderingfood food2
+			WHERE food2.MealDate IN(SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL -1 DAY))
+			AND food2.MealStatse = 1 AND food2.WPH_MealType_Fid IN(2,3,4) AND IF(food2.WPH_MealType_Fid=4,food2.WPH_MealMenu_Fid != 28,1=1) GROUP BY food2.Customer_Fid
+		)
+		AND food.Customer_Fid IN(
+			SELECT nursing.Customer_Fid FROM wph_orderingnursing nursing WHERE nursing.NursingStates = 1 AND nursing.NursingDate IN (SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL 0 DAY)) AND nursing.OrderingNumber NOT IN(
+				SELECT OldOrderingNumber FROM wph_orderingnursing nursing2 WHERE nursing2.NursingStates = 2 AND nursing2.NursingDate IN (SUBDATE(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL 0 DAY)) AND OldOrderingNumber IS NOT NULL )
+		)
+  </select>
+
+	<update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+	    update wph_orderingfood
+	    <set >
+	      <if test="orderingnumber != null" >
+	        OrderingNumber = #{orderingnumber,jdbcType=VARCHAR},
+	      </if>
+	      <if test="title != null" >
+	        Title = #{title,jdbcType=VARCHAR},
+	      </if>
+	      <if test="depict != null" >
+	        Depict = #{depict,jdbcType=VARCHAR},
+	      </if>
+	      <if test="numbers != null" >
+	        Numbers = #{numbers,jdbcType=INTEGER},
+	      </if>
+	      <if test="money != null" >
+	        Money = #{money,jdbcType=DOUBLE},
+	      </if>
+	      <if test="mealdate != null" >
+	        MealDate = #{mealdate,jdbcType=DATE},
+	      </if>
+	      <if test="mealstatse != null" >
+	        MealStatse = #{mealstatse,jdbcType=INTEGER},
+	      </if>
+	      <if test="mealadd != null" >
+	        MealAdd = #{mealadd,jdbcType=INTEGER},
+	      </if>
+	      <if test="customerFid != null" >
+	        Customer_Fid = #{customerFid,jdbcType=INTEGER},
+	      </if>
+	      <if test="customerCardid != null" >
+	        Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+	      </if>
+	      <if test="customerHospitalld != null" >
+	        Customer_HosPitalld = #{customerHospitalld,jdbcType=VARCHAR},
+	      </if>
+	        LunchFood = #{lunchfood,jdbcType=INTEGER},
+	        DinnerFood = #{dinnerfood,jdbcType=INTEGER},
+	        AddFood = #{addfood,jdbcType=INTEGER},
+			VegetarianFood=#{vegetarianfood,jdbcType=INTEGER},
+	      <if test="race != null" >
+	        Race = #{race,jdbcType=INTEGER},
+	      </if>
+	      <if test="wphMealmenuFid != null" >
+	        WPH_MealMenu_Fid = #{wphMealmenuFid,jdbcType=INTEGER},
+	      </if>
+	      <if test="wphMealnumeName != null" >
+	        WPH_MealNume_Name = #{wphMealnumeName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="wphMealtimeFid != null" >
+	        WPH_MealTime_Fid = #{wphMealtimeFid,jdbcType=INTEGER},
+	      </if>
+	      <if test="wphMealtimeName != null" >
+	        WPH_MealTime_Name = #{wphMealtimeName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="wphMealtypeFid != null" >
+	        WPH_MealType_Fid = #{wphMealtypeFid,jdbcType=INTEGER},
+	      </if>
+	      <if test="wphMealtypeName != null" >
+	        WPH_MealType_Name = #{wphMealtypeName,jdbcType=VARCHAR},
+	      </if>
+	      <if test="userFid != null" >
+	        User_Fid = #{userFid,jdbcType=INTEGER},
+	      </if>
+	      <if test="userrole != null" >
+	        UserRole = #{userrole,jdbcType=VARCHAR},
+	      </if>
+	      <if test="username != null" >
+	        UserName = #{username,jdbcType=VARCHAR},
+	      </if>
+	      <if test="notes != null" >
+	        Notes = #{notes,jdbcType=VARCHAR},
+	      </if>
+	      <if test="createdate != null" >
+	        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="bedno != null" >
+	        BedNo = #{bedno,jdbcType=VARCHAR},
+	      </if>
+	    </set>
+	    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+	<resultMap id="orderingAndFoodMap" type="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom">
+		<result column="orderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="depict" property="depict" jdbcType="VARCHAR" />
+		<result column="numbers" property="numbers" jdbcType="INTEGER" />
+		<result column="money" property="money" jdbcType="DOUBLE" />
+		<result column="datetime" property="mealdate" jdbcType="DATE" />
+		<result column="state" property="mealstatse" jdbcType="INTEGER" />
+		<result column="MealAdd" property="mealadd" jdbcType="INTEGER" />
+		<result column="customerFid" property="customerFid" jdbcType="INTEGER" />
+		<result column="cardNumber" property="customerCardid" jdbcType="VARCHAR" />
+		<result column="hospitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+		<result column="WPH_MealMenu_Fid" property="wphMealmenuFid" jdbcType="INTEGER" />
+		<result column="WPH_MealNume_Name" property="wphMealnumeName" jdbcType="VARCHAR" />
+		<result column="WPH_MealTime_Fid" property="wphMealtimeFid" jdbcType="INTEGER" />
+		<result column="WPH_MealTime_Name" property="wphMealtimeName" jdbcType="VARCHAR" />
+		<result column="WPH_MealType_Fid" property="wphMealtypeFid" jdbcType="INTEGER" />
+		<result column="WPH_MealType_Name" property="wphMealtypeName" jdbcType="VARCHAR" />
+		<result column="userFid" property="userFid" jdbcType="INTEGER" />
+		<result column="userRole" property="userrole" jdbcType="VARCHAR" />
+		<result column="userName" property="username" jdbcType="VARCHAR" />
+		<association property="order" javaType="com.slk.wph.module.WPH_Ordering.po.WphOrdering">
+			<result column="title" property="title" jdbcType="VARCHAR" />
+			<result column="depict" property="depict" jdbcType="VARCHAR" />
+			<result column="money" property="money" jdbcType="DOUBLE" />
+			<result column="state" property="orderingstatse" jdbcType="INTEGER" />
+			<result column="customerFid" property="customerFid" jdbcType="INTEGER" />
+			<result column="cardNumber" property="customerCarid" jdbcType="VARCHAR" />
+			<result column="hospitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+			<result column="Customer_Balance" property="customerBalance" jdbcType="DOUBLE" />
+			<result column="WPH_InvoiceRate_Fid" property="wphInvoicerateFid" jdbcType="INTEGER" />
+			<result column="WPH_Query_Fid" property="wphQueryFid" jdbcType="INTEGER" />
+			<result column="WPH_ServiceType_Fid" property="wphServicetypeFid" jdbcType="INTEGER" />
+			<result column="WPH_ServiceDetails_Fid" property="wphServicedetailsFid" jdbcType="INTEGER" />
+			<result column="datetime" property="orderingdate" jdbcType="TIMESTAMP" />
+			<result column="PayType" property="paytype" jdbcType="INTEGER" />
+			<result column="orderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+			<result column="userFid" property="userFid" jdbcType="INTEGER" />
+			<result column="userRole" property="userrole" jdbcType="VARCHAR" />
+			<result column="userName" property="username" jdbcType="VARCHAR" />
+			<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+		</association>
+		<association property="customer" javaType="com.slk.wph.module.WPH_Customer.po.WphCustomer">
+			<id column="customerFid" property="fid" jdbcType="INTEGER" />
+			<result column="Customer_Balance" property="balance" jdbcType="DOUBLE" />
+		</association>
+
+	</resultMap>
+	<select id="getVIPReserveIngBefore" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="orderingAndFoodMap">
+		SELECT
+			"VIP餐" title,"VIP餐" depict,meal.Money money,str_to_date(#{datetime},'%Y-%m-%d') datetime,1 state, concat('std_',CEILING((RAND()*9+1)*10000000),cus.fid) orderingNumber ,
+			cus.fid customerFid,cus.WPH_Card_Number cardNumber,cus.Hospitalld hospitalld,#{userFid} userFid,#{userrole} userRole,#{username} userName,
+
+			cus.Balance-meal.Money Customer_Balance,5 PayType,cus.WPH_Ward_Fid,2 WPH_InvoiceRate_Fid,details.WPH_Query_Fid,details.WPH_ServiceType_Fid,details.fid WPH_ServiceDetails_Fid,
+
+			1 numbers,1 MealAdd,meal.fid WPH_MealMenu_Fid,meal.`Name` WPH_MealNume_Name,mealtype.fid WPH_MealType_Fid,mealtype.`Name` WPH_MealType_Name
+		FROM wph_customer cus
+		LEFT JOIN wph_mealtype mealtype ON mealtype.fid = #{wphMealtypeFid}
+		LEFT JOIN wph_mealmenu meal ON meal.WPH_MealType_Fid = mealtype.fid
+		LEFT JOIN wph_servicedetails details ON details.JoinUUID = meal.UUID
+		WHERE cus.fid = #{customerFid} AND meal.fid = #{wphMealmenuFid}
+	</select>
+
+	<select id="getManyFoodListByInfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="BaseResultMap" >
+		SELECT food.Title,group_concat(food.WPH_MealNume_Name,'*',food.Numbers) Depict,cus.`Name` name,food.OrderingNumber,food.Customer_HosPitalld,food.Notes FROM wph_orderingfood food
+			LEFT JOIN wph_customer cus ON cus.Hospitalld = food.Customer_Hospitalld
+		WHERE food.MealDate = #{datetime}  AND food.Customer_HosPitalld = #{customerHospitalld} AND food.MealStatse = 1 AND food.WPH_MealType_Fid &gt;= 4 AND food.WPH_MealMenu_Fid NOT IN (27) #特餐，其他，vip,肠内配置,
+
+
+		GROUP BY food.OrderingNumber   ORDER BY MIN(food.WPH_MealType_Name)
+	</select>
+
+	<resultMap id="foodandfoodMap" type="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom">
+		<result column="OrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+		<result column="MealDate" property="mealdate" jdbcType="DATE" />
+		<collection property="food" ofType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" >
+			<result column="WPH_MealNume_Name" property="wphMealnumeName" jdbcType="VARCHAR" />
+			<result column="Numbers" property="numbers" jdbcType="INTEGER" />
+			<result column="Money" property="money" jdbcType="DOUBLE" />
+		</collection>
+	</resultMap>
+
+	<select id="getspecialListByInfo" parameterType="java.lang.String" resultMap="foodandfoodMap" >
+		SELECT food.OrderingNumber,food.MealDate,food.WPH_MealNume_Name, FORMAT(food.Money/food.Numbers,2) money,food.Numbers FROM wph_orderingfood food
+			LEFT JOIN wph_customer cus ON cus.Hospitalld = food.Customer_Hospitalld
+		WHERE food.MealDate IN (DATE_SUB(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL 0 DAY),DATE_SUB(DATE_FORMAT(NOW(),'%y-%m-%d'),INTERVAL -1 DAY))
+			  AND food.Customer_HosPitalld = #{customerHospitalld} AND food.MealStatse = 1 AND food.WPH_MealType_Fid &gt;= 5 AND food.WPH_MealType_Fid NOT IN (15)
+		ORDER BY food.OrderingNumber ;
+	</select>
+
+
+	<sql id="forOrderNumberArr">
+		<foreach collection="orderingnumber" item="orderingnumber" index="index" open="(" separator="," close=")">
+			#{orderingnumber}
+		</foreach>
+	</sql>
+	<update id="updateFoodByOrderNumber"  >
+		UPDATE wph_orderingfood food SET food.MealStatse = #{mealstatse} WHERE food.OrderingNumber IN <include refid="forOrderNumberArr"/>
+	</update>
+
+
+	<select id="getSpecialPrintListByInfo" resultMap="BaseResultMap">
+		SELECT
+		food.MealDate,
+		food.Customer_HosPitalld,
+		cus.`Name` NAME,
+		ward.`Name` wardName,
+		food.WPH_MealTime_Name,
+		GROUP_CONCAT(food.WPH_MealNume_Name,IF(food.Numbers>1,concat('*',food.Numbers),''),'' ORDER BY sort) WPH_MealNume_Name,
+		food.notes,
+		CASE WHEN meal.Type = 1 THEN '炒菜'
+		WHEN food.WPH_MealNume_Name LIKE "%包子%" THEN '包子'
+		WHEN food.WPH_MealNume_Name LIKE "%饺子%" THEN '饺子'
+		WHEN meal.Type = 3 THEN '饮品' END printType
+		FROM wph_orderingfood food
+		LEFT JOIN wph_customer cus ON cus.fid = food.Customer_Fid
+		LEFT JOIN wph_ward ward ON ward.fid = cus.WPH_Ward_Fid
+		LEFT JOIN (SELECT *,IF(`Name` IN('馒头','米饭','花卷') OR `Name` LIKE '%饭%'  ,1,0) sort FROM wph_mealmenu ) meal ON meal.fid = food.WPH_MealMenu_Fid
+		WHERE food.MealDate = #{datetime}
+		AND food.WPH_MealTime_Fid =  #{wphMealtimeFid}
+		AND food.WPH_MealType_Fid = 5
+		AND food.mealStatse = 1
+		<if test="wphWardFid != null and wphWardFid != ''">AND ward.fid = #{wphWardFid}</if>
+		GROUP BY
+		food.OrderingNumber,cus.Hospitalld,printType
+		ORDER BY
+		cus.Hospitalld,printType
+	</select>
+	<!-- 赵福岭 患者用餐明细 -->
+	<select id="selectFoodInfoHospitalld" resultMap="BaseResultMap">
+		select cus.`Name` as name,
+		food.*,
+		ward.`Name` as wardName
+		from wph_orderingfood food
+			LEFT JOIN wph_customer cus
+				on food.Customer_Hospitalld=cus.Hospitalld
+			left JOIN wph_ward ward
+				on cus.WPH_Ward_Fid=ward.fid
+		<where>
+			cus.Hospitalld=#{hospitalld}
+			AND food.MealDate BETWEEN #{startDate} AND #{endDate}
+		</where>
+		ORDER BY food.fid desc
+	</select>
+
+	<sql id="foodFidsArr">
+		<foreach collection="array" item="fids" open="(" separator="," close=")">
+			#{fids}
+		</foreach>
+	</sql>
+
+	<update id="updateFoodStateByFidsArr" >
+		UPDATE wph_orderingfood food SET food.MealStatse = 2 WHERE food.fid IN <include refid="foodFidsArr"/>
+	</update>
+
+
+	<select  id="selectMealPcInfo" resultType="com.slk.wph.module.WPH_Orderingfood.po.WphMealPcCollect">
+		SELECT
+		if(of.WPH_MealMenu_Fid!=1  or  of.WPH_MealTime_Fid=1,
+		concat(of.WPH_MealNume_Name  ,'  :  ',sum(1),'  份  '),
+		concat(
+		if(of.Race=1,'回餐',of.WPH_MealNume_Name),'  :  ',sum(1),'  份  ',
+		'  ,米饭:',sum(IF(of.WPH_MealTime_Fid=2,IF(of.LunchFood=1,1,0),IF(of.LunchFood=1,1,0)))  ,'  份  '  ,
+		'  ,馒头:',sum(IF(of.WPH_MealTime_Fid=2,IF(of.DinnerFood=1,1,0),IF(of.DinnerFood=1,1,0))),'  份  ',
+		'  ,全素:',sum(IF(of.VegetarianFood=1,1,0))  ,'  份  '
+		)
+		)    as  info
+		FROM  wph_orderingfood  of
+		LEFT  JOIN  wph_customer  c  ON  of.Customer_Fid  =  c.fid
+		LEFT  JOIN  wph_ward  w  ON  w.fid  =  c.WPH_Ward_Fid
+		LEFT  JOIN  wph_mealmenu  meal  ON  meal.fid  =  of.WPH_MealMenu_Fid
+		WHERE  (c.HospitalldStatus  =  1  OR  (c.HospitalldStatus  =  2  AND  c.WPH_Card_Fid  !=  ''  AND  c.WPH_Card_Fid  IS  NOT  NULL  )  OR    c.Worker  =  1    OR  w.fid  =  1)
+		AND  of.MealStatse  =  1
+		AND  of.MealDate  =  #{datetime}
+		AND  (of.WPH_MealTime_Fid  = #{mealTimeFid}   OR  of.WPH_MealMenu_Fid  =  28  OR  of.WPH_MealType_Fid  IN(15,16))
+		AND  IF(of.WPH_MealTime_Fid  =   #{mealTimeFid},    of.Facting  !=  1,1=1)
+		and of.WPH_MealType_Fid != 5
+		<choose>
+			<when test="wardFid != null and wardFid != ''">AND c.WPH_Ward_Fid = #{wardFid}</when>
+			<otherwise>AND c.WPH_Ward_Fid IN(SELECT fid FROM wph_ward WHERE `Status` = 0)</otherwise>
+		</choose>
+		GROUP BY of.WPH_MealMenu_Fid,of.WPH_MealNume_Name
+		ORDER  BY  of.fid
+	</select>
+
+
+</mapper>

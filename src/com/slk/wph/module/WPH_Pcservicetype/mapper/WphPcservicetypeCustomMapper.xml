@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.slk.wph.module.WPH_Pcservicetype.mapper.WphPcservicetypeCustomMapper">
+    <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Pcservicetype.po.WphPcservicetype">
+        <id column="fid" jdbcType="INTEGER" property="fid" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="img" jdbcType="VARCHAR" property="img" />
+        <result column="createdate" jdbcType="TIMESTAMP" property="createdate" />
+        <result column="createuser" jdbcType="VARCHAR" property="createuser" />
+        <result column="state" property="state"/>
+    </resultMap>
+    <select id="selectAllPcservicetype" resultMap="BaseResultMap">
+        SELECT *
+        FROM wph_pcservicetype
+        ORDER BY fid ASC
+    </select>
+    <select id="selectPcservicetypeState" resultMap="BaseResultMap">
+        SELECT *
+        FROM wph_pcservicetype
+        <where>
+            and state='0'
+        </where>
+        ORDER BY fid ASC
+    </select>
+
+    <select id="selectByFid" resultMap="BaseResultMap">
+        SELECT *
+        FROM wph_pcservicetype
+        <where>
+            and fid=#{fid}
+        </where>
+    </select>
+
+    <insert id="savePcservicetype">
+        insert into wph_pcservicetype
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="fid != null">
+                fid,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="img != null">
+                img,
+            </if>
+            <if test="createdate != null">
+                createdate,
+            </if>
+            <if test="createuser != null">
+                createuser,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="fid != null">
+                #{fid,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="img != null">
+                #{img,jdbcType=VARCHAR},
+            </if>
+            <if test="createdate != null">
+                #{createdate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createuser != null">
+                #{createuser,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updatePcservicetype">
+        update wph_pcservicetype
+        <set>
+            createdate =now(),
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="img != null">
+                img = #{img,jdbcType=VARCHAR},
+            </if>
+            <if test="createuser != null">
+                createuser = #{createuser,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where fid = #{fid,jdbcType=INTEGER}
+    </update>
+</mapper>

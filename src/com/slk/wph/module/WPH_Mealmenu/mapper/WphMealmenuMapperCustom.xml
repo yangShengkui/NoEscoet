@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Mealmenu.mapper.WphMealmenuMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Mealmenu.po.WphMealmenuCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="WPH_MealType_Fid" property="wphMealtypeFid" jdbcType="INTEGER" />
+    <result column="Name" property="name" />
+    <result column="Status" property="status" />
+    <result column="Type" property="type" />
+    <result column="imgs" property="imgs" />
+    <result column="Money" property="money" />
+    <result column="Depict" property="depict" />
+    <result column="Meterage" property="meterage" />
+    <result column="CreateDate" property="createdate"  />
+    <result column="UUID" property="uuid" jdbcType="VARCHAR" />
+    <result column="maxNum" property="maxnum" jdbcType="INTEGER" />
+    <result column="nowNum" property="nownum" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <resultMap  id="SpecialMap" type="com.slk.wph.module.WPH_Mealmenu.po.WphMealmenuCustom" extends="BaseResultMap">
+  
+  	<collection property="mealWeekTimeList"  ofType="com.slk.wph.module.WPH_Mealweek.po.WphMealweekCustom">
+	    <id column="mwFid" property="fid"/>
+	    <result column="mwName" property="name"/>
+	    <result column="CreateDate" property="createdate"/>
+	    
+	    <collection property="mealtimeList" ofType="com.slk.wph.module.WPH_Mealtime.po.WphMealtimeCustom">
+	    	<id column="mtFid" property="fid" />
+		    <result column="mtName" property="name"/>
+		    <result column="onCheck" property="onCheck" />
+	    </collection>
+  	</collection>
+  
+  </resultMap>
+  
+  
+  <select id="getMealMenuOneByTypeFid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  		SELECT * FROM wph_mealmenu m WHERE m.WPH_MealType_Fid = ${value} ORDER BY m.fid 
+  </select>
+  
+  
+  <select id="getMealMenuTweByTypeFid" parameterType="java.lang.Integer" resultMap="SpecialMap">
+  		
+		SELECT mm.*, mw.fid mwFid,mw.`Name` mwName,mt.fid mtFid,mt.`Name` mtName,CASE WHEN mt.fid = mmt.WPH_MealTime THEN 1 ELSE 0 END AS onCheck FROM wph_mealmenu mm 
+
+			LEFT JOIN wph_mealweek mw ON mw.fid = mw.fid
+			LEFT JOIN wph_mealtime mt ON mt.fid = mt.fid
+			LEFT JOIN wph_mealmenu_time mmt ON mmt.WPH_MealWeek = mw.fid AND mmt.WPH_MealTime = mt.fid AND mmt.WPH_MealMenu_Fid = mm.fid
+
+		WHERE mm.WPH_MealType_Fid = ${value} ORDER BY mm.fid,mw.fid,mt.fid 
+		
+  </select>
+  
+  <select id="getMealMenuThreeByTypeFid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  		SELECT mm.*,mt.`Name` mtName FROM wph_mealmenu mm 
+			LEFT JOIN wph_mealtype mt ON mt.fid = mm.WPH_MealType_Fid
+	
+			WHERE mm.WPH_MealType_Fid >= ${value} ORDER BY mm.fid 
+  </select>
+  
+  
+  <sql id="typeFidForeach">
+  	<foreach collection="fids" item="fid" open="(" separator="," close=")">
+  		#{fid}
+  	</foreach>
+  </sql>
+  
+  	
+  <select id="getMenuOrdinaryMealTypeFid" parameterType="com.slk.wph.module.WPH_Mealmenu.po.WphMealmenuCustom" resultMap="BaseResultMap">
+		SELECT mm.* FROM wph_mealmenu mm WHERE mm.WPH_MealType_Fid IN<include refid="typeFidForeach"/> AND mm.`Status` = 0 ORDER BY mm.fid 
+  </select>
+  
+  <select id="getMenuBySpecialMealWeek" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT mm.*,mt.`Name` mtName ,mmt.WPH_MealTime mealTimeFid FROM wph_mealmenu mm
+			LEFT JOIN wph_mealtype mt ON mt.fid = mm.WPH_MealType_Fid
+			LEFT JOIN wph_mealmenu_time mmt ON mmt.WPH_MealMenu_Fid = mm.fid
+		WHERE mmt.WPH_MealWeek = #{week} AND mm.WPH_MealType_Fid = 5
+  </select>
+  
+  <select id="getMenuByOtherMealTypeFid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+	  SELECT mm.*,mt.`Name` mtName  FROM wph_mealmenu mm
+		  LEFT JOIN wph_mealtype mt ON mt.fid = mm.WPH_MealType_Fid
+	  WHERE mm.WPH_MealType_Fid >= 7 AND mm.WPH_MealType_Fid NOT IN (15)  AND mm.`Status` = 0 ORDER BY mm.fid
+  </select>
+  
+  
+  <select id="getOrderingCountByInfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" resultType="java.lang.Integer">
+		SELECT count(*) FROM wph_orderingfood of
+			
+ 		WHERE of.Customer_HosPitalld = #{customerHospitalld } 
+ 					 AND of.MealDate = #{mealdate } 
+ 					 AND of.MealStatse = #{mealstatse} 
+ 					 AND of.WPH_MealMenu_Fid NOT IN(28)
+ 					 AND of.WPH_MealType_Fid IN(2,3,4) 
+  </select>
+  
+  <select id="getBoolNursingByCustomerFid" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM wph_ordering oo
+		WHERE oo.Customer_Fid = #{value}
+		AND (DATE_FORMAT(oo.OrderingDate, '%y-%m-%d') = DATE_FORMAT(now(), '%y-%m-%d'))
+		AND oo.WPH_Query_Fid = 1
+		AND oo.OrderingStatse = 1
+	  	AND oo.OrderingNumber NOT IN (SELECT oo2.OldOrderingNumber FROM wph_ordering oo2 WHERE oo2.Customer_Fid = #{value} AND oo2.OrderingStatse = 2)
+  </select>
+  
+  <select id="getMenuAndTypeNameByFid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+	  	SELECT m.*,mt.`Name` mtName FROM wph_mealmenu m 
+				LEFT JOIN wph_mealtype mt ON mt.fid = m.WPH_MealType_Fid
+		WHERE m.fid = #{value} ORDER BY m.fid 
+  </select>
+  
+  <sql id="arrayFids">
+  	<foreach collection="array" item="fids" index="index" open="(" separator="," close=")">
+  		#{fids}
+  	</foreach>
+  </sql>
+  
+  <select id="getMealMenuListByFids"  resultMap="BaseResultMap">
+  	SELECT * FROM wph_mealmenu meal WHERE meal.fid IN <include refid="arrayFids"/>;
+  </select>
+
+	<select id="getMealMenuByTypeFid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT * FROM wph_mealmenu meal WHERE meal.WPH_MealType_Fid = #{value} AND meal.`Status` = 0
+	</select>
+  
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Servicetype.mapper.WphServicetypeMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Servicetype.po.WphServicetypeCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="WPH_Query_Fid" property="wphQueryFid" jdbcType="INTEGER" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="JoinUUID" property="joinuuid" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap type="com.slk.wph.module.WPH_Servicetype.po.WphServicetypeCustom" id="TypeAndDetails" extends="BaseResultMap">
+  	<collection property="detailsList" ofType="com.slk.wph.module.Wph_Servicedetails.po.WphServicedetails" >
+  		<id column="detailsFid" property="fid" jdbcType="INTEGER" />
+	    <result column="detailsName" property="name" jdbcType="VARCHAR" />
+	    <result column="detailsWPH_Query_Fid" property="wphQueryFid" jdbcType="INTEGER" />
+	    <result column="WPH_ServiceType_Fid" property="wphServicetypeFid" jdbcType="INTEGER" />
+	    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+	    <result column="JoinUUID" property="joinuuid" jdbcType="VARCHAR" />
+  	</collection>
+  </resultMap>
+  
+  <select id="getServiceTypeAndDetailsByQuery" parameterType="java.lang.Integer" resultMap="TypeAndDetails">
+	  	SELECT type.*,details.*,details.fid detailsFid,details.name detailsName,details.WPH_Query_Fid detailsWPH_Query_Fid FROM wph_servicetype type 
+				LEFT JOIN wph_servicedetails details ON details.WPH_ServiceType_Fid = type.fid
+		WHERE type.WPH_Query_Fid = #{value}  AND type.fid NOT IN(12) ORDER BY type.fid,details.fid
+  	
+  </select>
+  
+  <select id="getServiceTypeAndDetailsByQueryAll" resultMap="TypeAndDetails">
+  		SELECT type.*,details.*,details.fid detailsFid,details.name detailsName,details.WPH_Query_Fid detailsWPH_Query_Fid FROM wph_servicetype type 
+				LEFT JOIN wph_servicedetails details ON details.WPH_ServiceType_Fid = type.fid
+		WHERE type.fid NOT IN(12) ORDER BY type.fid,details.fid
+  </select>
+</mapper>

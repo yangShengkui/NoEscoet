@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Summary_Synopsis.mapper.WphSummarySynopsisMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Summary_Synopsis.po.WphSummarySynopsisCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="imgs" property="imgs" jdbcType="VARCHAR" />
+    <result column="notes" property="notes" jdbcType="VARCHAR" />
+    <result column="createdate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+  </resultMap>
+  
+ 
+  <select id="selectSummarySynopsis" resultMap="BaseResultMap">
+  		select * from wph_summary_synopsis
+  </select>
+  <update id="updateSummarySynopsis">
+    update wph_summary_synopsis
+    <set >
+      <if test="imgs != null" >
+        imgs = #{imgs},
+      </if>
+      <if test="notes != null" >
+        notes = #{notes},
+      </if>
+      <if test="createdate != null" >
+        createdate = #{createdate},
+      </if>
+      <if test="createuser != null" >
+        createuser = #{createuser},
+      </if>
+    </set>
+    where fid = #{fid}
+  </update>
+</mapper>

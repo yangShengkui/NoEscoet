@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Role.mapper.WphRoleMapperCustom">
+	<resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Role.po.WphRoleCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="RoleName" property="rolename" jdbcType="VARCHAR" />
+		<result column="RoleDesc" property="roledesc" jdbcType="VARCHAR" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="CreateUserId" property="createuserid" jdbcType="INTEGER" />
+		<result column="UserName" property="userName" jdbcType="VARCHAR" />
+		<result column="RoleType" property="roletype" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="MenuOrApp">
+		<if test="menuIds!=null">
+			'Menu'
+		</if>
+		<if test="appIds!=null">
+			'App'
+		</if>
+	</sql>
+	<sql id="MenuOrApp_tableName">
+		<if test="menuIds!=null">
+			Wph_menu
+		</if>
+		<if test="appIds!=null">
+			Wph_app
+		</if>
+	</sql>
+
+
+	<sql id="quer_fid_where">
+		<if test="menuIds!=null">
+			<foreach collection="menuIds" item="fids" open="and ("
+				separator="or" close=")">
+				<!-- 每个遍历需要拼接的串 -->
+				fid=#{fids}
+			</foreach>
+		</if>
+		<if test="appIds!=null">
+			<foreach collection="appIds" item="fids" open="and ("
+				separator="or" close=")">
+				<!-- 每个遍历需要拼接的串 -->
+				fid=#{fids}
+			</foreach>
+		</if>
+	</sql>
+
+	<sql id="rolesFids_quer">
+
+		<if test="rolesFids!=null">
+			<foreach collection="rolesFids" item="fids" open="and ("
+				separator="or" close=")">
+				<!-- 每个遍历需要拼接的串 -->
+				fid=#{fids}
+			</foreach>
+		</if>
+	</sql>
+
+
+	<delete id="deleteRoleByuser" parameterType="java.lang.Integer">
+		delete from Wph_user_role where User_Fid=#{value}
+	</delete>
+
+	<insert id="UpdateUserByRole" parameterType="com.slk.wph.module.WPH_Role.po.WphRoleCustom">
+		insert into Wph_user_role(Role_Fid,User_Fid)
+		select
+		fid,#{userFid} from Wph_role
+		<where>
+			<include refid="rolesFids_quer" />
+		</where>
+	</insert>
+
+
+	<insert id="insertPrivilege" parameterType="com.slk.wph.module.WPH_Role.po.WphRoleCustom">
+		insert into
+		Wph_privilege(PrivilegeMasterValue,PrivilegeAccessValue,Modify_UserFid,PrivilegeAccess)
+		select #{fid},fid,#{userFid},
+		<include refid="MenuOrApp" />
+		from
+		<include refid="MenuOrApp_tableName" />
+		<where>
+			<include refid="quer_fid_where" />
+		</where>
+	</insert>
+
+	<delete id="deletePrivilege" parameterType="com.slk.wph.module.WPH_Role.po.WphRoleCustom">
+		delete a from Wph_privilege a
+		left join Wph_user_role b on a.PrivilegeMasterValue = b.Role_Fid and
+		b.User_Fid=#{userFid} or b.Role_Fid=#{fid}
+		where a.PrivilegeMasterValue=#{fid} and a.PrivilegeAccess=
+		<include refid="MenuOrApp" />
+	</delete>
+
+
+	<delete id="deleteUser_Roles" parameterType="java.lang.Integer">
+
+		delete from Wph_user_role where Role_Fid=#{value}
+
+	</delete>
+
+
+	<delete id="deletePrivilege_Roles" parameterType="java.lang.Integer">
+
+		delete from Wph_privilege where PrivilegeMaster='Role' and
+		PrivilegeMasterValue=#{value}
+
+	</delete>
+
+	<select id="findRoleByUserFid" parameterType="com.slk.wph.module.WPH_Role.po.WphRoleCustom"
+		resultMap="BaseResultMap">
+		SELECT a.*,(SELECT `Name` FROM wph_user WHERE fid= a.CreateUserId) AS
+		UserName,
+		CASE WHEN b.User_Fid=#{userFid} THEN 1 ELSE 0 END checkOn
+		FROM wph_role a
+		LEFT JOIN wph_user_role b ON a.fid = b.Role_Fid AND b.User_Fid =#{userFid}
+		LEFT JOIN wph_user c ON b.User_Fid=c.fid
+		WHERE  b.User_Fid=#{userFid} OR a.CreateUserId=#{userFid} OR 1=#{userFid}
+		GROUP BY a.fid ORDER BY a.fid DESC;
+	</select>
+
+	<select id="UserIdByRoles" parameterType="WphRoleCustom" resultMap="BaseResultMap">
+
+		<choose>
+			<when test=" createuserid == 1">
+				select a.*,case when b.Role_Fid is null then 0 else 1
+				end checkOn
+				from Wph_role a
+				left join Wph_user_role b on a.fid=b.Role_Fid and
+				b.User_Fid=#{userFid}
+
+				order by a.fid desc;
+			</when>
+			<otherwise>
+				SELECT r.* ,CASE WHEN ur.Role_Fid = ur2.Role_Fid THEN 1
+				ELSE 0 END checkON
+
+				FROM wph_role r
+
+				LEFT JOIN wph_user_role ur ON ur.Role_Fid = r.fid
+
+				LEFT JOIN wph_user_role ur2 ON ur2.Role_Fid = ur.Role_Fid AND
+				ur2.User_Fid = #{userFid} WHERE (ur.User_Fid = #{createuserid} or
+				r.CreateUserId = #{createuserid}) GROUP BY r.fid ORDER BY r.fid DESC
+			</otherwise>
+		</choose>
+
+
+	</select>
+
+
+	<insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Role.po.WphRoleCustom">
+		insert into Wph_role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="rolename != null">
+				RoleName,
+			</if>
+			<if test="roledesc != null">
+				RoleDesc,
+			</if>
+			<if test="createdate != null">
+				CreateDate,
+			</if>
+			<if test="createuserid != null">
+				CreateUserId,
+			</if>
+			<if test="roletype != null">
+				RoleType,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="rolename != null">
+				#{rolename,jdbcType=VARCHAR},
+			</if>
+			<if test="roledesc != null">
+				#{roledesc,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createuserid != null">
+				#{createuserid,jdbcType=INTEGER},
+			</if>
+			<if test="roletype != null">
+				#{roletype,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="deleteByIdByUserId" parameterType="com.slk.wph.module.WPH_Role.po.WphRoleCustom">
+		delete a from Wph_role a left join Wph_user_role b ON (a.fid =
+		b.Role_Fid or b.Role_Fid=1) and b.User_Fid =#{userFid}
+		where a.fid=#{fid,jdbcType=INTEGER} and
+		(b.User_Fid=#{userFid,jdbcType=INTEGER} or
+		a.CreateUserId=#{userFid,jdbcType=INTEGER})
+	</delete>
+
+	<update id="updateByIdByuserFid" parameterType="com.slk.wph.module.WPH_Role.po.WphRoleCustom">
+		update Wph_role a left join Wph_user_role b ON (a.fid = b.Role_Fid or
+		b.Role_Fid=1) and b.User_Fid =#{userFid}
+		<set>
+			<if test="rolename != null">
+				a.RoleName = #{rolename,jdbcType=VARCHAR},
+			</if>
+			<if test="roledesc != null">
+				a.RoleDesc = #{roledesc,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				a.CreateDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createuserid != null">
+				a.CreateUserId = #{createuserid,jdbcType=INTEGER},
+			</if>
+			<if test="roletype != null">
+				RoleType,
+			</if>
+		</set>
+		where a.fid = #{fid,jdbcType=INTEGER} and
+		(b.User_Fid=#{userFid,jdbcType=INTEGER} or
+		a.CreateUserId=#{userFid,jdbcType=INTEGER})
+	</update>
+
+
+
+	<select id="getRoleByUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT ur.Role_Fid FROM wph_user_role ur
+		LEFT JOIN wph_user u ON u.fid = ur.User_Fid
+		WHERE u.fid = #{value}
+	</select>
+
+	<select id="getRoleListByUserId" parameterType="java.lang.Integer" resultType="com.slk.wph.module.WPH_Role.po.WphRole">
+		SELECT a.* FROM
+		wph_role a left JOIN wph_user_role b on a.fid=b.Role_Fid
+		left JOIN wph_user c on b.User_Fid=c.fid
+		where c.fid=#{fid}
+	</select>
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.slk.wph.module.WPH_UserCodeId.mapper.WphUsercodeidMapperCustom">
+	<resultMap id="BaseResultMap"
+		type="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeidCustom">
+		<id column="fid" property="fid" />
+		<result column="CodeNumber" property="codenumber" />
+		<result column="CodeStatus" property="codestatus" />
+		<result column="CodeId" property="codeid" />
+		<result column="types" property="types" />
+		<result column="User_Fid" property="userFid" />
+		<result column="UserRole" property="userrole" />
+		<result column="UserName" property="username" />
+		<result column="CreateDate" property="createdate" />
+		<result column="customerfid" property="customerfid" />
+	</resultMap>
+	
+	<select id="getWphUserCodeIdByCodeId" resultMap="BaseResultMap">
+		select * from
+		WPH_UserCodeId where CodeId=#{value}
+	</select>
+	
+	<select id="getWphUserCodeIdByFid" resultMap="BaseResultMap">
+		select * from
+		WPH_UserCodeId where fid=#{value}
+	</select>
+	
+	<select id="getWphUserCodeIdByCodeNumber" resultMap="BaseResultMap">
+		select * from
+		WPH_UserCodeId where CodeNumber=#{value}
+	</select>
+	
+	<select id="selectByWphUserCode" resultMap="BaseResultMap"> 
+		select * from WPH_UserCodeId where types='0' and CodeStatus='1' ORDER BY fid asc LIMIT 1 
+	</select>
+	
+	<update id="updateWphUserCodeBlood">
+		update WPH_UserCodeId
+		<set>
+			<if test="codestatus != null">
+				CodeStatus = #{codestatus,jdbcType=INTEGER},
+			</if>
+			<if test="types != null">
+				types = #{types,jdbcType=INTEGER},
+			</if>
+			<if test="userFid != null">
+				User_Fid = #{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null">
+				UserRole = #{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				UserName = #{username,jdbcType=VARCHAR},
+			</if> 
+			<if test="codeid != null">
+				CodeId = #{codeid},
+			</if> 
+			<if test="customerfid != null">
+				customerfid = #{customerfid},
+			</if> 
+		</set>
+		<where>
+			 CodeNumber=#{codenumber} or (types='0' and CodeStatus='1')  ORDER BY fid asc LIMIT 1
+		</where>
+	</update>
+	
+	<!-- <insert id="insertWphUserCodeId" useGeneratedKeys="true" keyProperty="fid">
+		insert into WPH_UserCodeId
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="codenumber != null">
+				CodeNumber,
+			</if>
+			<if test="codestatus != null">
+				CodeStatus,
+			</if>
+			<if test="codeid != null">
+				CodeId,
+			</if>
+			<if test="types != null">
+				types,
+			</if>
+			<if test="userFid != null">
+				User_Fid,
+			</if>
+			<if test="userrole != null">
+				UserRole,
+			</if>
+			<if test="username != null">
+				UserName,
+			</if>
+			<if test="createdate != null">
+				CreateDate,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="codenumber != null">
+				#{codenumber,jdbcType=VARCHAR},
+			</if>
+			<if test="codestatus != null">
+				#{codestatus,jdbcType=INTEGER},
+			</if>
+			<if test="codeid != null">
+				#{codeid,jdbcType=VARCHAR},
+			</if>
+			<if test="types != null">
+				#{types,jdbcType=INTEGER},
+			</if>
+			<if test="userFid != null">
+				#{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null">
+				#{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert> -->
+	<update id="updateWphUserCodeId">
+		update wph_usercodeid
+		<set>
+			<if test="codenumber != null">
+				CodeNumber = #{codenumber,jdbcType=VARCHAR},
+			</if>
+			<if test="codestatus != null">
+				CodeStatus = #{codestatus,jdbcType=INTEGER},
+			</if>
+			<if test="types != null">
+				types = #{types,jdbcType=INTEGER},
+			</if>
+			<if test="userFid != null">
+				User_Fid = #{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null">
+				UserRole = #{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				UserName = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="customerfid != null">
+				customerfid = #{customerfid},
+			</if> 
+			<if test="codeid != null">
+				CodeId = #{codeid},
+			</if> 
+			
+		</set>
+		where CodeNumber = #{codenumber,jdbcType=INTEGER}
+	</update>
+	
+	<update id="cleanCodeidByCustomerFid" parameterType="java.lang.Integer">
+		UPDATE wph_usercodeid uci 
+		SET uci.CodeStatus = 1,uci.CodeId = NULL,uci.types = 0,uci.UserName = '',uci.UserRole = '',uci.User_Fid = NULL,uci.customerFid=NULL  
+		WHERE uci.customerFid = #{value}
+	</update>
+</mapper>

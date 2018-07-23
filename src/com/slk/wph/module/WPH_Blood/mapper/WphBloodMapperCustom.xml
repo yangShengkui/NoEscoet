@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Blood.mapper.WphBloodMapperCustom">
+	<resultMap id="BaseResultMap"
+		type="com.slk.wph.module.WPH_Blood.po.WphBloodCustom">
+		<id column="fid" property="fid" />
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+		<result column="Customer_CardId" property="customerCardid"
+			jdbcType="VARCHAR" />
+		<result column="Customer_HospitalId" property="customerHospitalid"
+			jdbcType="VARCHAR" />
+		<result column="Custmer_Name" property="custmerName" jdbcType="VARCHAR" />
+		<result column="BloodType" property="bloodtype" jdbcType="VARCHAR" />
+		<result column="Picture" property="picture" jdbcType="VARCHAR" />
+		<result column="Dosage" property="dosage" jdbcType="DOUBLE" />
+		<result column="NowDosageMoney" property="nowdosagemoney"
+			jdbcType="DOUBLE" />
+		<result column="NowDosage" property="nowdosage" jdbcType="DOUBLE" />
+		<result column="Status" property="status" jdbcType="INTEGER" />
+		<result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+		<result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+		<result column="UserName" property="username" jdbcType="VARCHAR" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="Notes" property="notes" jdbcType="VARCHAR" />
+		<result column="OrderingNumber" property="orderingnumber"
+			jdbcType="VARCHAR" />
+		<result column="bBalance" property="balance" />
+		<result column="updatedate" property="updatedate" />
+		<result column="codeNumber" property="codeNumber" />
+	</resultMap>
+
+	<!-- 只显示住院的患者 -->
+	<select id="selectAll" resultMap="BaseResultMap">
+		select a.*,b.Balance as
+		bBalance from wph_blood a left join wph_customer b on
+		a.Customer_Fid=b.fid
+		where (b.HospitalldStatus!='2' or b.HospitalldStatus is not null) 
+		order by a.status asc,a.CreateDate desc
+	</select>
+
+	<select id="selectWphBloodCustomByFid" resultMap="BaseResultMap">
+		select
+		a.*,b.Balance as bBalance from wph_blood a left join wph_customer b
+		on
+		a.Customer_Fid=b.fid where a.fid=${value}
+		order by a.CreateDate desc
+	</select>
+
+	<sql id="columns">
+		fid,
+		Customer_Fid,
+		Customer_CardId,
+		Customer_HospitalId,
+		Custmer_Name,BloodType,
+		Dosage,
+		NowDosage,
+		Status,
+		User_Fid,
+		UserRole,
+		UserName,
+		CreateDate,
+		Notes,
+		NowDosageMoney,
+		OrderingNumber,
+		Picture
+	</sql>
+
+
+
+	<select id="getWphBloodCustomByCardId" resultMap="BaseResultMap">
+		select *
+		from
+		wph_blood where Customer_CardId=#{value}
+	</select>
+	
+	
+	<select id="selectAllPic" resultMap="BaseResultMap">
+		select Picture from
+		wph_blood where Picture is not null and Picture!=""
+		<if test="hospitalld!=null and hospitalld!=''">
+		 and Customer_HospitalId=#{hospitalld}
+		</if>
+	</select>
+	
+	
+	<insert id="insertWphBloodCustom">
+		insert into wph_blood
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="customerFid != null">
+				Customer_Fid,
+			</if>
+			<if test="customerCardid != null">
+				Customer_CardId,
+			</if>
+			<if test="customerHospitalid != null">
+				Customer_HospitalId,
+			</if>
+			<if test="custmerName != null">
+				Custmer_Name,
+			</if>
+			<if test="bloodtype != null">
+				BloodType,
+			</if>
+			<if test="picture != null">
+				Picture,
+			</if>
+			<if test="dosage != null">
+				Dosage,
+			</if>
+			<if test="nowdosagemoney != null">
+				NowDosageMoney,
+			</if>
+			<if test="nowdosage != null">
+				NowDosage,
+			</if>
+			<if test="status != null">
+				Status,
+			</if>
+			<if test="userFid != null">
+				User_Fid,
+			</if>
+			<if test="userrole != null">
+				UserRole,
+			</if>
+			<if test="username != null">
+				UserName,
+			</if>
+			<if test="createdate != null">
+				CreateDate,
+			</if>
+			<if test="notes != null">
+				Notes,
+			</if>
+			<if test="orderingnumber != null">
+				OrderingNumber,
+			</if>
+			<if test="codeNumber != null">
+				codeNumber,
+			</if>
+			<if test="updatedate!=null">
+				updatedate,
+			</if>
+			
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="customerFid != null">
+				#{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerCardid != null">
+				#{customerCardid,jdbcType=VARCHAR},
+			</if>
+			<if test="customerHospitalid != null">
+				#{customerHospitalid,jdbcType=VARCHAR},
+			</if>
+			<if test="custmerName != null">
+				#{custmerName,jdbcType=VARCHAR},
+			</if>
+			<if test="bloodtype != null">
+				#{bloodtype,jdbcType=VARCHAR},
+			</if>
+			<if test="picture != null">
+				#{picture,jdbcType=VARCHAR},
+			</if>
+			<if test="dosage != null">
+				#{dosage,jdbcType=DOUBLE},
+			</if>
+			<if test="nowdosagemoney != null">
+				#{nowdosagemoney,jdbcType=DOUBLE},
+			</if>
+			<if test="nowdosage != null">
+				#{nowdosage,jdbcType=DOUBLE},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="userFid != null">
+				#{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null">
+				#{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="notes != null">
+				#{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="orderingnumber != null">
+				#{orderingnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="codeNumber != null">
+				#{codeNumber},
+			</if>
+			<if test="updatedate!=null">
+				#{updatedate},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateWphBloodCustom">
+		update wph_blood
+		<set>
+			<if test="customerFid != null">
+				Customer_Fid = #{customerFid,jdbcType=INTEGER},
+			</if>
+			<if test="customerCardid != null">
+				Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+			</if>
+			<if test="customerHospitalid != null">
+				Customer_HospitalId = #{customerHospitalid,jdbcType=VARCHAR},
+			</if>
+			<if test="custmerName != null">
+				Custmer_Name = #{custmerName,jdbcType=VARCHAR},
+			</if>
+			<if test="bloodtype != null">
+				BloodType = #{bloodtype,jdbcType=VARCHAR},
+			</if>
+			<if test="picture != null">
+				Picture = #{picture,jdbcType=VARCHAR},
+			</if>
+			<if test="dosage != null">
+				Dosage = #{dosage,jdbcType=DOUBLE},
+			</if>
+			<if test="nowdosagemoney != null">
+				NowDosageMoney = #{nowdosagemoney,jdbcType=DOUBLE},
+			</if>
+			<if test="nowdosage != null">
+				NowDosage = #{nowdosage,jdbcType=DOUBLE},
+			</if>
+			<if test="status != null">
+				Status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="userFid != null">
+				User_Fid = #{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null">
+				UserRole = #{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				UserName = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				CreateDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="notes != null">
+				Notes = #{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="orderingnumber != null">
+				OrderingNumber = #{orderingnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="updatedate != null">
+				updatedate = #{updatedate},
+			</if>
+			
+		</set>
+		where fid = #{fid,jdbcType=INTEGER}
+	</update>
+</mapper>

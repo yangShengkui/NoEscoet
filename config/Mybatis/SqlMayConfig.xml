@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration 
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 全局配置参数 -->
+	 <settings>
+	 	<!-- 开启延迟加载 -->
+	 	<setting name="lazyLoadingEnabled" value="false"/>
+	 	<!-- 关闭积极加载，使其按需加载，如果积极加载为true则懒加载属性全部加载 -->
+	 	<setting name="aggressiveLazyLoading" value="false"/>
+	 	<!-- 开启二级缓存 	还需要在想开启二级缓存的mapper中开启 cache
+	 		并且要做Pojo类中实现序列化接口 Serializable
+	 	-->
+	 	<setting name="cacheEnabled" value="true"/>
+	 	 <setting name="logImpl" value="LOG4J2" />  
+	 </settings> 
+	
+	<!-- typeAliases(别名) 
+	可以定义XML中 parameterType 的类型别名 如 com.sui.mybatis.po.User=user
+	-->
+	<typeAliases>
+		<!-- 单个别名 -->
+		 <!-- <typeAlias type="com.sui.SpringMvc.module.user.po.User" alias="users"/>  -->
+		<!-- 批量别名
+			   指定包名，Mybatis会自动扫描包中的po类，自定义别名，自定义的别名就是类名（首字母不区分大小写）
+		 -->
+		 <package name="com.slk.wph.module"/> 
+	</typeAliases>
+	
+	
+</configuration>

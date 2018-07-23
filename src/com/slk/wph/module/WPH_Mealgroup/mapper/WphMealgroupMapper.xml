@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Mealgroup.mapper.WphMealgroupMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroup" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+    <result column="WPH_Ward_Name" property="wphWardName" jdbcType="VARCHAR" />
+    <result column="Group1" property="group1" jdbcType="VARCHAR" />
+    <result column="Group2" property="group2" jdbcType="VARCHAR" />
+    <result column="Group3" property="group3" jdbcType="VARCHAR" />
+    <result column="Group4" property="group4" jdbcType="VARCHAR" />
+    <result column="Group5" property="group5" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, WPH_Ward_Fid, WPH_Ward_Name, Group1, Group2, Group3, Group4, Group5, CreateDate
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroupExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_mealgroup
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_mealgroup
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_mealgroup
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroupExample" >
+    delete from wph_mealgroup
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroup" >
+    insert into wph_mealgroup (fid, WPH_Ward_Fid, WPH_Ward_Name, 
+      Group1, Group2, Group3, 
+      Group4, Group5, CreateDate
+      )
+    values (#{fid,jdbcType=INTEGER}, #{wphWardFid,jdbcType=INTEGER}, #{wphWardName,jdbcType=VARCHAR}, 
+      #{group1,jdbcType=VARCHAR}, #{group2,jdbcType=VARCHAR}, #{group3,jdbcType=VARCHAR}, 
+      #{group4,jdbcType=VARCHAR}, #{group5,jdbcType=VARCHAR}, #{createdate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroup" >
+    insert into wph_mealgroup
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="wphWardFid != null" >
+        WPH_Ward_Fid,
+      </if>
+      <if test="wphWardName != null" >
+        WPH_Ward_Name,
+      </if>
+      <if test="group1 != null" >
+        Group1,
+      </if>
+      <if test="group2 != null" >
+        Group2,
+      </if>
+      <if test="group3 != null" >
+        Group3,
+      </if>
+      <if test="group4 != null" >
+        Group4,
+      </if>
+      <if test="group5 != null" >
+        Group5,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="wphWardFid != null" >
+        #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphWardName != null" >
+        #{wphWardName,jdbcType=VARCHAR},
+      </if>
+      <if test="group1 != null" >
+        #{group1,jdbcType=VARCHAR},
+      </if>
+      <if test="group2 != null" >
+        #{group2,jdbcType=VARCHAR},
+      </if>
+      <if test="group3 != null" >
+        #{group3,jdbcType=VARCHAR},
+      </if>
+      <if test="group4 != null" >
+        #{group4,jdbcType=VARCHAR},
+      </if>
+      <if test="group5 != null" >
+        #{group5,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroupExample" resultType="java.lang.Integer" >
+    select count(*) from wph_mealgroup
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_mealgroup
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphWardFid != null" >
+        WPH_Ward_Fid = #{record.wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphWardName != null" >
+        WPH_Ward_Name = #{record.wphWardName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.group1 != null" >
+        Group1 = #{record.group1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.group2 != null" >
+        Group2 = #{record.group2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.group3 != null" >
+        Group3 = #{record.group3,jdbcType=VARCHAR},
+      </if>
+      <if test="record.group4 != null" >
+        Group4 = #{record.group4,jdbcType=VARCHAR},
+      </if>
+      <if test="record.group5 != null" >
+        Group5 = #{record.group5,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_mealgroup
+    set fid = #{record.fid,jdbcType=INTEGER},
+      WPH_Ward_Fid = #{record.wphWardFid,jdbcType=INTEGER},
+      WPH_Ward_Name = #{record.wphWardName,jdbcType=VARCHAR},
+      Group1 = #{record.group1,jdbcType=VARCHAR},
+      Group2 = #{record.group2,jdbcType=VARCHAR},
+      Group3 = #{record.group3,jdbcType=VARCHAR},
+      Group4 = #{record.group4,jdbcType=VARCHAR},
+      Group5 = #{record.group5,jdbcType=VARCHAR},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroup" >
+    update wph_mealgroup
+    <set >
+      <if test="wphWardFid != null" >
+        WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphWardName != null" >
+        WPH_Ward_Name = #{wphWardName,jdbcType=VARCHAR},
+      </if>
+      <if test="group1 != null" >
+        Group1 = #{group1,jdbcType=VARCHAR},
+      </if>
+      <if test="group2 != null" >
+        Group2 = #{group2,jdbcType=VARCHAR},
+      </if>
+      <if test="group3 != null" >
+        Group3 = #{group3,jdbcType=VARCHAR},
+      </if>
+      <if test="group4 != null" >
+        Group4 = #{group4,jdbcType=VARCHAR},
+      </if>
+      <if test="group5 != null" >
+        Group5 = #{group5,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroup" >
+    update wph_mealgroup
+    set WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+      WPH_Ward_Name = #{wphWardName,jdbcType=VARCHAR},
+      Group1 = #{group1,jdbcType=VARCHAR},
+      Group2 = #{group2,jdbcType=VARCHAR},
+      Group3 = #{group3,jdbcType=VARCHAR},
+      Group4 = #{group4,jdbcType=VARCHAR},
+      Group5 = #{group5,jdbcType=VARCHAR},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

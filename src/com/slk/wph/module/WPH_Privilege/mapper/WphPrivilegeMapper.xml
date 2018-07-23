@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Privilege.mapper.WphPrivilegeMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Privilege.po.WphPrivilege" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="PrivilegeMaster" property="privilegemaster" jdbcType="VARCHAR" />
+    <result column="PrivilegeMasterValue" property="privilegemastervalue" jdbcType="INTEGER" />
+    <result column="PrivilegeAccess" property="privilegeaccess" jdbcType="VARCHAR" />
+    <result column="PrivilegeAccessValue" property="privilegeaccessvalue" jdbcType="INTEGER" />
+    <result column="PrivilegeAccessCodeOrUrl" property="privilegeaccesscodeorurl" jdbcType="VARCHAR" />
+    <result column="PrivilegeOperation" property="privilegeoperation" jdbcType="VARCHAR" />
+    <result column="Modify_UserFid" property="modifyUserfid" jdbcType="INTEGER" />
+    <result column="ModifyDate" property="modifydate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, PrivilegeMaster, PrivilegeMasterValue, PrivilegeAccess, PrivilegeAccessValue, 
+    PrivilegeAccessCodeOrUrl, PrivilegeOperation, Modify_UserFid, ModifyDate
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Privilege.po.WphPrivilegeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from Wph_privilege
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from Wph_privilege
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from Wph_privilege
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_Privilege.po.WphPrivilegeExample" >
+    delete from Wph_privilege
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_Privilege.po.WphPrivilege" >
+    insert into Wph_privilege (fid, PrivilegeMaster, PrivilegeMasterValue, 
+      PrivilegeAccess, PrivilegeAccessValue, 
+      PrivilegeAccessCodeOrUrl, PrivilegeOperation, 
+      Modify_UserFid, ModifyDate)
+    values (#{fid,jdbcType=INTEGER}, #{privilegemaster,jdbcType=VARCHAR}, #{privilegemastervalue,jdbcType=INTEGER}, 
+      #{privilegeaccess,jdbcType=VARCHAR}, #{privilegeaccessvalue,jdbcType=INTEGER}, 
+      #{privilegeaccesscodeorurl,jdbcType=VARCHAR}, #{privilegeoperation,jdbcType=VARCHAR}, 
+      #{modifyUserfid,jdbcType=INTEGER}, #{modifydate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Privilege.po.WphPrivilege" >
+    insert into Wph_privilege
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="privilegemaster != null" >
+        PrivilegeMaster,
+      </if>
+      <if test="privilegemastervalue != null" >
+        PrivilegeMasterValue,
+      </if>
+      <if test="privilegeaccess != null" >
+        PrivilegeAccess,
+      </if>
+      <if test="privilegeaccessvalue != null" >
+        PrivilegeAccessValue,
+      </if>
+      <if test="privilegeaccesscodeorurl != null" >
+        PrivilegeAccessCodeOrUrl,
+      </if>
+      <if test="privilegeoperation != null" >
+        PrivilegeOperation,
+      </if>
+      <if test="modifyUserfid != null" >
+        Modify_UserFid,
+      </if>
+      <if test="modifydate != null" >
+        ModifyDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="privilegemaster != null" >
+        #{privilegemaster,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegemastervalue != null" >
+        #{privilegemastervalue,jdbcType=INTEGER},
+      </if>
+      <if test="privilegeaccess != null" >
+        #{privilegeaccess,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegeaccessvalue != null" >
+        #{privilegeaccessvalue,jdbcType=INTEGER},
+      </if>
+      <if test="privilegeaccesscodeorurl != null" >
+        #{privilegeaccesscodeorurl,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegeoperation != null" >
+        #{privilegeoperation,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyUserfid != null" >
+        #{modifyUserfid,jdbcType=INTEGER},
+      </if>
+      <if test="modifydate != null" >
+        #{modifydate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_Privilege.po.WphPrivilegeExample" resultType="java.lang.Integer" >
+    select count(*) from Wph_privilege
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update Wph_privilege
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.privilegemaster != null" >
+        PrivilegeMaster = #{record.privilegemaster,jdbcType=VARCHAR},
+      </if>
+      <if test="record.privilegemastervalue != null" >
+        PrivilegeMasterValue = #{record.privilegemastervalue,jdbcType=INTEGER},
+      </if>
+      <if test="record.privilegeaccess != null" >
+        PrivilegeAccess = #{record.privilegeaccess,jdbcType=VARCHAR},
+      </if>
+      <if test="record.privilegeaccessvalue != null" >
+        PrivilegeAccessValue = #{record.privilegeaccessvalue,jdbcType=INTEGER},
+      </if>
+      <if test="record.privilegeaccesscodeorurl != null" >
+        PrivilegeAccessCodeOrUrl = #{record.privilegeaccesscodeorurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.privilegeoperation != null" >
+        PrivilegeOperation = #{record.privilegeoperation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modifyUserfid != null" >
+        Modify_UserFid = #{record.modifyUserfid,jdbcType=INTEGER},
+      </if>
+      <if test="record.modifydate != null" >
+        ModifyDate = #{record.modifydate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update Wph_privilege
+    set fid = #{record.fid,jdbcType=INTEGER},
+      PrivilegeMaster = #{record.privilegemaster,jdbcType=VARCHAR},
+      PrivilegeMasterValue = #{record.privilegemastervalue,jdbcType=INTEGER},
+      PrivilegeAccess = #{record.privilegeaccess,jdbcType=VARCHAR},
+      PrivilegeAccessValue = #{record.privilegeaccessvalue,jdbcType=INTEGER},
+      PrivilegeAccessCodeOrUrl = #{record.privilegeaccesscodeorurl,jdbcType=VARCHAR},
+      PrivilegeOperation = #{record.privilegeoperation,jdbcType=VARCHAR},
+      Modify_UserFid = #{record.modifyUserfid,jdbcType=INTEGER},
+      ModifyDate = #{record.modifydate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Privilege.po.WphPrivilege" >
+    update Wph_privilege
+    <set >
+      <if test="privilegemaster != null" >
+        PrivilegeMaster = #{privilegemaster,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegemastervalue != null" >
+        PrivilegeMasterValue = #{privilegemastervalue,jdbcType=INTEGER},
+      </if>
+      <if test="privilegeaccess != null" >
+        PrivilegeAccess = #{privilegeaccess,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegeaccessvalue != null" >
+        PrivilegeAccessValue = #{privilegeaccessvalue,jdbcType=INTEGER},
+      </if>
+      <if test="privilegeaccesscodeorurl != null" >
+        PrivilegeAccessCodeOrUrl = #{privilegeaccesscodeorurl,jdbcType=VARCHAR},
+      </if>
+      <if test="privilegeoperation != null" >
+        PrivilegeOperation = #{privilegeoperation,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyUserfid != null" >
+        Modify_UserFid = #{modifyUserfid,jdbcType=INTEGER},
+      </if>
+      <if test="modifydate != null" >
+        ModifyDate = #{modifydate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_Privilege.po.WphPrivilege" >
+    update Wph_privilege
+    set PrivilegeMaster = #{privilegemaster,jdbcType=VARCHAR},
+      PrivilegeMasterValue = #{privilegemastervalue,jdbcType=INTEGER},
+      PrivilegeAccess = #{privilegeaccess,jdbcType=VARCHAR},
+      PrivilegeAccessValue = #{privilegeaccessvalue,jdbcType=INTEGER},
+      PrivilegeAccessCodeOrUrl = #{privilegeaccesscodeorurl,jdbcType=VARCHAR},
+      PrivilegeOperation = #{privilegeoperation,jdbcType=VARCHAR},
+      Modify_UserFid = #{modifyUserfid,jdbcType=INTEGER},
+      ModifyDate = #{modifydate,jdbcType=TIMESTAMP}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

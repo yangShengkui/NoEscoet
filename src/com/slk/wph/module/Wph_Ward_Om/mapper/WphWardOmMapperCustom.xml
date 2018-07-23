@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.Wph_Ward_Om.mapper.WphWardOmMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.Wph_Ward_Om.po.WphWardOmCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+    <result column="OM_Name" property="omName" jdbcType="VARCHAR" />
+    <result column="WPH_NursingGrade_type" property="wphNursinggradeType" jdbcType="INTEGER" />
+    <result column="WPH_NursingGrade_Fid" property="wphNursinggradeFid" jdbcType="INTEGER" />
+    <result column="Money" property="money" jdbcType="DOUBLE" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="Wages" property="wages" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Base_Column_List">
+		WPH_Ward_Fid,OM_Name,WPH_NursingGrade_type,WPH_NursingGrade_Fid
+ </sql>
+  <update id="updateOmName" >
+    update wph_ward_om
+    <set >
+      <if test="wphWardFid != null" >
+        WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="omName != null" >
+        OM_Name = #{omName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphNursinggradeType != null" >
+        WPH_NursingGrade_type = #{wphNursinggradeType,jdbcType=INTEGER},
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid = #{wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        Money = #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="wages != null" >
+        Wages = #{wages,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where WPH_NursingGrade_Fid = #{wphNursinggradeFid,jdbcType=INTEGER}
+    </update>
+    <delete id="deleteByNursingFid">
+    		delete from wph_ward_om  where WPH_NursingGrade_Fid=#{fid}
+            and WPH_Ward_Fid=#{wardFid}
+    </delete>
+
+    <select id="selecetWardOmByGradeFid" resultType="java.lang.String">
+        select wardom.WPH_Ward_Fid from wph_ward_om wardom where wardom.WPH_NursingGrade_Fid=#{value}
+    </select>
+    <insert id="saveWphWardOmCustomList" parameterType="map">
+		insert into wph_ward_om(<include refid="Base_Column_List" />) values 
+      <foreach collection="list" index="index" item="item" separator=",">
+         ( 
+         #{item.wphWardFid},
+		#{item.omName},
+		#{item.wphNursinggradeType},
+		#{item.wphNursinggradeFid}
+		)
+      </foreach>
+	</insert>
+
+  <insert id="saveWphWardOmCustom">
+    insert into wph_ward_om
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="wphWardFid != null" >
+        WPH_Ward_Fid,
+      </if>
+      <if test="omName != null" >
+        OM_Name,
+      </if>
+      <if test="wphNursinggradeType != null" >
+        WPH_NursingGrade_type,
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid,
+      </if>
+      <if test="money != null" >
+        Money,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+      <if test="wages != null" >
+        Wages,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="wphWardFid != null" >
+        #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="omName != null" >
+        #{omName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphNursinggradeType != null" >
+        #{wphNursinggradeType,jdbcType=INTEGER},
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        #{wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wages != null" >
+        #{wages,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+    <update id="updateOmMoney" >
+    update wph_ward_om
+    <set >
+      <if test="money != null" >
+        Money = #{money,jdbcType=DOUBLE},
+      </if><if test="wages != null" >
+        wages = #{wages,jdbcType=DOUBLE},
+      </if>
+    </set>
+     where WPH_NursingGrade_Fid = #{wphNursinggradeFid}
+      and  WPH_Ward_Fid=#{wphWardFid}
+    </update>
+
+
+
+  <!-- 查询今天病区下是否有已办护理的患者-->
+  <select id="selectNursingForWard" resultType="java.lang.Integer">
+    select count(nn.fid) from wph_orderingnursing nn
+    LEFT JOIN wph_customer cc
+    on nn.Customer_Fid=cc.fid
+    LEFT JOIN wph_ward_om om
+    on om.fid=nn.WPH_Ward_OM_Fid
+    where
+    cc.HospitalldStatus='1'
+    and nn.fid
+    in (select max(fid) from wph_orderingnursing nnn where
+    nnn.NursingDate=DATE_SUB(curdate(),INTERVAL 0 DAY)
+    GROUP BY nnn.Customer_Fid
+    )
+    and nn.NursingStates='1'
+    and om.WPH_NursingGrade_Fid=#{fid}
+    and cc.WPH_Ward_Fid in
+    <foreach collection="wardFid" open="(" close=")" item="wardFid" separator=",">
+      #{wardFid}
+    </foreach>
+  </select>
+</mapper>

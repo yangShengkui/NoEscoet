@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Warmprompt.mapper.WphWarmpromptCustomMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Warmprompt.po.WphWarmprompt" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="notes" property="notes" jdbcType="VARCHAR" />
+    <result column="ztype" property="ztype" jdbcType="INTEGER" />
+  </resultMap>
+
+
+  <select id="selectByType" resultMap="BaseResultMap">
+    select *
+    from wph_warmprompt
+    <where>
+        type =#{type}
+    </where>
+  </select>
+
+  <select id="selectByZtype" resultMap="BaseResultMap">
+    select *
+    from wph_warmprompt
+    <where>
+        ztype=#{ztype}
+    </where>
+  </select>
+
+
+  <update id="updateByFid">
+    update wph_warmprompt
+    <set >
+      <if test="notes != null" >
+        notes = #{notes,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

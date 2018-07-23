@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Invoice.mapper.WphInvoiceMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Invoice.po.WphInvoice" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+    <result column="Customer_CardId" property="customerCardid" jdbcType="VARCHAR" />
+    <result column="Customer_Hospitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+    <result column="WPH_InvoiceRate_Fid" property="wphInvoicerateFid" jdbcType="INTEGER" />
+    <result column="Rate" property="rate" jdbcType="DOUBLE" />
+    <result column="Money" property="money" jdbcType="DOUBLE" />
+    <result column="Taxation" property="taxation" jdbcType="DOUBLE" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, Name, Customer_Fid, Customer_CardId, Customer_Hospitalld, WPH_InvoiceRate_Fid, 
+    Rate, Money, Taxation, User_Fid, UserRole, UserName, CreateDate
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Invoice.po.WphInvoiceExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_invoice
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_invoice
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_invoice
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_Invoice.po.WphInvoiceExample" >
+    delete from wph_invoice
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_Invoice.po.WphInvoice" >
+    insert into wph_invoice (fid, Name, Customer_Fid, 
+      Customer_CardId, Customer_Hospitalld, WPH_InvoiceRate_Fid, 
+      Rate, Money, Taxation, 
+      User_Fid, UserRole, UserName, 
+      CreateDate)
+    values (#{fid,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{customerFid,jdbcType=INTEGER}, 
+      #{customerCardid,jdbcType=VARCHAR}, #{customerHospitalld,jdbcType=VARCHAR}, #{wphInvoicerateFid,jdbcType=INTEGER}, 
+      #{rate,jdbcType=DOUBLE}, #{money,jdbcType=DOUBLE}, #{taxation,jdbcType=DOUBLE}, 
+      #{userFid,jdbcType=INTEGER}, #{userrole,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{createdate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Invoice.po.WphInvoice" >
+    insert into wph_invoice
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid,
+      </if>
+      <if test="customerCardid != null" >
+        Customer_CardId,
+      </if>
+      <if test="customerHospitalld != null" >
+        Customer_Hospitalld,
+      </if>
+      <if test="wphInvoicerateFid != null" >
+        WPH_InvoiceRate_Fid,
+      </if>
+      <if test="rate != null" >
+        Rate,
+      </if>
+      <if test="money != null" >
+        Money,
+      </if>
+      <if test="taxation != null" >
+        Taxation,
+      </if>
+      <if test="userFid != null" >
+        User_Fid,
+      </if>
+      <if test="userrole != null" >
+        UserRole,
+      </if>
+      <if test="username != null" >
+        UserName,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="customerFid != null" >
+        #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerCardid != null" >
+        #{customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="customerHospitalld != null" >
+        #{customerHospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="wphInvoicerateFid != null" >
+        #{wphInvoicerateFid,jdbcType=INTEGER},
+      </if>
+      <if test="rate != null" >
+        #{rate,jdbcType=DOUBLE},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="taxation != null" >
+        #{taxation,jdbcType=DOUBLE},
+      </if>
+      <if test="userFid != null" >
+        #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_Invoice.po.WphInvoiceExample" resultType="java.lang.Integer" >
+    select count(*) from wph_invoice
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_invoice
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.name != null" >
+        Name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerFid != null" >
+        Customer_Fid = #{record.customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.customerCardid != null" >
+        Customer_CardId = #{record.customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerHospitalld != null" >
+        Customer_Hospitalld = #{record.customerHospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wphInvoicerateFid != null" >
+        WPH_InvoiceRate_Fid = #{record.wphInvoicerateFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.rate != null" >
+        Rate = #{record.rate,jdbcType=DOUBLE},
+      </if>
+      <if test="record.money != null" >
+        Money = #{record.money,jdbcType=DOUBLE},
+      </if>
+      <if test="record.taxation != null" >
+        Taxation = #{record.taxation,jdbcType=DOUBLE},
+      </if>
+      <if test="record.userFid != null" >
+        User_Fid = #{record.userFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.userrole != null" >
+        UserRole = #{record.userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        UserName = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_invoice
+    set fid = #{record.fid,jdbcType=INTEGER},
+      Name = #{record.name,jdbcType=VARCHAR},
+      Customer_Fid = #{record.customerFid,jdbcType=INTEGER},
+      Customer_CardId = #{record.customerCardid,jdbcType=VARCHAR},
+      Customer_Hospitalld = #{record.customerHospitalld,jdbcType=VARCHAR},
+      WPH_InvoiceRate_Fid = #{record.wphInvoicerateFid,jdbcType=INTEGER},
+      Rate = #{record.rate,jdbcType=DOUBLE},
+      Money = #{record.money,jdbcType=DOUBLE},
+      Taxation = #{record.taxation,jdbcType=DOUBLE},
+      User_Fid = #{record.userFid,jdbcType=INTEGER},
+      UserRole = #{record.userrole,jdbcType=VARCHAR},
+      UserName = #{record.username,jdbcType=VARCHAR},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Invoice.po.WphInvoice" >
+    update wph_invoice
+    <set >
+      <if test="name != null" >
+        Name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerCardid != null" >
+        Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="customerHospitalld != null" >
+        Customer_Hospitalld = #{customerHospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="wphInvoicerateFid != null" >
+        WPH_InvoiceRate_Fid = #{wphInvoicerateFid,jdbcType=INTEGER},
+      </if>
+      <if test="rate != null" >
+        Rate = #{rate,jdbcType=DOUBLE},
+      </if>
+      <if test="money != null" >
+        Money = #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="taxation != null" >
+        Taxation = #{taxation,jdbcType=DOUBLE},
+      </if>
+      <if test="userFid != null" >
+        User_Fid = #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        UserRole = #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        UserName = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_Invoice.po.WphInvoice" >
+    update wph_invoice
+    set Name = #{name,jdbcType=VARCHAR},
+      Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+      Customer_Hospitalld = #{customerHospitalld,jdbcType=VARCHAR},
+      WPH_InvoiceRate_Fid = #{wphInvoicerateFid,jdbcType=INTEGER},
+      Rate = #{rate,jdbcType=DOUBLE},
+      Money = #{money,jdbcType=DOUBLE},
+      Taxation = #{taxation,jdbcType=DOUBLE},
+      User_Fid = #{userFid,jdbcType=INTEGER},
+      UserRole = #{userrole,jdbcType=VARCHAR},
+      UserName = #{username,jdbcType=VARCHAR},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

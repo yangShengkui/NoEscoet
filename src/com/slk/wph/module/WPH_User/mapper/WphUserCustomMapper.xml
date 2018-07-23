@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+
+<mapper namespace="com.slk.wph.module.WPH_User.mapper.WphUserCustomMapper">
+
+	<resultMap type="com.slk.wph.module.WPH_User.po.WphUserCustom" id="BaseResultMap">
+		<id column="fid" property="fid" />
+		<result column="Name" property="name" />
+		<result column="Username" property="username" />
+		<result column="Password" property="password" />
+		<result column="Sex" property="sex" />
+		<result column="Phone" property="phone" />
+		<result column="Manager" property="manager" />
+		<result column="Status" property="status" />
+		<result column="CreateDate" property="createdate" />
+		<result column="device_tokens" property="deviceTokens" />
+		<result column="tag" property="tag" />
+		<result column="managerName" property="managerName" />
+	</resultMap>
+	
+	
+	<resultMap id="userListMap" type="com.slk.wph.module.WPH_User.po.WphUserCustom"  extends="BaseResultMap">
+		<!-- <result column="wardName" property="wardName" /> -->
+		<collection property="zdyhRoles" ofType="com.slk.wph.module.WPH_Role.po.WphRole">
+			<id column="rfid" property="fid" jdbcType="INTEGER" />
+			<result column="RoleName" property="rolename" jdbcType="VARCHAR" />
+		</collection>
+		<collection property="wphWardList" ofType="com.slk.wph.module.WPH_Ward.po.WphWard">
+			<id column="wfid" property="fid" jdbcType="INTEGER" />
+			<result column="WPH_Hospita_fid" property="wphHospitaFid"/>
+			<result column="wName" property="name"/>
+			<result column="wAbbreviation" property="abbreviation"/>
+			<result column="wCreateDate" property="createdate"/>
+			<result column="wNotes" property="notes"/>
+			<result column="wSaveMoney" property="savemoney"/>
+			<result column="WaringMoney" property="waringmoney"/>
+			<result column="wStatus" property="status" />
+		</collection>
+	
+	
+	</resultMap>
+	
+
+	<sql id="whereUserInfo">
+		<where>
+			<if test="fid != null">
+				AND u.fid = #{fid}
+			</if>
+			<if test="name != null">
+				AND u.Name = #{name}
+			</if>
+			<if test="username != null">
+				AND u.Username =#{username}
+			</if>
+			<if test="password != null">
+				AND u.Password =#{password}
+			</if>
+			<if test="sex != null">
+				AND u.Sex =#{sex}
+			</if>
+			<if test="phone != null">
+				AND u.Phone =#{phone}
+			</if>
+			<if test="manager != null">
+				AND u.Manager =#{manager}
+			</if>
+			<if test="status != null">
+				AND u.Status =#{status}
+			</if>
+			<if test="createdate != null">
+				AND u.CreateDate =#{createdate}
+			</if>
+		</where>
+	</sql>
+
+
+	<!-- 通过user信息获取user对象 -->
+	<select id="getUserByInfo" parameterType="wphUserCustom" resultType="wphUserCustom">
+		SELECT u.*,r.fid roleFid,r.RoleName FROM wph_user u 
+			LEFT JOIN wph_user_role ur ON ur.User_Fid = u.fid
+			LEFT JOIN wph_role r ON r.fid = ur.Role_Fid
+			<include refid="whereUserInfo" /> LIMIT 1
+	</select>
+
+
+
+
+
+
+
+	<!-- 根据 type状态获取User集合 -->
+	<select id="selectUserListByType" resultMap="BaseResultMap">
+		SELECT u.*,(SELECT group_concat(r.RoleName) FROM wph_role r WHERE r.fid IN(SELECT ur.Role_Fid FROM wph_user_role ur WHERE  ur.User_Fid = u.fid))RoleName FROM wph_user u
+	 	GROUP BY u.fid ORDER BY u.fid;
+	</select>
+
+
+
+	<delete id="deleteUser_RoleByUserId" parameterType="java.lang.Integer">
+		DELETE FROM wph_user_role WHERE user_Fid = #{value}
+	</delete>
+
+
+
+
+
+
+	<!-- 赵福岭 用户检测账户是否存在 -->
+	<select id="checkWphUser" resultType="java.lang.Integer">
+		select count(*) from wph_user
+		<where>
+		 username=#{username}
+		<if test="fid!=null">
+			and fid!=#{fid}
+		</if>
+		</where>
+	</select>
+
+
+	<!-- 赵福岭 用修改用户 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_User.po.WphUser">
+		update wph_user
+		<set>
+			<if test="name != null">
+				Name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				Username = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				Password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				Sex = #{sex,jdbcType=INTEGER},
+			</if>
+			<if test="phone != null">
+				Phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				Manager = #{manager,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				Status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				CreateDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="deviceTokens != null">
+				device_tokens = #{deviceTokens,jdbcType=VARCHAR},
+			</if>
+			<if test="tag != null">
+				tag = #{tag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where fid = #{fid,jdbcType=INTEGER}
+	</update>
+
+
+	<!-- 赵福岭 根据角色查用户 -->
+	<select id="getUserListByRoleFid" resultMap="userListMap">
+			select a.*,
+			(select name from wph_user where fid=a.manager) as managerName,
+			d.fid as wfid,
+			d.WPH_Hospita_fid,
+			d.Name as wName,
+			d.Abbreviation as wAbbreviation,
+			d.CreateDate as wCreateDate,
+			d.Notes as wNotes,
+			d.SaveMoney as wSaveMoney,
+			d.WaringMoney,
+			d.Status as wStatus
+			from
+			wph_user a left join wph_user_role b on
+			a.fid=b.User_Fid 
+			left join  wph_user_ward c on a.fid=c.WPH_User_Fid
+			left join wph_ward d on c.WPH_Ward_Fid=d.fid
+			where b.Role_Fid=#{roleId}	
+			<if test="status==2">
+			    and a.Status='2'<!-- 2为开启状态 -->
+			</if>
+			
+	</select>
+
+
+
+	<!-- 赵福岭 新增用户 -->
+	<insert id="insertSelective" parameterType="com.slk.wph.module.WPH_User.po.WphUser"
+		useGeneratedKeys="true" keyProperty="fid">
+
+		insert into wph_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				fid,
+			</if>
+			<if test="name != null">
+				Name,
+			</if>
+			<if test="username != null">
+				Username,
+			</if>
+			<if test="password != null">
+				Password,
+			</if>
+			<if test="sex != null">
+				Sex,
+			</if>
+			<if test="phone != null">
+				Phone,
+			</if>
+			<if test="manager != null">
+				Manager,
+			</if>
+			<if test="status != null">
+				Status,
+			</if>
+			<if test="createdate != null">
+				CreateDate,
+			</if>
+			<if test="deviceTokens != null">
+				device_tokens,
+			</if>
+			<if test="tag != null">
+				tag,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="fid != null">
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=INTEGER},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				#{manager,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="deviceTokens != null">
+				#{deviceTokens,jdbcType=VARCHAR},
+			</if>
+			<if test="tag != null">
+				#{tag,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	
+	
+	
+	<!--  根据fid获取的角色名称 -->
+	<select id="getRoleAndUserByUserFid" parameterType="java.lang.Integer"  resultType="wphUserCustom">
+	
+		SELECT u.fid,u.Username,u.`Name`,u.Phone,u_r.Role_Fid AS roleFid,group_concat(r.RoleName separator ",") AS roleName FROM wph_user_role u_r
+			LEFT JOIN wph_role r ON u_r.Role_Fid = r.fid
+			LEFT JOIN wph_user u ON u.fid = u_r.User_Fid
+		WHERE u.fid = #{fid}
+		
+	</select>
+	
+	
+	
+	<select id="getCheckByUserFid" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT  CASE WHEN r.fid = 36 THEN 1 ELSE 0 END checkOn FROM wph_user_role u_r 
+			LEFT JOIN wph_role r ON r.fid = u_r.Role_Fid 
+		WHERE u_r.User_Fid = #{fid}	
+	</select>
+	
+	
+	<select id="getUserByRoleWard" parameterType="java.lang.Integer" resultMap="BaseResultMap" >
+		SELECT u.* FROM wph_user u 
+				LEFT JOIN wph_user_role ur ON ur.User_Fid = u.fid
+				LEFT JOIN wph_user_ward uw ON uw.WPH_User_Fid = u.fid
+
+		WHERE ur.Role_Fid = 25 AND uw.WPH_Ward_Fid = #{value} ORDER BY uw.CreateDate DESC  LIMIT 1
+	</select>
+	
+	<!-- 赵福岭  根据病区获取主管 -->
+	<select id="selectByWardFid"  resultType="wphUserCustom">
+		select  a.* from wph_user a LEFT JOIN wph_user_role b 
+		on a.fid=b.User_Fid LEFT JOIN wph_user_ward c
+		on a.fid=c.WPH_User_Fid	where b.Role_Fid='34'
+		and c.WPH_Ward_Fid=#{value}
+		and a.status='2'
+	</select>
+	
+	
+	<select id="getUserByFid" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		
+		SELECT u.*,r.RoleName FROM wph_user u 
+			LEFT JOIN wph_user_role ur ON ur.User_Fid = u.fid
+			LEFT JOIN wph_role r ON r.fid = ur.Role_Fid
+		WHERE u.fid = ${value} ORDER BY u.CreateDate DESC LIMIT 1
+	
+	</select>
+	
+	
+	<select id="getUserListByRoleFids" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		SELECT * FROM wph_user WHERE fid IN(
+			SELECT ur.User_Fid FROM wph_user_role ur WHERE ur.Role_Fid 
+				<foreach collection="list" item="roleFids" open="IN(" separator="," close=")">#{roleFids}</foreach>)
+	</select>
+	<!-- 赵 -->
+	<select id="selectUserByRole" resultMap="BaseResultMap">
+		select * from wph_user a
+		LEFT JOIN wph_user_role b
+		on a.fid=b.User_Fid
+		where b.Role_Fid=#{roleFid}
+	</select>
+</mapper>

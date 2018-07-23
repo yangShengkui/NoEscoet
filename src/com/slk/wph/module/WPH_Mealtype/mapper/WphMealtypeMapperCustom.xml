@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Mealtype.mapper.WphMealtypeMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Mealtype.po.WphMealtypeCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="UUID" property="uuid" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="MealTypeAndMenu"  extends="BaseResultMap" type="com.slk.wph.module.WPH_Mealtype.po.WphMealtypeCustom">
+  		<id column="mtfid" property="fid" />
+  		<collection property="mealmenuList" ofType="com.slk.wph.module.WPH_Mealmenu.po.WphMealmenuCustom">
+  			<id column="mmfid" property="fid"  />
+		    <result column="WPH_MealType_Fid" property="wphMealtypeFid" />
+		    <result column="mmname" property="name" />
+		    <result column="Status" property="status" />
+		    <result column="Type" property="type" />
+		    <result column="imgs" property="imgs" />
+		    <result column="Money" property="money" />
+		    <result column="Depict" property="depict" />
+		    <result column="Meterage" property="meterage" />
+		    <result column="mmCreatedate" property="createdate"  />
+		    <result column="mmuuid" property="uuid"/>
+  		</collection>
+  
+  </resultMap>
+  
+  <insert id="InsertMealTypeByInfo" parameterType="com.slk.wph.module.WPH_Mealtype.po.WphMealtype" >
+    insert into wph_mealtype
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+      <if test="uuid != null" >
+        UUID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uuid != null" >
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  
+  <select id="getMealTypeByGreaterThanFid" parameterType="java.lang.Integer" resultType="com.slk.wph.module.WPH_Mealtype.po.WphMealtype" >
+  		SELECT * FROM wph_mealtype mt WHERE mt.fid > #{value} AND mt.fid NOT IN (15) ORDER BY mt.fid
+  </select>
+  
+  
+  <select id="getMealTypeAndMenu" resultMap="MealTypeAndMenu">
+  		
+		SELECT mt.*, mt.fid mtfid, mm.*,mm.fid mmfid,mm.`Name` mmname,mm.CreateDate mmCreatedate,mm.UUID mmuuid FROM wph_mealtype mt 
+					LEFT JOIN wph_mealmenu mm ON mm.WPH_MealType_Fid = mt.fid
+		WHERE mt.fid NOT IN(4,5,6,15) AND mm.Status = 0
+  </select>
+  
+  <select id="getMealTypeAndMenuAll" resultMap="MealTypeAndMenu">
+  		
+		SELECT mt.fid mtfid, mt.*,mm.*,mm.fid mmfid,mm.`Name` mmname,mm.CreateDate mmCreatedate,mm.UUID mmuuid FROM wph_mealtype mt
+					LEFT JOIN wph_mealmenu mm ON mm.WPH_MealType_Fid = mt.fid
+		WHERE mm.`Status` = 0 ORDER BY mt.fid,mm.fid
+  </select>
+  
+</mapper>

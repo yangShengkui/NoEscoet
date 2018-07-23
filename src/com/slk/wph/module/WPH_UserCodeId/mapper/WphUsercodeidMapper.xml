@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_UserCodeId.mapper.WphUsercodeidMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeid" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="CodeNumber" property="codenumber" jdbcType="VARCHAR" />
+    <result column="CodeStatus" property="codestatus" jdbcType="INTEGER" />
+    <result column="CodeId" property="codeid" jdbcType="VARCHAR" />
+    <result column="types" property="types" jdbcType="INTEGER" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, CodeNumber, CodeStatus, CodeId, types, User_Fid, UserRole, UserName, CreateDate
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeidExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_usercodeid
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_usercodeid
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_usercodeid
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeidExample" >
+    delete from wph_usercodeid
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeid" >
+    insert into wph_usercodeid (fid, CodeNumber, CodeStatus, 
+      CodeId, types, User_Fid, 
+      UserRole, UserName, CreateDate
+      )
+    values (#{fid,jdbcType=INTEGER}, #{codenumber,jdbcType=VARCHAR}, #{codestatus,jdbcType=INTEGER}, 
+      #{codeid,jdbcType=VARCHAR}, #{types,jdbcType=INTEGER}, #{userFid,jdbcType=INTEGER}, 
+      #{userrole,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{createdate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeid" >
+    insert into wph_usercodeid
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="codenumber != null" >
+        CodeNumber,
+      </if>
+      <if test="codestatus != null" >
+        CodeStatus,
+      </if>
+      <if test="codeid != null" >
+        CodeId,
+      </if>
+      <if test="types != null" >
+        types,
+      </if>
+      <if test="userFid != null" >
+        User_Fid,
+      </if>
+      <if test="userrole != null" >
+        UserRole,
+      </if>
+      <if test="username != null" >
+        UserName,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="codenumber != null" >
+        #{codenumber,jdbcType=VARCHAR},
+      </if>
+      <if test="codestatus != null" >
+        #{codestatus,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        #{codeid,jdbcType=VARCHAR},
+      </if>
+      <if test="types != null" >
+        #{types,jdbcType=INTEGER},
+      </if>
+      <if test="userFid != null" >
+        #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeidExample" resultType="java.lang.Integer" >
+    select count(*) from wph_usercodeid
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_usercodeid
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.codenumber != null" >
+        CodeNumber = #{record.codenumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.codestatus != null" >
+        CodeStatus = #{record.codestatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.codeid != null" >
+        CodeId = #{record.codeid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.types != null" >
+        types = #{record.types,jdbcType=INTEGER},
+      </if>
+      <if test="record.userFid != null" >
+        User_Fid = #{record.userFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.userrole != null" >
+        UserRole = #{record.userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        UserName = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_usercodeid
+    set fid = #{record.fid,jdbcType=INTEGER},
+      CodeNumber = #{record.codenumber,jdbcType=VARCHAR},
+      CodeStatus = #{record.codestatus,jdbcType=INTEGER},
+      CodeId = #{record.codeid,jdbcType=VARCHAR},
+      types = #{record.types,jdbcType=INTEGER},
+      User_Fid = #{record.userFid,jdbcType=INTEGER},
+      UserRole = #{record.userrole,jdbcType=VARCHAR},
+      UserName = #{record.username,jdbcType=VARCHAR},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeid" >
+    update wph_usercodeid
+    <set >
+      <if test="codenumber != null" >
+        CodeNumber = #{codenumber,jdbcType=VARCHAR},
+      </if>
+      <if test="codestatus != null" >
+        CodeStatus = #{codestatus,jdbcType=INTEGER},
+      </if>
+      <if test="codeid != null" >
+        CodeId = #{codeid,jdbcType=VARCHAR},
+      </if>
+      <if test="types != null" >
+        types = #{types,jdbcType=INTEGER},
+      </if>
+      <if test="userFid != null" >
+        User_Fid = #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        UserRole = #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        UserName = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_UserCodeId.po.WphUsercodeid" >
+    update wph_usercodeid
+    set CodeNumber = #{codenumber,jdbcType=VARCHAR},
+      CodeStatus = #{codestatus,jdbcType=INTEGER},
+      CodeId = #{codeid,jdbcType=VARCHAR},
+      types = #{types,jdbcType=INTEGER},
+      User_Fid = #{userFid,jdbcType=INTEGER},
+      UserRole = #{userrole,jdbcType=VARCHAR},
+      UserName = #{username,jdbcType=VARCHAR},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

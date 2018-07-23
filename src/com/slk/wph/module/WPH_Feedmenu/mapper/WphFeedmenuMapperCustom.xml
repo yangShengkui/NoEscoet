@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Feedmenu.mapper.WphFeedmenuMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Feedmenu.po.WphFeedmenuCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="wph_feedType_Fid" property="wphFeedtypeFid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="Status" property="status" jdbcType="INTEGER" />
+    <result column="Type" property="type" jdbcType="INTEGER" />
+    <result column="imgs" property="imgs" jdbcType="VARCHAR" />
+    <result column="Money" property="money" jdbcType="DOUBLE" />
+    <result column="Depict" property="depict" jdbcType="VARCHAR" />
+    <result column="Meterage" property="meterage" jdbcType="INTEGER" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="UUID" property="uuid" jdbcType="VARCHAR" />
+    <result column="maxNum" property="maxnum" jdbcType="INTEGER" />
+    <result column="nowNum" property="nownum" jdbcType="INTEGER" />
+  </resultMap>
+
+
+  <resultMap  id="SpecialMap" type="com.slk.wph.module.WPH_Feedmenu.po.WphFeedmenuCustom" extends="BaseResultMap">
+    <result column="type2Fid" property="type2Fid"/>
+    <result column="type2Name" property="type2Name"/>
+    <result column="typeName" property="typeName"/>
+
+    <collection property="feedWeekTimeList"  ofType="com.slk.wph.module.WPH_Feedweek.po.WphFeedweekCustom">
+      <id column="mwFid" property="fid"/>
+      <result column="mwName" property="name"/>
+      <result column="CreateDate" property="createdate"/>
+      <collection property="feedtimeList" ofType="com.slk.wph.module.WPH_Feedtime.po.WphFeedtimeCustom">
+        <id column="mtFid" property="fid" />
+        <result column="mtName" property="name"/>
+        <result column="onCheck" property="onCheck" />
+      </collection>
+    </collection>
+
+  </resultMap>
+
+
+  <select id="selectweekFeedAll" resultMap="SpecialMap">
+
+    SELECT mw.fid mwFid,mw.`Name` mwName,mt.fid mtFid,mt.`Name` mtName,CASE WHEN mt.fid = mmt.WPH_FeedTime THEN 1 ELSE 0 END AS onCheck ,
+
+      type2.fid type2Fid, type2.`Name` type2Name,type.`Name` typeName,mm.*
+
+    FROM wph_Feedmenu mm
+
+      LEFT JOIN wph_feedtype type ON type.fid = mm.wph_feedType_Fid
+      LEFT JOIN wph_feedtype type2 ON type2.fid = type.parent_Fid
+      LEFT JOIN wph_Feedweek mw ON mw.fid = mw.fid
+      LEFT JOIN wph_Feedtime mt ON mt.fid = mt.fid
+      LEFT JOIN wph_Feedmenu_time mmt ON mmt.WPH_FeedWeek = mw.fid AND mmt.WPH_FeedTime = mt.fid AND mmt.WPH_FeedMenu_Fid = mm.fid
+
+    ORDER BY mm.fid,mw.fid,mt.fid
+
+  </select>
+
+
+
+
+</mapper>

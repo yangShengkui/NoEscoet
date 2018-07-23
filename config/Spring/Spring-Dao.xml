@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+			<!-- 加载配置文件 -->
+	<context:property-placeholder location="classpath:db.properties"/>
+	 <!-- 配置dbcp数据源 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" autowire="byName" destroy-method="close">
+        <property name="url" value="${mysql.url}" />
+        <property name="driverClassName" value="${mysql.driver}" />
+        <property name="username" value="${mysql.username}" />
+        <property name="password" value="${mysql.password}" />
+        <property name="testOnBorrow"> 
+		    <value>true</value> 
+		   </property> 
+		   <property name="validationQuery"> 
+		    <value>SELECT 1 FROM DUAL</value> 
+		</property> 
+		<property name="maxActive" value="100"></property>
+		<property name="maxIdle" value="60"></property>
+		<property name="maxWait" value="5000"></property>
+		<property name="defaultAutoCommit" value="true"></property>
+    </bean>	
+    
+    
+    	    <!-- redis数据源 -->
+	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">  
+	    <property name="maxIdle" value="${redis.maxIdle}" />  
+	    <property name="maxTotal" value="${redis.maxActive}" />  
+	    <property name="maxWaitMillis" value="${redis.maxWait}" />  
+	    <property name="testOnBorrow" value="${redis.testOnBorrow}" />  
+	</bean>
+	
+	<!-- Spring-redis连接池管理工厂 -->
+	<bean id="jedisConnectionFactory" class ="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.pass}"  p:pool-config-ref="poolConfig"/>  
+
+	<!-- 使用中间类解决RedisCache.jedisConnectionFactory的静态注入，从而使MyBatis实现第三方缓存 -->
+	<bean id="redisCacheTransfer" class="com.slk.wph.framework.Cache.RedisCacheTransfer">
+	    <property name="jedisConnectionFactory" ref="jedisConnectionFactory"/>
+	</bean>
+    
+
+<!-- 	<bean id="dynamicDataSource" class="com.zdyh.xny.framework.Util.DynamicDataSource" autowire="byName">
+		
+		
+		<property name="targetDataSources">
+            <map>
+             <entry key="dataSource" value-ref="dataSource"/>
+            </map>
+        </property>
+		<property name="defaultTargetDataSource" ref="dataSource"></property>
+	
+	</bean> -->
+    
+    <!-- Spring与Mybatis整合 
+	实体映射类 sqlSessionFactory-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 加载Mybatis的配置文件 -->
+		<property name="configLocation" value="classpath:Mybatis/SqlMayConfig.xml" />
+		<!-- 数据源 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+		
+	<!-- 批量扫描mapper
+		遵循mapper规范，自动扫描出来的Mapper与类名相同但首字母小写
+	 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.slk.wph.module.*.mapper" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+		
+	</bean>	
+		
+</beans>

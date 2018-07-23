@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Customer.mapper.WphCustomerMapperCustom">
+	<resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Customer.po.WphCustomerCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="CodeId" property="codeid" jdbcType="VARCHAR" />
+		<result column="Birthday" property="birthday" jdbcType="VARCHAR" />
+		<result column="Sex" property="sex" jdbcType="VARCHAR" />
+		<result column="Age" property="age" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="Hospitalld" property="hospitalld" jdbcType="VARCHAR" />
+		<result column="BindingTime" property="bindingtime" jdbcType="TIMESTAMP" />
+		<result column="WPH_Hospita_Fid" property="wphHospitaFid" jdbcType="INTEGER" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+		<result column="Nation" property="nation" jdbcType="INTEGER" />
+		<result column="WPH_Card_Fid" property="wphCardFid" jdbcType="INTEGER" />
+		<result column="WPH_Card_Number" property="wphCardNumber" jdbcType="INTEGER" />
+		<result column="Balance" property="balance" jdbcType="DOUBLE" />
+		<result column="HospitalldStatus" property="hospitalldstatus" jdbcType="INTEGER" />
+		<result column="HospitalldDate" property="hospitallddate" jdbcType="TIMESTAMP" />
+		<result column="Nursing_Type" property="nursingType" jdbcType="INTEGER" />
+		<result column="Worker" property="worker" jdbcType="INTEGER" />
+		<result column="WorkerStatus" property="workerstatus" jdbcType="INTEGER" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="notes" property="notes" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="customerAndFoodMap" type="com.slk.wph.module.WPH_Customer.po.WphCustomerCustom" >
+		<id column="cfid" property="fid" />
+		<result column="cname" property="name" />
+		<result column="wardName" property="wardName" />
+		<result column="cOrderingNumber" property="orderingNumber" />
+		<collection property="foodList" ofType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom">
+			<id column="fid" property="fid" jdbcType="INTEGER" />
+			<result column="OrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+			<result column="Title" property="title" jdbcType="VARCHAR" />
+			<result column="Depict" property="depict" jdbcType="VARCHAR" />
+			<result column="Numbers" property="numbers" jdbcType="INTEGER" />
+			<result column="Money" property="money" jdbcType="DOUBLE" />
+			<result column="MealDate" property="mealdate" jdbcType="DATE" />
+			<result column="MealStatse" property="mealstatse" jdbcType="INTEGER" />
+			<result column="MealAdd" property="mealadd" jdbcType="INTEGER" />
+			<result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+			<result column="Customer_CardId" property="customerCardid" jdbcType="VARCHAR" />
+			<result column="Customer_HosPitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+			<result column="LunchFood" property="lunchfood" jdbcType="INTEGER" />
+			<result column="DinnerFood" property="dinnerfood" jdbcType="INTEGER" />
+			<result column="AddFood" property="addfood" jdbcType="INTEGER" />
+			<result column="Race" property="race" jdbcType="INTEGER" />
+			<result column="WPH_MealMenu_Fid" property="wphMealmenuFid" jdbcType="INTEGER" />
+			<result column="WPH_MealNume_Name" property="wphMealnumeName" jdbcType="VARCHAR" />
+			<result column="WPH_MealTime_Fid" property="wphMealtimeFid" jdbcType="INTEGER" />
+			<result column="WPH_MealTime_Name" property="wphMealtimeName" jdbcType="VARCHAR" />
+			<result column="WPH_MealType_Fid" property="wphMealtypeFid" jdbcType="INTEGER" />
+			<result column="WPH_MealType_Name" property="wphMealtypeName" jdbcType="VARCHAR" />
+			<result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+			<result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+			<result column="UserName" property="username" jdbcType="VARCHAR" />
+			<result column="Notes" property="notes" jdbcType="VARCHAR" />
+			<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+			<result column="BedNo" property="bedno" jdbcType="VARCHAR" />
+			<result column="ofcheckOn" property="checkOn" jdbcType="VARCHAR" />
+		</collection>
+
+	</resultMap>
+
+
+	<resultMap type="com.slk.wph.module.WPH_Customer.po.WphCustomerCustom" id="customerAndFoodMap2" extends="customerAndFoodMap">
+		<association property="food" javaType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom">
+			<result column="ofBedNo" property="bedno" />
+			<result column="ofWPH_MealNume_Name" property="wphMealnumeName" />
+			<result column="ofcustomerHospitalld" property="customerHospitalld" />
+			<result column="OrderingNumber" property="orderingnumber" />
+		</association>
+	</resultMap>
+
+	<insert id="insertCustomerByInfo" useGeneratedKeys="true" keyProperty="fid" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomer">
+		insert into wph_customer
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="fid != null" >
+				fid,
+			</if>
+			<if test="name != null" >
+				Name,
+			</if>
+			<if test="codeid != null" >
+				CodeId,
+			</if>
+			<if test="birthday != null" >
+				Birthday,
+			</if>
+			<if test="sex != null" >
+				Sex,
+			</if>
+			<if test="age != null" >
+				Age,
+			</if>
+			<if test="phone != null" >
+				phone,
+			</if>
+			<if test="hospitalld != null" >
+				Hospitalld,
+			</if>
+			<if test="bindingtime != null" >
+				BindingTime,
+			</if>
+			<if test="wphHospitaFid != null" >
+				WPH_Hospita_Fid,
+			</if>
+			<if test="wphWardFid != null" >
+				WPH_Ward_Fid,
+			</if>
+			<if test="nation != null" >
+				Nation,
+			</if>
+			<if test="wphCardFid != null" >
+				WPH_Card_Fid,
+			</if>
+			<if test="wphCardNumber != null" >
+				WPH_Card_Number,
+			</if>
+			<if test="balance != null" >
+				Balance,
+			</if>
+			<if test="hospitalldstatus != null" >
+				HospitalldStatus,
+			</if>
+			<if test="hospitallddate != null" >
+				HospitalldDate,
+			</if>
+			<if test="nursingType != null" >
+				Nursing_Type,
+			</if>
+			<if test="worker != null" >
+				Worker,
+			</if>
+			<if test="workerstatus != null" >
+				WorkerStatus,
+			</if>
+			<if test="createdate != null" >
+				CreateDate,
+			</if>
+			<if test="notes != null" >
+				notes,
+			</if>
+			<if test="img != null" >
+				Img,
+			</if>
+			<if test="userFid != null" >
+				User_Fid,
+			</if>
+			<if test="userrole != null" >
+				UserRole,
+			</if>
+			<if test="username != null" >
+				UserName,
+			</if>
+			<if test="createtype != null" >
+				CreateType,
+			</if>
+			<if test="password != null" >
+				password,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="fid != null" >
+				#{fid,jdbcType=INTEGER},
+			</if>
+			<if test="name != null" >
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="codeid != null" >
+				#{codeid,jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null" >
+				#{birthday,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null" >
+				#{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="age != null" >
+				#{age,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null" >
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="hospitalld != null" >
+				#{hospitalld,jdbcType=VARCHAR},
+			</if>
+			<if test="bindingtime != null" >
+				#{bindingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="wphHospitaFid != null" >
+				#{wphHospitaFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphWardFid != null" >
+				#{wphWardFid,jdbcType=INTEGER},
+			</if>
+			<if test="nation != null" >
+				#{nation,jdbcType=INTEGER},
+			</if>
+			<if test="wphCardFid != null" >
+				#{wphCardFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphCardNumber != null" >
+				#{wphCardNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="balance != null" >
+				#{balance,jdbcType=DOUBLE},
+			</if>
+			<if test="hospitalldstatus != null" >
+				#{hospitalldstatus,jdbcType=INTEGER},
+			</if>
+			<if test="hospitallddate != null" >
+				#{hospitallddate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="nursingType != null" >
+				#{nursingType,jdbcType=INTEGER},
+			</if>
+			<if test="worker != null" >
+				#{worker,jdbcType=INTEGER},
+			</if>
+			<if test="workerstatus != null" >
+				#{workerstatus,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null" >
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="notes != null" >
+				#{notes,jdbcType=VARCHAR},
+			</if>
+			<if test="img != null" >
+				#{img,jdbcType=VARCHAR},
+			</if>
+			<if test="userFid != null" >
+				#{userFid,jdbcType=INTEGER},
+			</if>
+			<if test="userrole != null" >
+				#{userrole,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null" >
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="createtype != null" >
+				#{createtype,jdbcType=INTEGER},
+			</if>
+			<if test="password != null" >
+				#{password,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<!-- 赵福岭 -->
+	<select id="selectByCardFid" resultMap="BaseResultMap">
+		select a.*,B.Name as
+		hospitaName,C.Name as wardName from wph_customer A left join
+		wph_hospita B on A.WPH_Hospita_Fid=B.fid
+		LEFT JOIN wph_ward C on
+		A.WPH_Ward_Fid=C.fid where WPH_Card_Number=#{value}
+	</select>
+
+
+	<sql id="customerSql">
+		<where>
+			<if test="fid != null">
+				AND c.fid = #{fid}
+			</if>
+			<if test="name != null">
+				AND c.Name = #{name}
+			</if>
+			<if test="codeid != null">
+				AND c.CodeId = #{codeid}
+			</if>
+			<if test="phone != null">
+				AND c.Phone = #{phone}
+			</if>
+			<if test="hospitalld != null">
+				AND c.Hospitalld = #{hospitalld}
+			</if>
+			<if test="wphCardNumber != null">
+				AND c.WPH_Card_Number = #{wphCardNumber}
+			</if>
+			<if test="img != null">
+				AND c.Img = #{img}
+			</if>
+			<if test="createtype != null">
+				AND c.CreateType = #{createtype}
+			</if>
+			<if test="wphWardFid != null">
+				AND c.WPH_Ward_Fid = #{wphWardFid}
+			</if>
+			<if test="bindingtime != null">
+				AND DATE_FORMAT(c.BindingTime, '%y-%m-%d') = DATE_FORMAT(#{bindingtime}, '%y-%m-%d')
+			</if>
+		</where>
+	</sql>
+
+
+	<select id="getCustomerByFid" resultMap="BaseResultMap">
+		select * from wph_customer where fid=#{value}
+	</select>
+
+
+	<select id="getCustomerByInfo" parameterType="wphCustomer" resultMap="BaseResultMap" >
+		select c.*,h.`Name` hospitaName,w.`Name` wardName from wph_customer c
+		LEFT JOIN wph_hospita h ON h.fid = c.WPH_Hospita_Fid
+		LEFT JOIN wph_ward w ON w.fid = c.WPH_Ward_Fid
+		<include refid="customerSql" />  LIMIT 1
+	</select>
+
+	<update id="updateCustomer">
+		update wph_customer
+		<set>
+			<if test="fid != null">
+				fid = #{fid,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				Name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="codeid != null">
+				CodeId = #{codeid,jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null">
+				Birthday = #{birthday,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				Sex = #{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="age != null">
+				Age = #{age,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="hospitalld != null">
+				Hospitalld = #{hospitalld,jdbcType=VARCHAR},
+			</if>
+			<if test="bindingtime != null">
+				BindingTime = #{bindingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="wphHospitaFid != null">
+				WPH_Hospita_Fid = #{wphHospitaFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphWardFid != null">
+				WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+			</if>
+			<if test="nation != null">
+				Nation = #{nation,jdbcType=INTEGER},
+			</if>
+			<if test="wphCardFid != null">
+				WPH_Card_Fid = #{wphCardFid,jdbcType=INTEGER},
+			</if>
+			<if test="wphCardNumber != null">
+				WPH_Card_Number = #{wphCardNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="balance != null">
+				Balance = #{balance,jdbcType=DOUBLE},
+			</if>
+			<if test="hospitalldstatus != null">
+				HospitalldStatus = #{hospitalldstatus,jdbcType=INTEGER},
+			</if>
+			<if test="hospitallddate != null">
+				HospitalldDate = #{hospitallddate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="nursingType != null">
+				Nursing_Type = #{nursingType,jdbcType=INTEGER},
+			</if>
+			<if test="worker != null">
+				Worker = #{worker,jdbcType=INTEGER},
+			</if>
+			<if test="workerstatus != null">
+				WorkerStatus = #{workerstatus,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				CreateDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="notes != null">
+				notes = #{notes,jdbcType=VARCHAR},
+			</if>
+
+		</set>
+		where fid = #{fid,jdbcType=INTEGER}
+	</update>
+	<!-- 赵福岭 接口用 -->
+	<!-- 根据住院号获取患者信息 -->
+	<select id="getCustomerByHospitalld" resultMap="BaseResultMap">
+		select c.*,w.`Name` wardName from wph_customer c
+		left join wph_ward w on w.fid = c.WPH_Ward_Fid
+		where c.Hospitalld=#{value}
+	</select>
+
+
+
+	<select id="getCustomerByCardId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT cus.*,w.`Name` wardName,h.`Name` hospitaName,card.CardStatus state
+        FROM wph_customer cus
+            LEFT JOIN wph_card card ON card.CardNumber = cus.WPH_Card_Number
+            LEFT JOIN wph_ward w ON w.fid = cus.WPH_Ward_Fid
+            LEFT JOIN wph_hospita h ON h.fid = cus.WPH_Hospita_Fid
+        WHERE card.CardId = #{value} ORDER BY cus.fid DESC LIMIT 1
+	</select>
+
+
+	<select id="getCustomerByCardNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT cus.*,w.`Name` wardName,h.`Name` hospitaName,card.CardStatus state FROM wph_customer cus
+            LEFT JOIN wph_card card ON card.CardNumber = cus.WPH_Card_Number
+            LEFT JOIN wph_ward w ON w.fid = cus.WPH_Ward_Fid
+            LEFT JOIN wph_hospita h ON h.fid = cus.WPH_Hospita_Fid
+        WHERE cus.WPH_Card_Number = #{value} ORDER BY cus.fid DESC LIMIT 1
+	</select>
+
+
+	<sql id="typeFidForeach">
+		<foreach collection="fids" item="fid" open="(" separator="," close=")">
+			#{fid}
+		</foreach>
+	</sql>
+
+
+	<select id="getCustomerAndFoodOByFood" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="customerAndFoodMap">
+
+		SELECT c.fid cfid, c.`Name` cname,w.`Name` wardName, of.OrderingNumber cOrderingNumber ,of.*,of.fid offid FROM wph_customer c
+		LEFT JOIN wph_ward w ON w.fid = c.WPH_Ward_Fid
+		LEFT JOIN wph_orderingfood of ON c.fid = of.Customer_Fid
+		WHERE c.WPH_Ward_Fid = #{wphWardFid} AND of.fid IN(SELECT of2.fid FROM wph_orderingfood of2 WHERE of2.MealDate = #{mealdate} AND of2.WPH_MealType_Fid IN <include refid="typeFidForeach"/> AND of2.MealStatse = 1)
+	</select>
+
+	<select id="getCustomerAndFoodSByFood" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="customerAndFoodMap">
+
+		SELECT c.fid cfid, c.`Name` cname,w.`Name` wardName, of.OrderingNumber cOrderingNumber ,of.*,of.fid offid ,
+		CASE WHEN of.WPH_MealType_Fid = 4 THEN 0 ELSE 1 END  ofcheckOn
+		FROM wph_customer c
+		LEFT JOIN wph_ward w ON w.fid = c.WPH_Ward_Fid
+		LEFT JOIN wph_orderingfood of ON c.fid = of.Customer_Fid
+		WHERE of.OrderingNumber IN(SELECT of2.OrderingNumber FROM wph_orderingfood of2 WHERE of2.MealDate = #{mealdate}  AND c.WPH_Ward_Fid = #{wphWardFid} AND of.WPH_MealMenu_Fid = 27 AND of2.WPH_MealType_Fid IN <include refid="typeFidForeach"/>)
+	</select>
+
+
+	<!-- 修改肠内配制餐和统计订餐数量  杨明 -->
+	<select id="getCustomerAndFoodIByFood" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="BaseResultMap" >
+		<!--SELECT * FROM wph_customer c WHERE  c.WPH_Ward_Fid = #{wphWardFid} AND c.HospitalldStatus = 1
+		SELECT * FROM wph_customer c WHERE  c.WPH_Ward_Fid = #{wphWardFid} AND c.HospitalldStatus = 1 AND c.fid NOT IN(
+			SELECT of.Customer_Fid FROM wph_orderingfood of WHERE of.MealDate = #{mealdate } AND of.WPH_MealType_Fid = 4 AND of.WPH_MealMenu_Fid = 28 AND of.MealStatse = 1
+		);-->
+		SELECT c.*, count(food.Customer_HosPitalld) state
+		FROM wph_customer c
+		LEFT JOIN wph_orderingfood food ON food.Customer_HosPitalld = c.Hospitalld AND food.WPH_MealMenu_Fid = 28 AND food.MealDate = #{mealdate } AND food.MealStatse = 1
+		WHERE c.WPH_Ward_Fid = #{wphWardFid} AND c.HospitalldStatus = 1
+		GROUP BY c.fid
+	</select>
+
+	<select id="getCustomerAndFoodCByFood" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="customerAndFoodMap2" >
+		SELECT c.fid cfid, c.`Name` cname, w.`Name` wardName, of.BedNo ofBedNo,of.MealDate ofMealDate ,of.WPH_MealNume_Name ofWPH_MealNume_Name ,of.Customer_HosPitalld ofcustomerHospitalld,of.*
+		FROM wph_customer c
+		LEFT JOIN wph_ward w ON w.fid = c.WPH_Ward_Fid
+		LEFT JOIN wph_orderingfood of ON c.fid = of.Customer_Fid
+		WHERE of.OrderingNumber IN(SELECT of2.OrderingNumber FROM wph_orderingfood of2 WHERE of2.MealDate = #{mealdate } AND of2.Customer_HosPitalld = #{customerHospitalld} ) AND of.WPH_MealType_Fid IN(2,3)
+		AND of.MealStatse = 1
+	</select>
+
+
+
+	<!-- pc端用 赵福岭  2017-08-02 -->
+	<select id="selectAllCustomer" resultMap="BaseResultMap">
+		<!--select distinct a.*,b.Name as wardName,c.Nursing_Type as
+		nursingGType,
+        c.Nursing_Name as nursingName
+		from wph_customer a
+		left join wph_ward b
+		on a.WPH_Ward_Fid=b.fid
+		LEFT JOIN
+		wph_orderingnursing c
+		on a.fid=c.Customer_Fid
+		left join wph_card z
+		on a.WPH_Card_Fid=z.fid
+		<where>
+		c.NursingStates=1 and b.Status='0' and
+		c.NursingDate=DATE_FORMAT(#{date}, '%Y-%m-%d')
+		<if test="wardFid!=null and wardFid!=''">
+		 and a.WPH_Ward_Fid=#{wardFid}
+		</if>
+		<if test="nursingType!=null and nursingType!=''">
+		 and c.Nursing_Type=#{nursingType}
+		</if>
+
+		</where>
+		 -->
+		select cc.*,ward.`Name` as wardName, nn.Nursing_Type as nursingGType,nn.Nursing_Name as nursingName from wph_orderingnursing nn
+		LEFT JOIN wph_customer cc
+		on nn.Customer_Fid=cc.fid
+		LEFT JOIN wph_ward ward
+		on ward.fid=cc.WPH_Ward_Fid
+		<where>
+			nn.fid in (select max(n.fid) from wph_orderingnursing n where
+			n.nursingDate=DATE_FORMAT(#{date}, '%Y-%m-%d')
+			GROUP BY n.customer_fid)
+			and nn.NursingStates='1'
+			and ward.`Status`='0'
+			<if test="wardFid!=null and wardFid!=''">
+				and cc.WPH_Ward_Fid=#{wardFid}
+			</if>
+			<if test="nursingType!=null and nursingType!=''">
+				and nn.Nursing_Type=#{nursingType}
+			</if>
+		</where>
+	</select>
+
+	<select id="getCustomByHospitalldStates"  resultMap="BaseResultMap">
+		select a.name,a.Hospitalld,a.Balance from wph_customer a
+		LEFT JOIN wph_ward b on a.WPH_Ward_Fid=b.fid
+		where a.HospitalldStatus='1'
+		and a.Balance<![CDATA[<=]]>b.WaringMoney
+		and b.Status='0'
+		and a.WPH_Ward_Fid=#{wardFid}
+	</select>
+
+
+
+	<!-- 赵 -->
+	<select id="getWphInvoiceManger" resultMap="BaseResultMap">
+		select a.*,c.name as wardName,d.name as hospitaName,
+		(IFNULL((select sum(money) from wph_ordering z1 where z1.Customer_Fid=a.fid
+		and z1.CreateDate>a.BindingTime and z1.OrderingStatse='1' and z1.WPH_Query_Fid='3' GROUP BY z1.Customer_Hospitalld),0)
+		-
+		IFNULL((select sum(money) from wph_ordering y1 where y1.Customer_Fid=a.fid
+		and y1.CreateDate>a.BindingTime and y1.OrderingStatse='2' and y1.WPH_Query_Fid='3' GROUP BY y1.Customer_Hospitalld),0)
+		)
+		as cf,
+		(IFNULL((select sum(money) from wph_ordering z2 where z2.Customer_Fid=a.fid
+		and z2.CreateDate>a.BindingTime and z2.OrderingStatse='1' and (z2.WPH_ServiceType_Fid='1'or z2.WPH_ServiceType_Fid='2') GROUP BY z2.Customer_Hospitalld),0)
+		-
+		IFNULL((select sum(money) from wph_ordering y2 where y2.Customer_Fid=a.fid
+		and y2.CreateDate>a.BindingTime and y2.OrderingStatse='2' and (y2.WPH_ServiceType_Fid='1' or y2.WPH_ServiceType_Fid='2' ) GROUP BY y2.Customer_Hospitalld),0)
+		)
+		as ph,
+		(IFNULL((select sum(money) from wph_ordering z3 where z3.Customer_Fid=a.fid
+		and z3.CreateDate>a.BindingTime and z3.OrderingStatse='1' and z3.WPH_InvoiceRate_Fid='3' GROUP BY z3.Customer_Hospitalld),0)
+		-
+		IFNULL((select sum(money) from wph_ordering y3 where y3.Customer_Fid=a.fid
+		and y3.CreateDate>a.BindingTime and y3.OrderingStatse='2' and y3.WPH_InvoiceRate_Fid='3' GROUP BY y3.Customer_Hospitalld),0)
+		)
+		as qt,
+		(IFNULL((select sum(money) from wph_ordering z4 where z4.Customer_Fid=a.fid
+		and z4.CreateDate>a.BindingTime and z4.OrderingStatse='1' and z4.WPH_ServiceType_Fid='2' GROUP BY z4.Customer_Hospitalld),0)
+		-
+		IFNULL((select sum(money) from wph_ordering y4 where y4.Customer_Fid=a.fid
+		and y4.CreateDate>a.BindingTime and y4.OrderingStatse='2' and y4.WPH_ServiceType_Fid='2' GROUP BY y4.Customer_Hospitalld),0)
+		)
+		as oneAndOne,
+		(IFNULL((select sum(money) from wph_ordering z5 where z5.Customer_Fid=a.fid
+		and z5.CreateDate>a.BindingTime and z5.OrderingStatse='1' and z5.WPH_ServiceType_Fid='1' GROUP BY z5.Customer_Hospitalld),0)
+		-
+		IFNULL((select sum(money) from wph_ordering y5 where y5.Customer_Fid=a.fid
+		and y5.CreateDate>a.BindingTime and y5.OrderingStatse='2' and y5.WPH_ServiceType_Fid='1' GROUP BY y5.Customer_Hospitalld),0)
+		)
+		as oneAndMany
+		from
+		wph_customer a
+		LEFT JOIN wph_ward c
+		on a.WPH_Ward_Fid=c.fid
+		LEFT JOIN wph_hospita d
+		on a.WPH_Hospita_Fid=d.fid
+		where a.WPH_Card_Fid is NULL
+		and a.HospitalldStatus='2'
+		and a.hospitalld=#{value}
+	</select>
+
+	<update id="getEmptyCustomerByFid" parameterType="java.lang.Integer" >
+		UPDATE wph_customer cus SET cus.WPH_Card_Fid = NULL,cus.WPH_Card_Number=NULL,cus.Balance= 0.0 WHERE cus.fid=#{fid}
+	</update>
+
+
+	<select id="getRetreatCardCustomerList" resultMap="BaseResultMap">
+        SELECT cus.* FROM wph_customer cus
+        LEFT JOIN (
+        SELECT MAX(oo.OrderingDate) OrderingDate, oo.Customer_Hospitalld FROM wph_ordering oo GROUP BY Customer_Hospitalld
+        ) oo ON oo.Customer_Hospitalld = cus.Hospitalld
+        WHERE cus.WPH_Card_Fid IS NOT NULL AND cus.WPH_Card_Fid !='' AND cus.HospitalldStatus = 2 AND SUBDATE(oo.OrderingDate,INTERVAL -6 MONTH) &lt;= NOW();
+	</select>
+
+	<select id="getRetreatCardFeeCustomerByhos" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT cus.*,oo.Money total,
+		(SELECT h.`Name` FROM wph_hospita h WHERE h.fid = cus.WPH_Hospita_Fid) hospitaName,
+		(SELECT w.`Name` FROM wph_ward w WHERE w.fid = cus.WPH_Ward_Fid) wardName
+		FROM wph_customer cus
+		LEFT JOIN wph_ordering oo ON oo.Customer_Hospitalld = cus.Hospitalld
+		WHERE oo.WPH_Query_Fid = 6 AND oo.WPH_ServiceType_Fid = 17 AND WPH_ServiceDetails_Fid = 51 AND cus.Hospitalld=${value }
+	</select>
+
+	<select id="RetreatCardFee_Summary" parameterType="com.slk.wph.module.WPH_Ordering.po.WphOrderingCustom" resultMap="BaseResultMap">
+		SELECT cus.Hospitalld,
+		cus.`Name`,
+		ward.`Name` wardName,
+		(SELECT oo2.Money FROM wph_ordering oo2 WHERE oo2.Customer_Hospitalld = cus.Hospitalld AND oo2.Title='退卡押金' ORDER BY oo2.fid DESC LIMIT 1) oneAndMany,
+		oo.Money total
+		FROM wph_customer cus
+		LEFT JOIN wph_ward ward ON ward.fid = cus.WPH_Ward_Fid
+		LEFT JOIN wph_ordering oo ON oo.Customer_Hospitalld = cus.Hospitalld
+		WHERE (cus.HospitalldStatus = 2 OR cus.Worker = 1 ) AND oo.OrderingStatse = 4 AND cus.WPH_Card_Fid IS NULL  AND (oo.WPH_Query_Fid IS NULL OR oo.WPH_Query_Fid ='')
+		AND oo.OrderingDate BETWEEN DATE_SUB(DATE_FORMAT(#{datetime},'%y-%m-%d'),interval 0 day) AND DATE_SUB(DATE_FORMAT(#{datetime2},'%y-%m-%d'),interval -1 day)  ORDER BY ward.fid;
+
+	</select>
+
+
+	<select id="getCustomerListByInfo" parameterType="com.slk.wph.module.WPH_Customer.po.WphCustomer" resultMap="BaseResultMap">
+		SELECT * FROM `wph_customer` c <include refid="customerSql"/>
+	</select>
+
+
+	<select id="selectCustomerBalanceByWardFid" resultMap="BaseResultMap">
+		select a.fid,
+		b.name as wardName,
+		a.name,a.Hospitalld,
+		d.name as hospitaName, a.Balance,
+		(select sum(c.money) from wph_ordering c where c.Customer_Hospitalld=a.Hospitalld
+		and c.OrderingDate>=a.BindingTime and c.OrderingStatse='3' GROUP BY c.Customer_Hospitalld) as total
+		from wph_customer a
+		LEFT JOIN wph_ward b
+		on a.WPH_Ward_Fid=b.fid
+		LEFT JOIN wph_hospita d
+		on d.fid=b.WPH_Hospita_fid
+		where a.HospitalldStatus='1'
+		and a.WorkerStatus='0'
+		and a.Balance &lt;b.WaringMoney
+		and b.fid=#{wardFid}
+	</select>
+
+	<select id="getPSTByCustomerInfo" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT cus.*,
+		(SELECT hosp.`Name` FROM wph_hospita hosp WHERE hosp.fid = cus.WPH_Hospita_Fid) hospitaName,
+		(SELECT ward.`Name` FROM wph_ward ward WHERE ward.fid = cus.WPH_Ward_Fid) wardName,
+		(SELECT oo.Money FROM wph_ordering oo WHERE oo.OrderingStatse = 3 AND oo.Customer_Hospitalld = cus.Hospitalld ORDER BY oo.fid LIMIT 1)cf ,
+		(SELECT oo.Money FROM wph_ordering oo WHERE oo.Customer_Hospitalld = cus.Hospitalld AND oo.Title='开卡押金' )ph
+		FROM wph_customer cus
+		WHERE cus.Hospitalld = #{value} OR cus.WPH_Card_Number = (SELECT card.CardNumber FROM wph_card card WHERE card.CardId = #{value});
+	</select>
+
+	<select id="getVIPReserve" parameterType="java.lang.String" resultMap="BaseResultMap">
+		SELECT cus.fid,cus.`Name`,cus.Balance,cus.HospitalldStatus,ward.`Name` wardName,ward.`Status` createtype,
+		(SELECT count(oo.fid) FROM wph_ordering oo
+		WHERE oo.Customer_Hospitalld = cus.Hospitalld
+		AND oo.WPH_Query_Fid =1
+		AND oo.OrderingNumber IN (SELECT OrderingNumber FROM wph_orderingnursing WHERE (DATE_FORMAT(NursingDate,'%y-%m-%d') =  DATE_FORMAT(now(),'%y-%m-%d')))
+		AND oo.OrderingStatse = 1 AND oo.OrderingNumber NOT IN (
+		SELECT oo1.OldOrderingNumber FROM wph_ordering oo1 WHERE (oo1.OldOrderingNumber IS NOT NULL  OR oo1.OldOrderingNumber = '') AND oo1.Customer_Hospitalld = oo.Customer_Hospitalld )
+		) state
+		FROM wph_customer cus
+		LEFT JOIN wph_ward ward ON ward.fid = cus.WPH_Ward_Fid AND ward.fid = 30
+		WHERE cus.Hospitalld = #{hospitalId};
+	</select>
+
+	<resultMap id="customerabroadMap" type="com.slk.wph.module.WPH_Customer.po.WphCustomerCustom" extends="BaseResultMap">
+		<result column="wardName" property="wardName"/>
+		<result column="nursingFid" property="nursingFid" />
+		<result column="Facting" property="state" />
+	</resultMap>
+
+	<select id="getInputFactFoodListByInfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom" resultMap="customerabroadMap" >
+		SELECT cus.*,ward.`Name` wardName,food.fid nursingFid,food.Facting FROM wph_customer cus
+		LEFT JOIN wph_ward ward ON ward.fid = cus.WPH_Ward_Fid
+		LEFT JOIN wph_orderingfood food ON food.Customer_Fid = cus.fid
+		WHERE food.MealDate = #{datetime}  AND food.MealStatse = #{mealstatse} AND food.WPH_MealType_Fid IN(2,3,4) AND food.WPH_MealMenu_Fid != 28  AND food.WPH_MealTime_Fid = 1
+		<if test="wphWardFid != null and wphWardFid != ''"> AND ward.fid = #{wphWardFid}</if>
+		ORDER BY cus.WPH_Ward_Fid,cus.fid
+	</select>
+
+	<!-- 根据姓名查询患者信息 -->
+	<select id="getCustomerByName" resultMap="BaseResultMap">
+		select c.*,w.`Name` as wardName,c.HospitalldStatus from wph_customer c
+		left join wph_ward w on w.fid = c.WPH_Ward_Fid
+		where c.name LIKE concat('%',#{value},'%')
+	</select>
+
+	<!--根据id查询患者信息 庞军霞-->
+	<select id="selectCustomerById" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM wph_customer WHERE hospitalld=#{hospitalld}
+	</select>
+
+	<resultMap id="BaseMealTcInfo" type="com.slk.wph.module.WPH_Ordering.po.WphMealInfo" >
+		<result column="name" property="name" />
+		<result column="cardnumber" property="cardnumber" />
+		<!--<result column="countMoney" property="countMoney" />-->
+		<collection property="infoList" ofType="com.slk.wph.module.WPH_Ordering.po.WphMealInfo">
+			<result column="orderNumber" property="orderNumber" />
+			<collection property="mealCollectList" ofType="com.slk.wph.module.WPH_Ordering.po.WphMealCollect">
+				<result column="mealcount" property="mealcount"/>
+				<result column="mealname" property="mealname"/>
+				<result column="mealmoney" property="mealmoney"/>
+			</collection>
+		</collection>
+	</resultMap>
+<!--	<select id="selectMealTcInfo" resultMap="BaseMealTcInfo">
+		select x.`Name` name,
+		x.WPH_Card_Number as cardnumber ,
+		c.OrderingNumber as orderNumber,
+		count(c.WPH_MealMenu_Fid) as mealcount ,
+		c.WPH_MealNume_Name as mealname,
+		c.Money as mealmoney
+		from  wph_customer x
+		left join wph_orderingfood c on x.fid=c.Customer_Fid and c.MealStatse = 1
+		where
+		(x.HospitalldStatus=1 OR x.Worker = 1  OR x.WPH_Ward_Fid = 1 )
+		and x.WPH_Ward_Fid =#{wardFid} and DATE_FORMAT(c.MealDate,'%m-%d-%Y')=DATE_FORMAT(#{datatime},'%m-%d-%Y')
+		and x.WPH_Card_Number IS NOT NULL and x.WPH_Card_Number != ''
+		AND c.WPH_MealType_Fid &gt;=5
+		GROUP BY c.WPH_MealMenu_Fid,x.fid
+		order by x.`Name`,c.OrderingNumber
+	</select>-->
+	<select id="selectMealTcInfo" resultMap="BaseMealTcInfo">
+        SELECT
+			x.`Name` NAME,
+			x.Hospitalld AS cardnumber,
+			c.OrderingNumber AS orderNumber,
+			c.Numbers AS mealcount,
+			c.Money AS mealmoney,
+			GROUP_CONCAT(CASE c.WPH_MealTime_Fid
+						 WHEN 1 THEN '早-'
+						 WHEN 2 THEN '中-'
+						 WHEN 3 THEN '晚-'
+						 END,c.WPH_MealNume_Name) as mealname
+        FROM
+            wph_customer x
+            LEFT JOIN wph_orderingfood c ON x.fid = c.Customer_Fid
+            LEFT JOIN wph_ordering cc on c.OrderingNumber = cc.OldOrderingNumber
+        WHERE
+            x.WPH_Ward_Fid =#{wardFid}
+            AND DATE_FORMAT(c.MealDate, '%m-%d-%Y') = DATE_FORMAT(#{datatime}, '%m-%d-%Y')
+            AND x.WPH_Card_Number IS NOT NULL
+            AND x.WPH_Card_Number != ''
+            AND c.WPH_MealType_Fid &gt;= 5 and c.WPH_MealType_Fid !=14
+        GROUP BY
+            c.WPH_MealMenu_Fid,c.OrderingNumber,
+            x.fid,cc.OrderingNumber,c.WPH_MealTime_Fid
+        HAVING count(cc.OrderingNumber)=0
+        ORDER BY
+            x.`Name`,
+            c.OrderingNumber,
+			c.WPH_MealTime_Fid
+    </select>
+</mapper>

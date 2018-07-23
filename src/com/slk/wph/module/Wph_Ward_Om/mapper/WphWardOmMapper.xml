@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.Wph_Ward_Om.mapper.WphWardOmMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.Wph_Ward_Om.po.WphWardOm" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+    <result column="OM_Name" property="omName" jdbcType="VARCHAR" />
+    <result column="WPH_NursingGrade_type" property="wphNursinggradeType" jdbcType="INTEGER" />
+    <result column="WPH_NursingGrade_Fid" property="wphNursinggradeFid" jdbcType="INTEGER" />
+    <result column="Money" property="money" jdbcType="DOUBLE" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="Wages" property="wages" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, WPH_Ward_Fid, OM_Name, WPH_NursingGrade_type, WPH_NursingGrade_Fid, Money, CreateDate, 
+    Wages
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.Wph_Ward_Om.po.WphWardOmExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_ward_om
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_ward_om
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_ward_om
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.Wph_Ward_Om.po.WphWardOmExample" >
+    delete from wph_ward_om
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.Wph_Ward_Om.po.WphWardOm" >
+    insert into wph_ward_om (fid, WPH_Ward_Fid, OM_Name, 
+      WPH_NursingGrade_type, WPH_NursingGrade_Fid, 
+      Money, CreateDate, Wages
+      )
+    values (#{fid,jdbcType=INTEGER}, #{wphWardFid,jdbcType=INTEGER}, #{omName,jdbcType=VARCHAR}, 
+      #{wphNursinggradeType,jdbcType=INTEGER}, #{wphNursinggradeFid,jdbcType=INTEGER}, 
+      #{money,jdbcType=DOUBLE}, #{createdate,jdbcType=TIMESTAMP}, #{wages,jdbcType=DOUBLE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.Wph_Ward_Om.po.WphWardOm" >
+    insert into wph_ward_om
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="wphWardFid != null" >
+        WPH_Ward_Fid,
+      </if>
+      <if test="omName != null" >
+        OM_Name,
+      </if>
+      <if test="wphNursinggradeType != null" >
+        WPH_NursingGrade_type,
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid,
+      </if>
+      <if test="money != null" >
+        Money,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+      <if test="wages != null" >
+        Wages,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="wphWardFid != null" >
+        #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="omName != null" >
+        #{omName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphNursinggradeType != null" >
+        #{wphNursinggradeType,jdbcType=INTEGER},
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        #{wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wages != null" >
+        #{wages,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.Wph_Ward_Om.po.WphWardOmExample" resultType="java.lang.Integer" >
+    select count(*) from wph_ward_om
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_ward_om
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphWardFid != null" >
+        WPH_Ward_Fid = #{record.wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.omName != null" >
+        OM_Name = #{record.omName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wphNursinggradeType != null" >
+        WPH_NursingGrade_type = #{record.wphNursinggradeType,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid = #{record.wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.money != null" >
+        Money = #{record.money,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.wages != null" >
+        Wages = #{record.wages,jdbcType=DOUBLE},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_ward_om
+    set fid = #{record.fid,jdbcType=INTEGER},
+      WPH_Ward_Fid = #{record.wphWardFid,jdbcType=INTEGER},
+      OM_Name = #{record.omName,jdbcType=VARCHAR},
+      WPH_NursingGrade_type = #{record.wphNursinggradeType,jdbcType=INTEGER},
+      WPH_NursingGrade_Fid = #{record.wphNursinggradeFid,jdbcType=INTEGER},
+      Money = #{record.money,jdbcType=DOUBLE},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      Wages = #{record.wages,jdbcType=DOUBLE}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.Wph_Ward_Om.po.WphWardOm" >
+    update wph_ward_om
+    <set >
+      <if test="wphWardFid != null" >
+        WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="omName != null" >
+        OM_Name = #{omName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphNursinggradeType != null" >
+        WPH_NursingGrade_type = #{wphNursinggradeType,jdbcType=INTEGER},
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid = #{wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        Money = #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wages != null" >
+        Wages = #{wages,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.Wph_Ward_Om.po.WphWardOm" >
+    update wph_ward_om
+    set WPH_Ward_Fid = #{wphWardFid,jdbcType=INTEGER},
+      OM_Name = #{omName,jdbcType=VARCHAR},
+      WPH_NursingGrade_type = #{wphNursinggradeType,jdbcType=INTEGER},
+      WPH_NursingGrade_Fid = #{wphNursinggradeFid,jdbcType=INTEGER},
+      Money = #{money,jdbcType=DOUBLE},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      Wages = #{wages,jdbcType=DOUBLE}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

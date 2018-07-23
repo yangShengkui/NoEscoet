@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_One.mapper.WphOneMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_One.po.WphOne" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="WPH_Ward_fid" property="wphWardFid" jdbcType="INTEGER" />
+    <result column="WPH_NursingGrade_Fid" property="wphNursinggradeFid" jdbcType="INTEGER" />
+    <result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+    <result column="Workers_Fid" property="workersFid" jdbcType="INTEGER" />
+    <result column="StartDate" property="startdate" jdbcType="TIMESTAMP" />
+    <result column="EndDate" property="enddate" jdbcType="TIMESTAMP" />
+    <result column="Money" property="money" jdbcType="DOUBLE" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="statse" property="statse" jdbcType="INTEGER" />
+    <result column="imgs" property="imgs" jdbcType="VARCHAR" />
+    <result column="TrueEndDate" property="trueenddate" jdbcType="TIMESTAMP" />
+    <result column="WagesStates" property="wagesstates" jdbcType="INTEGER" />
+    <result column="SettlementMoney" property="settlementmoney" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, WPH_Ward_fid, WPH_NursingGrade_Fid, Customer_Fid, Workers_Fid, StartDate, EndDate, 
+    Money, CreateDate, User_Fid, statse, imgs, TrueEndDate, WagesStates, SettlementMoney
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_One.po.WphOneExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_one
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_one
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_one
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_One.po.WphOneExample" >
+    delete from wph_one
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_One.po.WphOne" >
+    insert into wph_one (fid, WPH_Ward_fid, WPH_NursingGrade_Fid, 
+      Customer_Fid, Workers_Fid, StartDate, 
+      EndDate, Money, CreateDate, 
+      User_Fid, statse, imgs, 
+      TrueEndDate, WagesStates, SettlementMoney
+      )
+    values (#{fid,jdbcType=INTEGER}, #{wphWardFid,jdbcType=INTEGER}, #{wphNursinggradeFid,jdbcType=INTEGER}, 
+      #{customerFid,jdbcType=INTEGER}, #{workersFid,jdbcType=INTEGER}, #{startdate,jdbcType=TIMESTAMP}, 
+      #{enddate,jdbcType=TIMESTAMP}, #{money,jdbcType=DOUBLE}, #{createdate,jdbcType=TIMESTAMP}, 
+      #{userFid,jdbcType=INTEGER}, #{statse,jdbcType=INTEGER}, #{imgs,jdbcType=VARCHAR}, 
+      #{trueenddate,jdbcType=TIMESTAMP}, #{wagesstates,jdbcType=INTEGER}, #{settlementmoney,jdbcType=DOUBLE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_One.po.WphOne" >
+    insert into wph_one
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="wphWardFid != null" >
+        WPH_Ward_fid,
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid,
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid,
+      </if>
+      <if test="workersFid != null" >
+        Workers_Fid,
+      </if>
+      <if test="startdate != null" >
+        StartDate,
+      </if>
+      <if test="enddate != null" >
+        EndDate,
+      </if>
+      <if test="money != null" >
+        Money,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+      <if test="userFid != null" >
+        User_Fid,
+      </if>
+      <if test="statse != null" >
+        statse,
+      </if>
+      <if test="imgs != null" >
+        imgs,
+      </if>
+      <if test="trueenddate != null" >
+        TrueEndDate,
+      </if>
+      <if test="wagesstates != null" >
+        WagesStates,
+      </if>
+      <if test="settlementmoney != null" >
+        SettlementMoney,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="wphWardFid != null" >
+        #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        #{wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerFid != null" >
+        #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="workersFid != null" >
+        #{workersFid,jdbcType=INTEGER},
+      </if>
+      <if test="startdate != null" >
+        #{startdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enddate != null" >
+        #{enddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userFid != null" >
+        #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="statse != null" >
+        #{statse,jdbcType=INTEGER},
+      </if>
+      <if test="imgs != null" >
+        #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="trueenddate != null" >
+        #{trueenddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wagesstates != null" >
+        #{wagesstates,jdbcType=INTEGER},
+      </if>
+      <if test="settlementmoney != null" >
+        #{settlementmoney,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_One.po.WphOneExample" resultType="java.lang.Integer" >
+    select count(*) from wph_one
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_one
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphWardFid != null" >
+        WPH_Ward_fid = #{record.wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid = #{record.wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.customerFid != null" >
+        Customer_Fid = #{record.customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.workersFid != null" >
+        Workers_Fid = #{record.workersFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.startdate != null" >
+        StartDate = #{record.startdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.enddate != null" >
+        EndDate = #{record.enddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.money != null" >
+        Money = #{record.money,jdbcType=DOUBLE},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.userFid != null" >
+        User_Fid = #{record.userFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.statse != null" >
+        statse = #{record.statse,jdbcType=INTEGER},
+      </if>
+      <if test="record.imgs != null" >
+        imgs = #{record.imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="record.trueenddate != null" >
+        TrueEndDate = #{record.trueenddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.wagesstates != null" >
+        WagesStates = #{record.wagesstates,jdbcType=INTEGER},
+      </if>
+      <if test="record.settlementmoney != null" >
+        SettlementMoney = #{record.settlementmoney,jdbcType=DOUBLE},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_one
+    set fid = #{record.fid,jdbcType=INTEGER},
+      WPH_Ward_fid = #{record.wphWardFid,jdbcType=INTEGER},
+      WPH_NursingGrade_Fid = #{record.wphNursinggradeFid,jdbcType=INTEGER},
+      Customer_Fid = #{record.customerFid,jdbcType=INTEGER},
+      Workers_Fid = #{record.workersFid,jdbcType=INTEGER},
+      StartDate = #{record.startdate,jdbcType=TIMESTAMP},
+      EndDate = #{record.enddate,jdbcType=TIMESTAMP},
+      Money = #{record.money,jdbcType=DOUBLE},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      User_Fid = #{record.userFid,jdbcType=INTEGER},
+      statse = #{record.statse,jdbcType=INTEGER},
+      imgs = #{record.imgs,jdbcType=VARCHAR},
+      TrueEndDate = #{record.trueenddate,jdbcType=TIMESTAMP},
+      WagesStates = #{record.wagesstates,jdbcType=INTEGER},
+      SettlementMoney = #{record.settlementmoney,jdbcType=DOUBLE}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_One.po.WphOne" >
+    update wph_one
+    <set >
+      <if test="wphWardFid != null" >
+        WPH_Ward_fid = #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid = #{wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="workersFid != null" >
+        Workers_Fid = #{workersFid,jdbcType=INTEGER},
+      </if>
+      <if test="startdate != null" >
+        StartDate = #{startdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enddate != null" >
+        EndDate = #{enddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="money != null" >
+        Money = #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userFid != null" >
+        User_Fid = #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="statse != null" >
+        statse = #{statse,jdbcType=INTEGER},
+      </if>
+      <if test="imgs != null" >
+        imgs = #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="trueenddate != null" >
+        TrueEndDate = #{trueenddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wagesstates != null" >
+        WagesStates = #{wagesstates,jdbcType=INTEGER},
+      </if>
+      <if test="settlementmoney != null" >
+        SettlementMoney = #{settlementmoney,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_One.po.WphOne" >
+    update wph_one
+    set WPH_Ward_fid = #{wphWardFid,jdbcType=INTEGER},
+      WPH_NursingGrade_Fid = #{wphNursinggradeFid,jdbcType=INTEGER},
+      Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      Workers_Fid = #{workersFid,jdbcType=INTEGER},
+      StartDate = #{startdate,jdbcType=TIMESTAMP},
+      EndDate = #{enddate,jdbcType=TIMESTAMP},
+      Money = #{money,jdbcType=DOUBLE},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      User_Fid = #{userFid,jdbcType=INTEGER},
+      statse = #{statse,jdbcType=INTEGER},
+      imgs = #{imgs,jdbcType=VARCHAR},
+      TrueEndDate = #{trueenddate,jdbcType=TIMESTAMP},
+      WagesStates = #{wagesstates,jdbcType=INTEGER},
+      SettlementMoney = #{settlementmoney,jdbcType=DOUBLE}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Mealgroup.mapper.WphMealgroupMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroupCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+    <result column="WPH_Ward_Name" property="wphWardName" jdbcType="VARCHAR" />
+    <result column="Group1" property="group1" jdbcType="VARCHAR" />
+    <result column="Group2" property="group2" jdbcType="VARCHAR" />
+    <result column="Group3" property="group3" jdbcType="VARCHAR" />
+    <result column="Group4" property="group4" jdbcType="VARCHAR" />
+    <result column="Group5" property="group5" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  
+  
+  <select id="getGroupList" resultMap="BaseResultMap">
+	SELECT * FROM `wph_mealgroup` mg WHERE mg.WPH_Ward_Fid IN(
+		SELECT w.fid FROM wph_ward w WHERE w.`Status` = 0 AND w.WPH_Hospita_fid IN(
+			SELECT h.fid FROM wph_hospita h WHERE h.`Status` = 0));
+  </select>
+  
+  <resultMap type="com.slk.wph.module.WPH_Mealgroup.po.WphMealGroupSpread" id="groupMealMap" >
+  	<result column="groups" property="groups" />
+	<result column="wardName" property="wardName" />
+  	<result column="riceC" property="riceC" />
+  	<result column="noodlesC" property="noodlesC" />
+  	<result column="plusC" property="plusC" />
+  	<result column="riceH" property="riceH" />
+  	<result column="noodlesH" property="noodlesH" />
+  	<result column="plusH" property="plusH" />
+  	<result column="riceD" property="riceD" />
+  	<result column="noodlesD" property="noodlesD" />
+  	<result column="flow" property="flow" />
+  	<result column="halfFlow" property="halfFlow" />
+  	<result column="sugar" property="sugar" />
+  	<result column="riceC2" property="riceC2" />
+  	<result column="noodlesC2" property="noodlesC2" />
+  	<result column="plusC2" property="plusC2" />
+  	<result column="riceH2" property="riceH2" />
+  	<result column="noodlesH2" property="noodlesH2" />
+  	<result column="plusH2" property="plusH2" />
+  	<result column="riceD2" property="riceD2" />
+  	<result column="noodlesD2" property="noodlesD2" />
+  	<result column="flow2" property="flow2" />
+  	<result column="halfFlow2" property="halfFlow2" />
+  	<result column="sugar2" property="sugar2" />
+  	<result column="vegetarianfood" property="vegetarianfood" />
+  </resultMap>
+  
+ <select id="getGroupMealByGroup" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroupCustom" resultMap="groupMealMap" >
+ 		SELECT w.groups,w.groupsNum,w.WPH_Ward_Name AS `wardName`,
+		
+				 SUM(of.WPH_MealTime_Fid = 1 AND of.Race = 0 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS riceCZ <!-- #米饭 -->
+			 	,SUM(of.WPH_MealTime_Fid = 1 AND of.Race = 1 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS riceHZ
+			 	,SUM(of.WPH_MealTime_Fid = 1 AND (of.WPH_MealMenu_Fid = 5 OR of.WPH_MealMenu_Fid = 26)) AS riceDZ<!-- 早餐没有主食所以不显示 -->
+			 	
+				,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 0,of.DinnerFood = 0) AND of.Race = 0 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS riceC  <!-- #米饭 -->
+				,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 1,of.DinnerFood = 1) AND of.Race = 0 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS noodlesC  <!-- #花卷 -->
+				,SUM(of.AddFood   = 1 AND of.Race = 0 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 3)) AS plusC    <!--  #加双       #普餐 -->
+
+				
+				,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 0,of.DinnerFood = 0) AND of.Race = 1 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS riceH
+				,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 1,of.DinnerFood = 1) AND of.Race = 1 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS noodlesH
+				,SUM(of.AddFood   = 1 AND of.Race = 1 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 3)) AS plusH   <!--  #回餐 -->
+
+				
+				,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 0,of.DinnerFood = 0) AND (of.WPH_MealMenu_Fid = 5 OR of.WPH_MealMenu_Fid = 26)) AS riceD
+				,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 1,of.DinnerFood = 1) AND (of.WPH_MealMenu_Fid = 5 OR of.WPH_MealMenu_Fid = 26)) AS noodlesD  <!-- #低盐低脂餐 -->
+				
+				,SUM((of.WPH_MealMenu_Fid = 3 OR of.WPH_MealMenu_Fid = 24)) AS flow
+				,SUM((of.WPH_MealMenu_Fid = 4 OR of.WPH_MealMenu_Fid = 25)) AS halfFlow
+				,SUM(of.WPH_MealMenu_Fid = 27 ) AS sugar
+				,SUM(of.VegetarianFood = 1 ) AS vegetarianfood
+	 	FROM groupmeal w
+	 	LEFT JOIN  wph_customer cus  ON w.WPH_Ward_Fid =  cus.WPH_Ward_Fid
+	 	LEFT JOIN wph_orderingfood of ON of.Customer_Fid= cus.fid
+	 	WHERE  w.groupsNum <foreach collection="fids" item="fids" open="In(" separator="," close=")"> #{fids} </foreach>
+	 	AND of.MealDate=DATE_FORMAT(now(),'%y-%m-%d') AND of.WPH_MealTime_Fid = #{timeFid}  AND of.MealAdd = #{mealadd} AND of.MealStatse = 1
+	 	AND (cus.HospitalldStatus = 1 OR cus.Worker = 1 )
+	 	GROUP BY w.fid  ORDER BY w.groupsNum,w.WPH_Ward_Fid;
+  </select>
+
+	<select id="getGroupMealByGroupCollect" parameterType="com.slk.wph.module.WPH_Mealgroup.po.WphMealgroupCustom" resultMap="groupMealMap" >
+		SELECT w.groups,w.groupsNum,
+		SUM(of.WPH_MealTime_Fid = 1 AND of.Race = 0 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS riceCZ -- #米饭
+		,SUM(of.WPH_MealTime_Fid = 1 AND of.Race = 1 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS riceHZ
+		,SUM(of.WPH_MealTime_Fid = 1 AND (of.WPH_MealMenu_Fid = 5 OR of.WPH_MealMenu_Fid = 26)) AS riceDZ-- 早餐没有主食所以不显示
+
+		,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 0,of.DinnerFood = 0) AND of.Race = 0 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS riceC-- #米饭
+		,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 1,of.DinnerFood = 1) AND of.Race = 0 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS noodlesC-- #花卷
+		,SUM(of.AddFood   = 1 AND of.Race = 0 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 3)) AS plusC   --  #加双       #普餐
+
+
+		,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 0,of.DinnerFood = 0) AND of.Race = 1 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS riceH
+		,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 1,of.DinnerFood = 1) AND of.Race = 1 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 2)) AS noodlesH
+		,SUM(of.AddFood   = 1 AND of.Race = 1 AND (of.WPH_MealMenu_Fid = 1 OR of.WPH_MealMenu_Fid = 3)) AS plusH   --  #回餐
+
+
+		,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 0,of.DinnerFood = 0) AND (of.WPH_MealMenu_Fid = 5 OR of.WPH_MealMenu_Fid = 26)) AS riceD
+		,SUM(IF(of.WPH_MealTime_Fid = 2,of.LunchFood = 1,of.DinnerFood = 1) AND (of.WPH_MealMenu_Fid = 5 OR of.WPH_MealMenu_Fid = 26)) AS noodlesD  -- #低盐低脂餐
+
+		,SUM((of.WPH_MealMenu_Fid = 3 OR of.WPH_MealMenu_Fid = 24)) AS flow
+		,SUM((of.WPH_MealMenu_Fid = 4 OR of.WPH_MealMenu_Fid = 25)) AS halfFlow
+		,SUM(of.WPH_MealMenu_Fid = 27 ) AS sugar
+		,SUM(of.VegetarianFood = 1 ) AS vegetarianfood
+		FROM groupmeal w
+		LEFT JOIN  wph_customer cus  ON w.WPH_Ward_Fid =  cus.WPH_Ward_Fid
+		LEFT JOIN wph_orderingfood of ON of.Customer_Fid= cus.fid
+		WHERE  w.groupsNum in (1,2,3,4,5)
+		AND of.MealDate=DATE_FORMAT(now(),'%y-%m-%d')  AND of.WPH_MealTime_Fid = #{timeFid}  AND of.MealAdd = #{mealadd} AND of.MealStatse = 1
+		AND (cus.HospitalldStatus = 1 OR cus.Worker = 1 )
+		GROUP BY w.groupsNum ORDER BY w.groupsNum
+	</select>
+</mapper>

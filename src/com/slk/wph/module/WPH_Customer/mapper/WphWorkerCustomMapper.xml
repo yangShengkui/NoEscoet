@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Customer.mapper.WphWorkerCustomMapper">
+	<resultMap id="BaseResultMap"
+		type="com.slk.wph.module.WPH_Customer.po.WphWorkerCustom">
+		<id column="fid" property="fid" jdbcType="INTEGER" />
+		<result column="Name" property="name" jdbcType="VARCHAR" />
+		<result column="CodeId" property="codeid" jdbcType="VARCHAR" />
+		<result column="Birthday" property="birthday" jdbcType="VARCHAR" />
+		<result column="Sex" property="sex" jdbcType="VARCHAR" />
+		<result column="Age" property="age" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="Hospitalld" property="hospitalld" jdbcType="VARCHAR" />
+		<result column="BindingTime" property="bindingtime" jdbcType="TIMESTAMP" />
+		<result column="WPH_Hospita_Fid" property="wphHospitaFid"
+			jdbcType="INTEGER" />
+		<result column="WPH_Ward_Fid" property="wphWardFid" jdbcType="INTEGER" />
+		<result column="Nation" property="nation" jdbcType="INTEGER" />
+		<result column="WPH_Card_Fid" property="wphCardFid" jdbcType="INTEGER" />
+		<result column="WPH_Card_Number" property="wphCardNumber"
+			jdbcType="INTEGER" />
+		<result column="Balance" property="balance" jdbcType="DOUBLE" />
+		<result column="HospitalldStatus" property="hospitalldstatus"
+			jdbcType="INTEGER" />
+		<result column="HospitalldDate" property="hospitallddate"
+			jdbcType="TIMESTAMP" />
+		<result column="Nursing_Type" property="nursingType" jdbcType="INTEGER" />
+		<result column="Worker" property="worker" jdbcType="INTEGER" />
+		<result column="WorkerStatus" property="workerstatus" jdbcType="INTEGER" />
+		<result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="notes" property="notes" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectAllWorker" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select a.`Name`,a.sex,a.phone,b.fid as wphoneFid,
+		truncate((SUM(IF(nur.NursingStates=1,nur.Money,0)-
+		IF(nur.NursingStates=2,nur.Money,0))-
+		SUM(IF(nur.NursingStates=1,nur.Money,0)-
+		IF(nur.NursingStates=2,nur.Money,0))*e.Wages),2)  as total  from  wph_customer a
+		LEFT JOIN wph_one b
+		on a.fid=b.Workers_Fid
+		left join wph_orderingnursing nur
+		on nur.WPH_One_Fid=b.fid
+		LEFT JOIN wph_ward_om e
+		on nur.WPH_Ward_OM_Fid =e.fid
+		where
+		a.Worker='1'
+		and b.statse='1'
+		and DATE_FORMAT(b.TrueEndDate, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate}, '%Y-%m-%d')
+		<if test="type==0">
+			and b.WagesStates='0'
+		</if>
+		<if test="type==1">
+			and b.WagesStates='1'
+		</if>
+		GROUP BY b.fid
+		ORDER BY b.fid desc
+		<!--select z.fid,wphoneFid,z.`Name`,z.Sex,z.phone,z.workerMoney as price,z.duration,(z.duration*z.workerMoney) as total from (
+		select a.fid,b.fid as wphoneFid,
+		a.`Name`,
+		a.Sex,
+		(select d.WPH_Ward_fid from wph_one d where d.fid=wphoneFid) as WPH_Ward_fid,
+		b.WPH_NursingGrade_Fid,
+		a.phone,
+		(SELECT round((UNIX_TIMESTAMP(b.TrueEndDate)-UNIX_TIMESTAMP(b.StartDate))/60/60)) as duration,
+		b.imgs,b.workerMoney
+		from wph_customer a
+		LEFT JOIN wph_one b
+		on a.fid=b.Workers_Fid
+		where
+		a.Worker='1'
+		and b.statse='1'
+		and DATE_FORMAT(b.TrueEndDate, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{startDate}, '%Y-%m-%d') and DATE_FORMAT(#{endDate}, '%Y-%m-%d')
+		<if test="type==0">
+				and b.WagesStates='0'
+		</if>
+		<if test="type==1">
+				and b.WagesStates='1'
+		</if>
+		) as z,wph_ward_om d
+		where z.WPH_NursingGrade_Fid=d.WPH_NursingGrade_Fid 
+		and z.WPH_Ward_fid=d.WPH_Ward_Fid	-->
+	</select>
+</mapper>

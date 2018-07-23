@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Blood.mapper.WphBloodMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Blood.po.WphBlood" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+    <result column="Customer_CardId" property="customerCardid" jdbcType="VARCHAR" />
+    <result column="Customer_HospitalId" property="customerHospitalid" jdbcType="VARCHAR" />
+    <result column="Custmer_Name" property="custmerName" jdbcType="VARCHAR" />
+    <result column="BloodType" property="bloodtype" jdbcType="VARCHAR" />
+    <result column="Dosage" property="dosage" jdbcType="DOUBLE" />
+    <result column="NowDosage" property="nowdosage" jdbcType="DOUBLE" />
+    <result column="Status" property="status" jdbcType="INTEGER" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="Picture" property="picture" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, Customer_Fid, Customer_CardId, Customer_HospitalId, Custmer_Name, BloodType, 
+    Dosage, NowDosage, Status, User_Fid, UserRole, UserName, CreateDate,Picture
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Blood.po.WphBloodExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_blood
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_blood
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_blood
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_Blood.po.WphBloodExample" >
+    delete from wph_blood
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_Blood.po.WphBlood" >
+    insert into wph_blood (fid, Customer_Fid, Customer_CardId, 
+      Customer_HospitalId, Custmer_Name, BloodType, 
+      Dosage, NowDosage, Status, 
+      User_Fid, UserRole, UserName, 
+      CreateDate,Picture)
+    values (#{fid,jdbcType=INTEGER}, #{customerFid,jdbcType=INTEGER}, #{customerCardid,jdbcType=VARCHAR}, 
+      #{customerHospitalid,jdbcType=VARCHAR}, #{custmerName,jdbcType=VARCHAR}, #{bloodtype,jdbcType=VARCHAR}, 
+      #{dosage,jdbcType=DOUBLE}, #{nowdosage,jdbcType=DOUBLE}, #{status,jdbcType=INTEGER}, 
+      #{userFid,jdbcType=INTEGER}, #{userrole,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{createdate,jdbcType=TIMESTAMP},#{picture})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Blood.po.WphBlood" >
+    insert into wph_blood
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid,
+      </if>
+      <if test="customerCardid != null" >
+        Customer_CardId,
+      </if>
+      <if test="customerHospitalid != null" >
+        Customer_HospitalId,
+      </if>
+      <if test="custmerName != null" >
+        Custmer_Name,
+      </if>
+      <if test="bloodtype != null" >
+        BloodType,
+      </if>
+      <if test="dosage != null" >
+        Dosage,
+      </if>
+      <if test="nowdosage != null" >
+        NowDosage,
+      </if>
+      <if test="status != null" >
+        Status,
+      </if>
+      <if test="userFid != null" >
+        User_Fid,
+      </if>
+      <if test="userrole != null" >
+        UserRole,
+      </if>
+      <if test="username != null" >
+        UserName,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+      <if test="picture != null" >
+        Picture,
+      </if>
+     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="customerFid != null" >
+        #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerCardid != null" >
+        #{customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="customerHospitalid != null" >
+        #{customerHospitalid,jdbcType=VARCHAR},
+      </if>
+      <if test="custmerName != null" >
+        #{custmerName,jdbcType=VARCHAR},
+      </if>
+      <if test="bloodtype != null" >
+        #{bloodtype,jdbcType=VARCHAR},
+      </if>
+      <if test="dosage != null" >
+        #{dosage,jdbcType=DOUBLE},
+      </if>
+      <if test="nowdosage != null" >
+        #{nowdosage,jdbcType=DOUBLE},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="userFid != null" >
+        #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+       <if test="picture != null" >
+        #{picture},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_Blood.po.WphBloodExample" resultType="java.lang.Integer" >
+    select count(*) from wph_blood
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_blood
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.customerFid != null" >
+        Customer_Fid = #{record.customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.customerCardid != null" >
+        Customer_CardId = #{record.customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerHospitalid != null" >
+        Customer_HospitalId = #{record.customerHospitalid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.custmerName != null" >
+        Custmer_Name = #{record.custmerName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bloodtype != null" >
+        BloodType = #{record.bloodtype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dosage != null" >
+        Dosage = #{record.dosage,jdbcType=DOUBLE},
+      </if>
+      <if test="record.nowdosage != null" >
+        NowDosage = #{record.nowdosage,jdbcType=DOUBLE},
+      </if>
+      <if test="record.status != null" >
+        Status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.userFid != null" >
+        User_Fid = #{record.userFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.userrole != null" >
+        UserRole = #{record.userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        UserName = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.picture != null" >
+        Picture,
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_blood
+    set fid = #{record.fid,jdbcType=INTEGER},
+      Customer_Fid = #{record.customerFid,jdbcType=INTEGER},
+      Customer_CardId = #{record.customerCardid,jdbcType=VARCHAR},
+      Customer_HospitalId = #{record.customerHospitalid,jdbcType=VARCHAR},
+      Custmer_Name = #{record.custmerName,jdbcType=VARCHAR},
+      BloodType = #{record.bloodtype,jdbcType=VARCHAR},
+      Dosage = #{record.dosage,jdbcType=DOUBLE},
+      NowDosage = #{record.nowdosage,jdbcType=DOUBLE},
+      Status = #{record.status,jdbcType=INTEGER},
+      User_Fid = #{record.userFid,jdbcType=INTEGER},
+      UserRole = #{record.userrole,jdbcType=VARCHAR},
+      UserName = #{record.username,jdbcType=VARCHAR},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      Picture=#{record.picture}
+       
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Blood.po.WphBlood" >
+    update wph_blood
+    <set >
+      <if test="customerFid != null" >
+        Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerCardid != null" >
+        Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="customerHospitalid != null" >
+        Customer_HospitalId = #{customerHospitalid,jdbcType=VARCHAR},
+      </if>
+      <if test="custmerName != null" >
+        Custmer_Name = #{custmerName,jdbcType=VARCHAR},
+      </if>
+      <if test="bloodtype != null" >
+        BloodType = #{bloodtype,jdbcType=VARCHAR},
+      </if>
+      <if test="dosage != null" >
+        Dosage = #{dosage,jdbcType=DOUBLE},
+      </if>
+      <if test="nowdosage != null" >
+        NowDosage = #{nowdosage,jdbcType=DOUBLE},
+      </if>
+      <if test="status != null" >
+        Status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="userFid != null" >
+        User_Fid = #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        UserRole = #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        UserName = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.picture != null" >
+        Picture,
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_Blood.po.WphBlood" >
+    update wph_blood
+    set Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+      Customer_HospitalId = #{customerHospitalid,jdbcType=VARCHAR},
+      Custmer_Name = #{custmerName,jdbcType=VARCHAR},
+      BloodType = #{bloodtype,jdbcType=VARCHAR},
+      Dosage = #{dosage,jdbcType=DOUBLE},
+      NowDosage = #{nowdosage,jdbcType=DOUBLE},
+      Status = #{status,jdbcType=INTEGER},
+      User_Fid = #{userFid,jdbcType=INTEGER},
+      UserRole = #{userrole,jdbcType=VARCHAR},
+      UserName = #{username,jdbcType=VARCHAR},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP}
+      Picture=#{picture}
+     
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

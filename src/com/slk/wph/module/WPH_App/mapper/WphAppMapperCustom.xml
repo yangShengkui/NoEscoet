@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_App.mapper.WphAppMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_App.po.WphAppCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="power" property="power" jdbcType="VARCHAR" />
+    <result column="power_img" property="powerImg" jdbcType="VARCHAR" />
+    <result column="userFid" property="userfid" jdbcType="INTEGER" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="orders" property="orders" jdbcType="INTEGER" />
+    <result column="spare" property="spare" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  
+    <!-- 宋现亮-获取菜单列表 -->
+	<select id="getAppListByParentFid" parameterType="WphAppCustom" resultType="com.slk.wph.module.WPH_App.po.WphAppCustom">
+		SELECT * FROM wph_app m WHERE m.Parent_Fid = #{parentFid} ORDER BY m.orders
+	</select>
+  
+  
+	<select id="findAppById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+		SELECT a.*, (SELECT name FROM wph_app WHERE fid = a.Parent_Fid)parentName FROM wph_app a   WHERE  a.fid = #{fid}  
+  	</select>
+  
+  
+  	<select id="deleteAppFindById" resultType ="java.lang.Integer"  parameterType="Integer" >
+	   
+		SELECT count(*) FROM wph_app a WHERE a.parent_Fid = #{fid}
+		
+  	</select>
+  
+
+  
+  <delete id="deleteAppById"  parameterType="java.lang.Integer"   >
+	  	
+		DELETE a,p FROM wph_app a 
+					LEFT JOIN wph_privilege p ON p.PrivilegeAccessValue = a.fid AND p.PrivilegeAccess = 'App'
+					LEFT JOIN wph_user_role ur ON p.PrivilegeMasterValue = ur.Role_Fid AND
+		
+		WHERE a.fid = #{fid} 
+	  	
+  </delete>
+  
+  
+  <!-- 宋现亮-根据userFid和parent_Fid获取APP菜单集合 -->
+  <select id="getAppListByApp" parameterType="WphAppCustom" resultType="com.slk.wph.module.WPH_App.po.WphAppCustom">
+  	
+  	SELECT * FROM wph_app a
+			LEFT JOIN wph_privilege p ON p.PrivilegeAccessValue = a.fid AND p.PrivilegeAccess = "App"
+			LEFT JOIN wph_user_role ur ON ur.Role_Fid = p.PrivilegeMasterValue 
+	WHERE  ur.User_Fid = #{userFid} AND parent_Fid = #{parentFid} GROUP BY a.fid ORDER BY a.fid 
+  	
+  </select>
+  
+  
+   <!-- 宋现亮-获取图标列表，并附带是否选中 -->
+  <select id="getAppListCheckByApp" parameterType="WphAppCustom" resultType="com.slk.wph.module.WPH_App.po.WphAppCustom">
+  		
+  		<!-- SELECT * ,CASE WHEN m.fid = p.PrivilegeAccessValue AND p.PrivilegeAccess = "App" THEN 1 ELSE 0 END checkON 
+			FROM wph_app m 
+				LEFT JOIN wph_privilege p ON p.PrivilegeAccessValue = m.fid AND p.PrivilegeMasterValue = #{roleFid} AND (p.PrivilegeAccess = "App" OR p.PrivilegeMaster IS NULL)
+			
+			 WHERE m.Parent_Fid = #{parentFid} ORDER BY m.fid -->
+			 
+		 SELECT m.*,CASE WHEN p2.PrivilegeAccessValue = m.fid THEN 1 ELSE 0 END checkON 
+				FROM wph_app m 
+					LEFT JOIN wph_privilege p ON p.PrivilegeAccessValue = m.fid AND p.PrivilegeAccess = "App" 
+					LEFT JOIN wph_user_role ur ON ur.Role_Fid = p.PrivilegeMasterValue 
+
+					LEFT JOIN wph_privilege p2 ON p2.PrivilegeAccessValue = m.fid <if test="roleFid != null">AND p2.PrivilegeMasterValue = #{roleFid}</if> 
+			  
+				WHERE ((ur.User_Fid = #{userFid} OR m.Create_UserFid = #{userFid}) OR 1=#{userFid}) AND m.Parent_Fid = #{parentFid}	GROUP BY m.fid ORDER BY m.fid 
+  		
+  </select>
+  
+  
+  
+  
+</mapper>

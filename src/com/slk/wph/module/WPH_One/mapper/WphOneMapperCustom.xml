@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_One.mapper.WphOneMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_One.po.WphOneCustom" >
+    <id column="fid" property="fid"/>
+    <result column="WPH_Ward_fid" property="wphWardFid"/>
+    <result column="WPH_NursingGrade_Fid" property="wphNursinggradeFid"/>
+    <result column="Customer_Fid" property="customerFid"/>
+    <result column="Workers_Fid" property="workersFid"/>
+    <result column="StartDate" property="startdate"/>
+    <result column="EndDate" property="enddate"/>
+    <result column="Money" property="money"/>
+    <result column="CreateDate" property="createdate"/>
+    <result column="User_Fid" property="userFid"/>
+    <result column="statse" property="statse"/>
+    <result column="imgs" property="imgs"/>
+    <result column="trueEndDate" property="trueenddate"/>
+    <result column="WagesStates" property="wagesstates" jdbcType="INTEGER" />
+    <result column="SettlementMoney" property="settlementmoney" jdbcType="DOUBLE" />
+    <result column="workermoney" property="workermoney" jdbcType="DOUBLE" />
+  </resultMap>
+  
+  <select id="selectWphOnePic" resultMap="BaseResultMap">
+  	select imgs from wph_one a
+	LEFT JOIN wph_customer b
+	on a.Customer_Fid=b.fid
+	where a.imgs is not null and a.imgs!=""
+	<if test="hospitalld!=null and hospitalld!=''">
+		and b.Hospitalld=#{hospitalld}
+  	</if>
+  </select>
+  <select id="getWphOneByFid" resultMap="BaseResultMap">
+  	select * from wph_one where fid=#{value}
+  </select>
+  <update id="updateWphOne">
+   update wph_one
+    <set >
+      <if test="wphWardFid != null" >
+        WPH_Ward_fid = #{wphWardFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphNursinggradeFid != null" >
+        WPH_NursingGrade_Fid = #{wphNursinggradeFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="workersFid != null" >
+        Workers_Fid = #{workersFid,jdbcType=INTEGER},
+      </if>
+      <if test="startdate != null" >
+        StartDate = #{startdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="enddate != null" >
+        EndDate = #{enddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="money != null" >
+        Money = #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userFid != null" >
+        User_Fid = #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="statse != null" >
+        statse = #{statse,jdbcType=INTEGER},
+      </if>
+      <if test="imgs != null" >
+        imgs = #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="trueenddate != null" >
+        TrueEndDate = #{trueenddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="wagesstates != null" >
+        WagesStates = #{wagesstates,jdbcType=INTEGER},
+      </if>
+      <if test="settlementmoney != null" >
+        SettlementMoney = #{settlementmoney,jdbcType=DOUBLE},
+      </if>
+       <if test="workermoney != null" >
+        workermoney = #{workermoney,jdbcType=DOUBLE},
+      </if>
+      
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+
+    <select id="getOneCountByWorkId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT count(*) FROM  wph_one one WHERE one.Workers_Fid = #{value} AND one.statse = 0
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Mealtime.mapper.WphMealtimeMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Mealtime.po.WphMealtimeCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  
+  <resultMap type="com.slk.wph.module.WPH_Mealtime.po.WphMealtimeCustom" id="timeAMenuAFoodMap" extends="BaseResultMap">
+  
+  	<collection property="menuList" ofType="com.slk.wph.module.WPH_Mealmenu.po.WphMealmenuCustom">
+  		<id column="mmfid" property="fid" />
+  		<result column="mmname" property="name" />
+  		<result column="Status" property="status" />
+	    <result column="Type" property="type" />
+	    <result column="imgs" property="imgs" />
+	    <result column="Money" property="money" />
+	    <result column="Depict" property="depict" />
+	    <result column="Meterage" property="meterage" />
+	    <result column="CreateDate" property="createdate"  />
+	    <result column="UUID" property="uuid"  />
+	    <association property="food" javaType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodCustom">
+	    	<id column="offid" property="fid" jdbcType="INTEGER" />
+		    <result column="OrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+		    <result column="Title" property="title" jdbcType="VARCHAR" />
+		    <result column="Numbers" property="numbers" jdbcType="INTEGER" />
+		    <result column="Money" property="money" jdbcType="DOUBLE" />
+		    <result column="MealDate" property="mealdate" jdbcType="DATE" />
+		    <result column="MealStatse" property="mealstatse" jdbcType="INTEGER" />
+		    <result column="MealAdd" property="mealadd" jdbcType="INTEGER" />
+		    <result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+		    <result column="Customer_CardId" property="customerCardid" jdbcType="VARCHAR" />
+		    <result column="Customer_HosPitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+		    <result column="LunchFood" property="lunchfood" jdbcType="INTEGER" />
+		    <result column="DinnerFood" property="dinnerfood" jdbcType="INTEGER" />
+		    <result column="AddFood" property="addfood" jdbcType="INTEGER" />
+		    <result column="Race" property="race" jdbcType="INTEGER" />
+		    <result column="WPH_MealMenu_Fid" property="wphMealmenuFid" jdbcType="INTEGER" />
+		    <result column="WPH_MealNume_Name" property="wphMealnumeName" jdbcType="VARCHAR" />
+		    <result column="WPH_MealTime_Fid" property="wphMealtimeFid" jdbcType="INTEGER" />
+		    <result column="WPH_MealTime_Name" property="wphMealtimeName" jdbcType="VARCHAR" />
+		    <result column="WPH_MealType_Fid" property="wphMealtypeFid" jdbcType="INTEGER" />
+		    <result column="WPH_MealType_Name" property="wphMealtypeName" jdbcType="VARCHAR" />
+		    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+		    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+		    <result column="UserName" property="username" jdbcType="VARCHAR" />
+		    <result column="Notes" property="notes" jdbcType="VARCHAR" />
+		    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+		    <result column="BedNo" property="bedno" jdbcType="VARCHAR" />
+		    <result column="checkOn" property="checkOn" />
+	    </association>
+  	</collection>
+  	
+  
+  </resultMap>
+  
+  
+  <select id="getMealOrderFoodByinfo" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" resultMap="timeAMenuAFoodMap">
+  		SELECT mt.*,mm.*,mm.fid mmfid,mm.`Name` mmname,of.*,of.fid offid, CASE WHEN mm.fid = of.WPH_MealMenu_Fid THEN 1 ELSE 0 END checkOn FROM wph_mealtime mt 
+
+			LEFT JOIN wph_mealmenu mm ON 1=1 
+			LEFT JOIN wph_orderingfood of ON mm.WPH_MealType_Fid = of.WPH_MealType_Fid AND of.WPH_MealTime_Fid = mt.fid 
+
+		WHERE of.MealDate = #{mealdate} AND of.Customer_HosPitalld = #{customerHospitalld} AND of.MealStatse = 1  AND mm.`Status`=0 AND mm.WPH_MealType_Fid = #{wphMealtypeFid } ORDER BY mt.fid, mm.fid
+  </select>
+  
+  
+</mapper>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Feedmenu_Time.mapper.WphFeedmenuTimeMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTime" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="wph_feedMenu_Fid" property="wphFeedmenuFid" jdbcType="INTEGER" />
+    <result column="wph_feedType_Fid" property="wphFeedtypeFid" jdbcType="INTEGER" />
+    <result column="wph_feedTime" property="wphFeedtime" jdbcType="INTEGER" />
+    <result column="wph_feedWeek" property="wphFeedweek" jdbcType="INTEGER" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, wph_feedMenu_Fid, wph_feedType_Fid, wph_feedTime, wph_feedWeek, CreateDate
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTimeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_feedmenu_time
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_feedmenu_time
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_feedmenu_time
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTimeExample" >
+    delete from wph_feedmenu_time
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTime" >
+    insert into wph_feedmenu_time (fid, wph_feedMenu_Fid, wph_feedType_Fid, 
+      wph_feedTime, wph_feedWeek, CreateDate
+      )
+    values (#{fid,jdbcType=INTEGER}, #{wphFeedmenuFid,jdbcType=INTEGER}, #{wphFeedtypeFid,jdbcType=INTEGER}, 
+      #{wphFeedtime,jdbcType=INTEGER}, #{wphFeedweek,jdbcType=INTEGER}, #{createdate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTime" >
+    insert into wph_feedmenu_time
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="wphFeedmenuFid != null" >
+        wph_feedMenu_Fid,
+      </if>
+      <if test="wphFeedtypeFid != null" >
+        wph_feedType_Fid,
+      </if>
+      <if test="wphFeedtime != null" >
+        wph_feedTime,
+      </if>
+      <if test="wphFeedweek != null" >
+        wph_feedWeek,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="wphFeedmenuFid != null" >
+        #{wphFeedmenuFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphFeedtypeFid != null" >
+        #{wphFeedtypeFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphFeedtime != null" >
+        #{wphFeedtime,jdbcType=INTEGER},
+      </if>
+      <if test="wphFeedweek != null" >
+        #{wphFeedweek,jdbcType=INTEGER},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTimeExample" resultType="java.lang.Integer" >
+    select count(*) from wph_feedmenu_time
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_feedmenu_time
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphFeedmenuFid != null" >
+        wph_feedMenu_Fid = #{record.wphFeedmenuFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphFeedtypeFid != null" >
+        wph_feedType_Fid = #{record.wphFeedtypeFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphFeedtime != null" >
+        wph_feedTime = #{record.wphFeedtime,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphFeedweek != null" >
+        wph_feedWeek = #{record.wphFeedweek,jdbcType=INTEGER},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_feedmenu_time
+    set fid = #{record.fid,jdbcType=INTEGER},
+      wph_feedMenu_Fid = #{record.wphFeedmenuFid,jdbcType=INTEGER},
+      wph_feedType_Fid = #{record.wphFeedtypeFid,jdbcType=INTEGER},
+      wph_feedTime = #{record.wphFeedtime,jdbcType=INTEGER},
+      wph_feedWeek = #{record.wphFeedweek,jdbcType=INTEGER},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTime" >
+    update wph_feedmenu_time
+    <set >
+      <if test="wphFeedmenuFid != null" >
+        wph_feedMenu_Fid = #{wphFeedmenuFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphFeedtypeFid != null" >
+        wph_feedType_Fid = #{wphFeedtypeFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphFeedtime != null" >
+        wph_feedTime = #{wphFeedtime,jdbcType=INTEGER},
+      </if>
+      <if test="wphFeedweek != null" >
+        wph_feedWeek = #{wphFeedweek,jdbcType=INTEGER},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_Feedmenu_Time.po.WphFeedmenuTime" >
+    update wph_feedmenu_time
+    set wph_feedMenu_Fid = #{wphFeedmenuFid,jdbcType=INTEGER},
+      wph_feedType_Fid = #{wphFeedtypeFid,jdbcType=INTEGER},
+      wph_feedTime = #{wphFeedtime,jdbcType=INTEGER},
+      wph_feedWeek = #{wphFeedweek,jdbcType=INTEGER},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

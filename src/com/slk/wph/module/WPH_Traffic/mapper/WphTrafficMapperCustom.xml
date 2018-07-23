@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Traffic.mapper.WphTrafficMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Traffic.po.WphTrafficCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="imgs" property="imgs" jdbcType="VARCHAR" />
+    <result column="note" property="note" jdbcType="VARCHAR" />
+    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+    <result column="createdate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="state" property="state"/>
+  </resultMap>
+  
+
+  <select id="selectWphTrafficCustomState" resultMap="BaseResultMap">
+  		select * from wph_traffic a where a.type=#{type}
+  		<if test="state!=null">
+  		   and a.state='0'
+  		</if>
+  		order by a.fid desc
+  </select>
+  <select id="selectWphTrafficCustomByFid" resultMap="BaseResultMap">
+  		select * from wph_traffic a where a.fid=#{fid}
+  </select> 
+  
+  <insert id="insertWphTrafficCustom" >
+    insert into wph_traffic
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="imgs != null" >
+        imgs,
+      </if>
+      <if test="note != null" >
+        note,
+      </if>
+      <if test="createuser != null" >
+        createuser,
+      </if>
+      <if test="createdate != null" >
+        createdate,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="imgs != null" >
+        #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="createuser != null" >
+        #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        #{state},
+      </if>
+    </trim>
+  </insert>
+  
+   <update id="updateWphTrafficCustom">
+    update wph_traffic
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="imgs != null" >
+        imgs = #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null" >
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="createuser != null" >
+        createuser = #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        createdate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        state=#{state},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  
+  
+</mapper>
+
+
+
+

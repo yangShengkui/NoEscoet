@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Orderingfood.mapper.WphOrderingfoodMapper" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="OrderingNumber" property="orderingnumber" jdbcType="VARCHAR" />
+    <result column="Title" property="title" jdbcType="VARCHAR" />
+    <result column="Depict" property="depict" jdbcType="VARCHAR" />
+    <result column="Numbers" property="numbers" jdbcType="INTEGER" />
+    <result column="Money" property="money" jdbcType="DOUBLE" />
+    <result column="MealDate" property="mealdate" jdbcType="TIMESTAMP" />
+    <result column="MealStatse" property="mealstatse" jdbcType="INTEGER" />
+    <result column="MealAdd" property="mealadd" jdbcType="INTEGER" />
+    <result column="Customer_Fid" property="customerFid" jdbcType="INTEGER" />
+    <result column="Customer_CardId" property="customerCardid" jdbcType="VARCHAR" />
+    <result column="Customer_HosPitalld" property="customerHospitalld" jdbcType="VARCHAR" />
+    <result column="LunchFood" property="lunchfood" jdbcType="INTEGER" />
+    <result column="DinnerFood" property="dinnerfood" jdbcType="INTEGER" />
+    <result column="AddFood" property="addfood" jdbcType="INTEGER" />
+    <result column="Facting" property="facting" jdbcType="INTEGER" />
+    <result column="VegetarianFood" property="vegetarianfood" jdbcType="INTEGER" />
+    <result column="Race" property="race" jdbcType="INTEGER" />
+    <result column="WPH_MealMenu_Fid" property="wphMealmenuFid" jdbcType="INTEGER" />
+    <result column="WPH_MealNume_Name" property="wphMealnumeName" jdbcType="VARCHAR" />
+    <result column="WPH_MealTime_Fid" property="wphMealtimeFid" jdbcType="INTEGER" />
+    <result column="WPH_MealTime_Name" property="wphMealtimeName" jdbcType="VARCHAR" />
+    <result column="WPH_MealType_Fid" property="wphMealtypeFid" jdbcType="INTEGER" />
+    <result column="WPH_MealType_Name" property="wphMealtypeName" jdbcType="VARCHAR" />
+    <result column="User_Fid" property="userFid" jdbcType="INTEGER" />
+    <result column="UserRole" property="userrole" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="Notes" property="notes" jdbcType="VARCHAR" />
+    <result column="CreateDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="BedNo" property="bedno" jdbcType="VARCHAR" />
+    <result column="PasserName" property="passername" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    fid, OrderingNumber, Title, Depict, Numbers, Money, MealDate, MealStatse, MealAdd, 
+    Customer_Fid, Customer_CardId, Customer_HosPitalld, LunchFood, DinnerFood, AddFood, 
+    Facting, VegetarianFood, Race, WPH_MealMenu_Fid, WPH_MealNume_Name, WPH_MealTime_Fid, 
+    WPH_MealTime_Name, WPH_MealType_Fid, WPH_MealType_Name, User_Fid, UserRole, UserName, 
+    Notes, CreateDate, BedNo, PasserName
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from wph_orderingfood
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from wph_orderingfood
+    where fid = #{fid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from wph_orderingfood
+    where fid = #{fid,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodExample" >
+    delete from wph_orderingfood
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+    insert into wph_orderingfood (fid, OrderingNumber, Title, 
+      Depict, Numbers, Money, 
+      MealDate, MealStatse, MealAdd, 
+      Customer_Fid, Customer_CardId, Customer_HosPitalld, 
+      LunchFood, DinnerFood, AddFood, 
+      Facting, VegetarianFood, Race, 
+      WPH_MealMenu_Fid, WPH_MealNume_Name, WPH_MealTime_Fid, 
+      WPH_MealTime_Name, WPH_MealType_Fid, WPH_MealType_Name, 
+      User_Fid, UserRole, UserName, 
+      Notes, CreateDate, BedNo, 
+      PasserName)
+    values (#{fid,jdbcType=INTEGER}, #{orderingnumber,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
+      #{depict,jdbcType=VARCHAR}, #{numbers,jdbcType=INTEGER}, #{money,jdbcType=DOUBLE}, 
+      #{mealdate,jdbcType=TIMESTAMP}, #{mealstatse,jdbcType=INTEGER}, #{mealadd,jdbcType=INTEGER}, 
+      #{customerFid,jdbcType=INTEGER}, #{customerCardid,jdbcType=VARCHAR}, #{customerHospitalld,jdbcType=VARCHAR}, 
+      #{lunchfood,jdbcType=INTEGER}, #{dinnerfood,jdbcType=INTEGER}, #{addfood,jdbcType=INTEGER}, 
+      #{facting,jdbcType=INTEGER}, #{vegetarianfood,jdbcType=INTEGER}, #{race,jdbcType=INTEGER}, 
+      #{wphMealmenuFid,jdbcType=INTEGER}, #{wphMealnumeName,jdbcType=VARCHAR}, #{wphMealtimeFid,jdbcType=INTEGER}, 
+      #{wphMealtimeName,jdbcType=VARCHAR}, #{wphMealtypeFid,jdbcType=INTEGER}, #{wphMealtypeName,jdbcType=VARCHAR}, 
+      #{userFid,jdbcType=INTEGER}, #{userrole,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{notes,jdbcType=VARCHAR}, #{createdate,jdbcType=TIMESTAMP}, #{bedno,jdbcType=VARCHAR}, 
+      #{passername,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+    insert into wph_orderingfood
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="orderingnumber != null" >
+        OrderingNumber,
+      </if>
+      <if test="title != null" >
+        Title,
+      </if>
+      <if test="depict != null" >
+        Depict,
+      </if>
+      <if test="numbers != null" >
+        Numbers,
+      </if>
+      <if test="money != null" >
+        Money,
+      </if>
+      <if test="mealdate != null" >
+        MealDate,
+      </if>
+      <if test="mealstatse != null" >
+        MealStatse,
+      </if>
+      <if test="mealadd != null" >
+        MealAdd,
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid,
+      </if>
+      <if test="customerCardid != null" >
+        Customer_CardId,
+      </if>
+      <if test="customerHospitalld != null" >
+        Customer_HosPitalld,
+      </if>
+      <if test="lunchfood != null" >
+        LunchFood,
+      </if>
+      <if test="dinnerfood != null" >
+        DinnerFood,
+      </if>
+      <if test="addfood != null" >
+        AddFood,
+      </if>
+      <if test="facting != null" >
+        Facting,
+      </if>
+      <if test="vegetarianfood != null" >
+        VegetarianFood,
+      </if>
+      <if test="race != null" >
+        Race,
+      </if>
+      <if test="wphMealmenuFid != null" >
+        WPH_MealMenu_Fid,
+      </if>
+      <if test="wphMealnumeName != null" >
+        WPH_MealNume_Name,
+      </if>
+      <if test="wphMealtimeFid != null" >
+        WPH_MealTime_Fid,
+      </if>
+      <if test="wphMealtimeName != null" >
+        WPH_MealTime_Name,
+      </if>
+      <if test="wphMealtypeFid != null" >
+        WPH_MealType_Fid,
+      </if>
+      <if test="wphMealtypeName != null" >
+        WPH_MealType_Name,
+      </if>
+      <if test="userFid != null" >
+        User_Fid,
+      </if>
+      <if test="userrole != null" >
+        UserRole,
+      </if>
+      <if test="username != null" >
+        UserName,
+      </if>
+      <if test="notes != null" >
+        Notes,
+      </if>
+      <if test="createdate != null" >
+        CreateDate,
+      </if>
+      <if test="bedno != null" >
+        BedNo,
+      </if>
+      <if test="passername != null" >
+        PasserName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid,jdbcType=INTEGER},
+      </if>
+      <if test="orderingnumber != null" >
+        #{orderingnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="depict != null" >
+        #{depict,jdbcType=VARCHAR},
+      </if>
+      <if test="numbers != null" >
+        #{numbers,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="mealdate != null" >
+        #{mealdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mealstatse != null" >
+        #{mealstatse,jdbcType=INTEGER},
+      </if>
+      <if test="mealadd != null" >
+        #{mealadd,jdbcType=INTEGER},
+      </if>
+      <if test="customerFid != null" >
+        #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerCardid != null" >
+        #{customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="customerHospitalld != null" >
+        #{customerHospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="lunchfood != null" >
+        #{lunchfood,jdbcType=INTEGER},
+      </if>
+      <if test="dinnerfood != null" >
+        #{dinnerfood,jdbcType=INTEGER},
+      </if>
+      <if test="addfood != null" >
+        #{addfood,jdbcType=INTEGER},
+      </if>
+      <if test="facting != null" >
+        #{facting,jdbcType=INTEGER},
+      </if>
+      <if test="vegetarianfood != null" >
+        #{vegetarianfood,jdbcType=INTEGER},
+      </if>
+      <if test="race != null" >
+        #{race,jdbcType=INTEGER},
+      </if>
+      <if test="wphMealmenuFid != null" >
+        #{wphMealmenuFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphMealnumeName != null" >
+        #{wphMealnumeName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphMealtimeFid != null" >
+        #{wphMealtimeFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphMealtimeName != null" >
+        #{wphMealtimeName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphMealtypeFid != null" >
+        #{wphMealtypeFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphMealtypeName != null" >
+        #{wphMealtypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="userFid != null" >
+        #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null" >
+        #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bedno != null" >
+        #{bedno,jdbcType=VARCHAR},
+      </if>
+      <if test="passername != null" >
+        #{passername,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfoodExample" resultType="java.lang.Integer" >
+    select count(*) from wph_orderingfood
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update wph_orderingfood
+    <set >
+      <if test="record.fid != null" >
+        fid = #{record.fid,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderingnumber != null" >
+        OrderingNumber = #{record.orderingnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.title != null" >
+        Title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.depict != null" >
+        Depict = #{record.depict,jdbcType=VARCHAR},
+      </if>
+      <if test="record.numbers != null" >
+        Numbers = #{record.numbers,jdbcType=INTEGER},
+      </if>
+      <if test="record.money != null" >
+        Money = #{record.money,jdbcType=DOUBLE},
+      </if>
+      <if test="record.mealdate != null" >
+        MealDate = #{record.mealdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.mealstatse != null" >
+        MealStatse = #{record.mealstatse,jdbcType=INTEGER},
+      </if>
+      <if test="record.mealadd != null" >
+        MealAdd = #{record.mealadd,jdbcType=INTEGER},
+      </if>
+      <if test="record.customerFid != null" >
+        Customer_Fid = #{record.customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.customerCardid != null" >
+        Customer_CardId = #{record.customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerHospitalld != null" >
+        Customer_HosPitalld = #{record.customerHospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lunchfood != null" >
+        LunchFood = #{record.lunchfood,jdbcType=INTEGER},
+      </if>
+      <if test="record.dinnerfood != null" >
+        DinnerFood = #{record.dinnerfood,jdbcType=INTEGER},
+      </if>
+      <if test="record.addfood != null" >
+        AddFood = #{record.addfood,jdbcType=INTEGER},
+      </if>
+      <if test="record.facting != null" >
+        Facting = #{record.facting,jdbcType=INTEGER},
+      </if>
+      <if test="record.vegetarianfood != null" >
+        VegetarianFood = #{record.vegetarianfood,jdbcType=INTEGER},
+      </if>
+      <if test="record.race != null" >
+        Race = #{record.race,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphMealmenuFid != null" >
+        WPH_MealMenu_Fid = #{record.wphMealmenuFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphMealnumeName != null" >
+        WPH_MealNume_Name = #{record.wphMealnumeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wphMealtimeFid != null" >
+        WPH_MealTime_Fid = #{record.wphMealtimeFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphMealtimeName != null" >
+        WPH_MealTime_Name = #{record.wphMealtimeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.wphMealtypeFid != null" >
+        WPH_MealType_Fid = #{record.wphMealtypeFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.wphMealtypeName != null" >
+        WPH_MealType_Name = #{record.wphMealtypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userFid != null" >
+        User_Fid = #{record.userFid,jdbcType=INTEGER},
+      </if>
+      <if test="record.userrole != null" >
+        UserRole = #{record.userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null" >
+        UserName = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.notes != null" >
+        Notes = #{record.notes,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createdate != null" >
+        CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.bedno != null" >
+        BedNo = #{record.bedno,jdbcType=VARCHAR},
+      </if>
+      <if test="record.passername != null" >
+        PasserName = #{record.passername,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update wph_orderingfood
+    set fid = #{record.fid,jdbcType=INTEGER},
+      OrderingNumber = #{record.orderingnumber,jdbcType=VARCHAR},
+      Title = #{record.title,jdbcType=VARCHAR},
+      Depict = #{record.depict,jdbcType=VARCHAR},
+      Numbers = #{record.numbers,jdbcType=INTEGER},
+      Money = #{record.money,jdbcType=DOUBLE},
+      MealDate = #{record.mealdate,jdbcType=TIMESTAMP},
+      MealStatse = #{record.mealstatse,jdbcType=INTEGER},
+      MealAdd = #{record.mealadd,jdbcType=INTEGER},
+      Customer_Fid = #{record.customerFid,jdbcType=INTEGER},
+      Customer_CardId = #{record.customerCardid,jdbcType=VARCHAR},
+      Customer_HosPitalld = #{record.customerHospitalld,jdbcType=VARCHAR},
+      LunchFood = #{record.lunchfood,jdbcType=INTEGER},
+      DinnerFood = #{record.dinnerfood,jdbcType=INTEGER},
+      AddFood = #{record.addfood,jdbcType=INTEGER},
+      Facting = #{record.facting,jdbcType=INTEGER},
+      VegetarianFood = #{record.vegetarianfood,jdbcType=INTEGER},
+      Race = #{record.race,jdbcType=INTEGER},
+      WPH_MealMenu_Fid = #{record.wphMealmenuFid,jdbcType=INTEGER},
+      WPH_MealNume_Name = #{record.wphMealnumeName,jdbcType=VARCHAR},
+      WPH_MealTime_Fid = #{record.wphMealtimeFid,jdbcType=INTEGER},
+      WPH_MealTime_Name = #{record.wphMealtimeName,jdbcType=VARCHAR},
+      WPH_MealType_Fid = #{record.wphMealtypeFid,jdbcType=INTEGER},
+      WPH_MealType_Name = #{record.wphMealtypeName,jdbcType=VARCHAR},
+      User_Fid = #{record.userFid,jdbcType=INTEGER},
+      UserRole = #{record.userrole,jdbcType=VARCHAR},
+      UserName = #{record.username,jdbcType=VARCHAR},
+      Notes = #{record.notes,jdbcType=VARCHAR},
+      CreateDate = #{record.createdate,jdbcType=TIMESTAMP},
+      BedNo = #{record.bedno,jdbcType=VARCHAR},
+      PasserName = #{record.passername,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+    update wph_orderingfood
+    <set >
+      <if test="orderingnumber != null" >
+        OrderingNumber = #{orderingnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        Title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="depict != null" >
+        Depict = #{depict,jdbcType=VARCHAR},
+      </if>
+      <if test="numbers != null" >
+        Numbers = #{numbers,jdbcType=INTEGER},
+      </if>
+      <if test="money != null" >
+        Money = #{money,jdbcType=DOUBLE},
+      </if>
+      <if test="mealdate != null" >
+        MealDate = #{mealdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="mealstatse != null" >
+        MealStatse = #{mealstatse,jdbcType=INTEGER},
+      </if>
+      <if test="mealadd != null" >
+        MealAdd = #{mealadd,jdbcType=INTEGER},
+      </if>
+      <if test="customerFid != null" >
+        Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      </if>
+      <if test="customerCardid != null" >
+        Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="customerHospitalld != null" >
+        Customer_HosPitalld = #{customerHospitalld,jdbcType=VARCHAR},
+      </if>
+      <if test="lunchfood != null" >
+        LunchFood = #{lunchfood,jdbcType=INTEGER},
+      </if>
+      <if test="dinnerfood != null" >
+        DinnerFood = #{dinnerfood,jdbcType=INTEGER},
+      </if>
+      <if test="addfood != null" >
+        AddFood = #{addfood,jdbcType=INTEGER},
+      </if>
+      <if test="facting != null" >
+        Facting = #{facting,jdbcType=INTEGER},
+      </if>
+      <if test="vegetarianfood != null" >
+        VegetarianFood = #{vegetarianfood,jdbcType=INTEGER},
+      </if>
+      <if test="race != null" >
+        Race = #{race,jdbcType=INTEGER},
+      </if>
+      <if test="wphMealmenuFid != null" >
+        WPH_MealMenu_Fid = #{wphMealmenuFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphMealnumeName != null" >
+        WPH_MealNume_Name = #{wphMealnumeName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphMealtimeFid != null" >
+        WPH_MealTime_Fid = #{wphMealtimeFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphMealtimeName != null" >
+        WPH_MealTime_Name = #{wphMealtimeName,jdbcType=VARCHAR},
+      </if>
+      <if test="wphMealtypeFid != null" >
+        WPH_MealType_Fid = #{wphMealtypeFid,jdbcType=INTEGER},
+      </if>
+      <if test="wphMealtypeName != null" >
+        WPH_MealType_Name = #{wphMealtypeName,jdbcType=VARCHAR},
+      </if>
+      <if test="userFid != null" >
+        User_Fid = #{userFid,jdbcType=INTEGER},
+      </if>
+      <if test="userrole != null" >
+        UserRole = #{userrole,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        UserName = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="notes != null" >
+        Notes = #{notes,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bedno != null" >
+        BedNo = #{bedno,jdbcType=VARCHAR},
+      </if>
+      <if test="passername != null" >
+        PasserName = #{passername,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.slk.wph.module.WPH_Orderingfood.po.WphOrderingfood" >
+    update wph_orderingfood
+    set OrderingNumber = #{orderingnumber,jdbcType=VARCHAR},
+      Title = #{title,jdbcType=VARCHAR},
+      Depict = #{depict,jdbcType=VARCHAR},
+      Numbers = #{numbers,jdbcType=INTEGER},
+      Money = #{money,jdbcType=DOUBLE},
+      MealDate = #{mealdate,jdbcType=TIMESTAMP},
+      MealStatse = #{mealstatse,jdbcType=INTEGER},
+      MealAdd = #{mealadd,jdbcType=INTEGER},
+      Customer_Fid = #{customerFid,jdbcType=INTEGER},
+      Customer_CardId = #{customerCardid,jdbcType=VARCHAR},
+      Customer_HosPitalld = #{customerHospitalld,jdbcType=VARCHAR},
+      LunchFood = #{lunchfood,jdbcType=INTEGER},
+      DinnerFood = #{dinnerfood,jdbcType=INTEGER},
+      AddFood = #{addfood,jdbcType=INTEGER},
+      Facting = #{facting,jdbcType=INTEGER},
+      VegetarianFood = #{vegetarianfood,jdbcType=INTEGER},
+      Race = #{race,jdbcType=INTEGER},
+      WPH_MealMenu_Fid = #{wphMealmenuFid,jdbcType=INTEGER},
+      WPH_MealNume_Name = #{wphMealnumeName,jdbcType=VARCHAR},
+      WPH_MealTime_Fid = #{wphMealtimeFid,jdbcType=INTEGER},
+      WPH_MealTime_Name = #{wphMealtimeName,jdbcType=VARCHAR},
+      WPH_MealType_Fid = #{wphMealtypeFid,jdbcType=INTEGER},
+      WPH_MealType_Name = #{wphMealtypeName,jdbcType=VARCHAR},
+      User_Fid = #{userFid,jdbcType=INTEGER},
+      UserRole = #{userrole,jdbcType=VARCHAR},
+      UserName = #{username,jdbcType=VARCHAR},
+      Notes = #{notes,jdbcType=VARCHAR},
+      CreateDate = #{createdate,jdbcType=TIMESTAMP},
+      BedNo = #{bedno,jdbcType=VARCHAR},
+      PasserName = #{passername,jdbcType=VARCHAR}
+    where fid = #{fid,jdbcType=INTEGER}
+  </update>
+</mapper>

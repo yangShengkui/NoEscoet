@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.slk.wph.module.WPH_Summary_Panorama.mapper.WphSummaryPanoramaMapperCustom" >
+  <resultMap id="BaseResultMap" type="com.slk.wph.module.WPH_Summary_Panorama.po.WphSummaryPanoramaCustom" >
+    <id column="fid" property="fid" jdbcType="INTEGER" />
+    <result column="name" property="name"/>
+    <result column="type" property="type"/>
+    <result column="imgs" property="imgs" jdbcType="VARCHAR" />
+    <result column="notes" property="notes" jdbcType="VARCHAR" />
+     <result column="state" property="state" />
+    <result column="createdate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="selectSummaryPanoramaByFid" resultMap="BaseResultMap">
+    select * from wph_summary_panorama sp
+    where sp.fid=#{fid}
+    order by sp.fid
+  </select>
+  
+  <select id="selectSummaryPanoramaState" resultMap="BaseResultMap">
+    select * from wph_summary_panorama a 
+    where 
+    a.state='0' 
+    order by a.fid
+  </select>
+
+  <select id="selectType" resultType="java.lang.String">
+    select sp.type from wph_summary_panorama sp
+    GROUP BY sp.type
+    ORDER BY sp.fid
+  </select>
+
+  <select id="selectSummaryPanoramaByType" resultMap="BaseResultMap">
+    select * from wph_summary_panorama sp
+    where sp.type=#{type}
+    <if test="state!=null">
+          AND state=0
+    </if>
+    ORDER BY  sp.fid
+  </select>
+
+  <select id="selectSummaryPanoramaAll" resultMap="BaseResultMap">
+    select * from wph_summary_panorama sp
+    order by sp.state,sp.fid
+  </select>
+ 
+  <insert id="insertSummaryPanorama">
+    insert into wph_summary_panorama
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        fid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="imgs != null" >
+        imgs,
+      </if>
+      <if test="notes != null" >
+        notes,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="createdate != null" >
+        createdate,
+      </if>
+      <if test="createuser != null" >
+        createuser,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fid != null" >
+        #{fid},
+      </if>
+      <if test="name != null" >
+        #{name},
+      </if>
+      <if test="type != null" >
+        #{type},
+      </if>
+      <if test="imgs != null" >
+        #{imgs},
+      </if>
+      <if test="notes != null" >
+        #{notes},
+      </if>
+      <if test="state != null" >
+        #{state},
+      </if>
+      <if test="createdate != null" >
+        #{createdate},
+      </if>
+      <if test="createuser != null" >
+        #{createuser},
+      </if>
+    </trim>
+  </insert>
+ 
+  
+  <update id="updateSummaryPanorama">
+    update wph_summary_panorama
+    <set >
+      <if test="name != null" >
+        type = #{name},
+      </if>
+      <if test="type != null" >
+        type = #{type},
+      </if>
+      <if test="imgs != null" >
+        imgs = #{imgs},
+      </if>
+      <if test="notes != null" >
+        notes = #{notes},
+      </if>
+      <if test="state != null" >
+        state=#{state},
+      </if>
+      <if test="createdate != null" >
+        createdate = #{createdate},
+      </if>
+      <if test="createuser != null" >
+        createuser = #{createuser},
+      </if>
+    </set>
+    where fid = #{fid}
+  </update>
+</mapper>
